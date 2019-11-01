@@ -2,8 +2,10 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
-  production: false
+export const env = {
+  production: false,
+  apiUrl: 'https://test-libapps.colorado.edu/api',
+  libcalApiUrl: 'https://colorado.libcal.com/1.1'
 };
 
 /*
