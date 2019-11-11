@@ -3,15 +3,17 @@
 
 <div mat-dialog-content class="modal-box-body" style="text-align: center;">
     <img src="assets/images/success.png" style="width: 120px;" /><br>
-    <span style="font-weight: bold">ALL DONE !<br><br> CONFIRMATION EMAILS WILL
-        BE SENT TO YOUR INBOX AT <br><br> FDSD@COLORADO.EDU</span>
+    <span style="font-weight: bold">
+        ALL DONE !<br><br>
+        CONFIRMATION EMAILS WILL BE SENT TO YOUR INBOX AT <br><br>
+        {{email | upperCase}}</span>
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
     <div style="font-weight: bold; margin-bottom: 27px;">
-        BACK TO MAIN SCREEN IN: 20(s)</div>
+        BACK TO MAIN SCREEN IN: 10(s)</div>
     <div>
         <button class="modal-box-button" mat-raised-button tabindex="-1"
-            (click)="onClose()">CLOSE</button>
+            (click)="onTouchClose()">CLOSE</button>
     </div>
 </div>

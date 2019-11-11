@@ -15,7 +15,8 @@ export class DialogSuccessComponent implements OnInit {
     //   this.dialogRef.close();
     // }, 20000);
   }
-  onClose(): void {
+
+  onTouchClose(): void {
     this.dialogRef.close();
   }
 

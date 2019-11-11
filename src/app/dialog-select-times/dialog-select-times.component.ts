@@ -12,13 +12,12 @@ import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confi
   styleUrls: ['../main/main.component.css']
 })
 export class DialogSelectTimesComponent implements OnInit {
-  setDateString: string = "";
+  setDateString = "";
+  displayTime: TimeDisplay[] = [];
+  isDisabledNextBtn = true;
+
   private openingHours = {};
-  public displayTime: TimeDisplay[] = [];
-  toggleItem = false;
-  private availableTime: string[] = [];
-  selectedTimeDisplay: TimeDisplay;
-  isDisabledSubmitBtn = true;
+  private availableTime = [];
 
   constructor(
     private dialogRef: MatDialogRef<DialogSelectTimesComponent>,
@@ -26,26 +25,29 @@ export class DialogSelectTimesComponent implements OnInit {
     private roomService: RoomService,
     private helperService: HelperService,
     private hoursService: HoursService,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+    @Inject(MAT_DIALOG_DATA) private data: any) { }
 
   ngOnInit() {
-    if (this.isToday(this.data.date)) {
-      this.setDateString = "TODAY";
-    } else {
-      this.setDateString = this.helperService.formatedDisplayDate(
-        this.data.date
-      );
-    }
-    if (this.data.selectedTime === null) {
-      this.isDisabledSubmitBtn = true;
-    } else {
-      this.isDisabledSubmitBtn = false;
-    }
 
-    this.displayTimeLine(this.data.date);
+    //Set Date on the header of the dialog
+    this.setDateString = this.helperService.isTheDay(this.data.date, new Date()) ?
+      this.setDateString = "TODAY" :
+      this.helperService.formatedDisplayDate(this.data.date);
+
+    //if user touch a time slot from main calendar then, Next button will be enable
+    this.isDisabledNextBtn = this.data.selectedTime === null ? true : false;
+
+    // Display time slots
+    this.times(this.data.date);
   }
-  displayTimeLine(currentDate: Date): void {
-    let dateString = this.helperService.formattedDate(currentDate);
+
+
+  /**
+   * Times dialog select times component
+   * @param date
+   */
+  private times(date: Date): void {
+    const dateString = this.helperService.formattedDate(date);
 
     this.hoursService.get().subscribe(res => {
       // GET OPENING HOURS
@@ -74,7 +76,7 @@ export class DialogSelectTimesComponent implements OnInit {
         );
 
         if (this.data) {
-          if (this.isToday(this.data.date)) {
+          if (this.helperService.isTheDay(this.data.date, new Date())) {
             let flag = true;
             const displayTimeToday = [];
             this.displayTime
@@ -123,44 +125,46 @@ export class DialogSelectTimesComponent implements OnInit {
     });
   }
 
-  isToday(date: Date) {
-    return this.helperService.isTheDay(date, new Date());
+  /**
+   * Touch : Toggle time between AVAILABLE - SELECTED
+   * @param time
+   */
+  onTouchSelectTime(time: TimeDisplay) {
+    // Toggle
+    time.active = !time.active;
+
+    // Only enable the next button if there are selected times
+    this.isDisabledNextBtn = (this.displayTime.find(e => { return e.active === true; })) ? true : false;
+
   }
 
-  onSelectTime(timeDisplay: TimeDisplay) {
-    timeDisplay.active = !timeDisplay.active;
-    let flag = false;
-    this.displayTime.forEach(e => {
-      if (e.active === true) {
-        flag = true;
-      }
-    });
-    if (flag) {
-      this.isDisabledSubmitBtn = false;
-    } else {
-      this.isDisabledSubmitBtn = true;
-    }
-  }
-
-  onNextConfirm(): void {
-    const selectedTime: TimeDisplay[] = [];
-    this.displayTime.forEach(e => {
-      if (e.active) {
-        selectedTime.push(e);
-      }
-    });
+  /**
+   * Touch : Next - go to confirmation component
+   */
+  onTouchNextConfirm(): void {
+    // TODO need to revise this update
+    // const selectedTime: TimeDisplay[] = [];
+    // this.displayTime.forEach(e => {
+    //   if (e.active) {
+    //     selectedTime.push(e);
+    //   }
+    // });
     this.dialog.open(DialogConfirmationComponent, {
       width: "65%",
       height: "70%",
       data: {
-        selectedTime: selectedTime,
+        selectedTime: this.displayTime.map(e => { return e.active }),
         dateString: this.setDateString,
         date: this.data ? this.data.date : new Date(),
         roomName: this.data.roomName
       }
     });
   }
-  onCancel(): void {
+
+  /**
+   * Touch : Cancel
+   */
+  onTouchCancel(): void {
     this.dialogRef.close();
   }
 

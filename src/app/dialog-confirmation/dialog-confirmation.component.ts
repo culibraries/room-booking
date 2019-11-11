@@ -23,9 +23,9 @@ export class DialogConfirmationComponent implements OnInit {
     this.dateString = this.data.dateString;
   }
   /**
-   * Next - go to swipe-card component
+   * Touch : Next - go to swipe-card component
    */
-  onNextSwipe(): void {
+  onTouchNextSwipe(): void {
     this.dialog.open(DialogSwipeCardComponent, {
       width: "65%",
       height: "70%",
@@ -38,18 +38,19 @@ export class DialogConfirmationComponent implements OnInit {
   }
 
   /**
-   * Back - go to select-times component
+   * Touch : Back - go to select-times component
    */
-  onBackSelectTimes(): void {
+  onTouchBackSelectTimes(): void {
     this.dialogRef.close();
   }
 
   /**
-   * Cancel - Close the dialog
+   * Touch : Cancel - Close the dialog
    */
-  onCancel(): void {
+  onTouchCancel(): void {
     this.dialogRef.close();
   }
+
 
   trackByFn(index: any) {
     return index;

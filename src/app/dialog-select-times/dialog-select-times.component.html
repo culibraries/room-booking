@@ -5,7 +5,7 @@
 <div mat-dialog-content class="modal-box-body">
     <ul class="select-time-list">
         <li *ngFor="let time of displayTime;" class="select-time-item"
-            (click)="onSelectTime(time)">
+            (click)="onTouchSelectTime(time)">
             <span>
                 <mat-icon>access_time</mat-icon>
             </span>
@@ -28,9 +28,9 @@
 <div mat-dialog-actions class="modal-box-button-wrapper">
     <div>
         <button class="modal-box-button" mat-raised-button tabindex="-1"
-            (click)="onCancel()">CANCEL</button>
+            (click)="onTouchCancel()">CANCEL</button>
         <button class="modal-box-button" mat-raised-button
-            [disabled]="!isDisabledSubmitBtn"
-            (click)="onNextConfirm()">NEXT</button>
+            [disabled]="!isDisabledNextBtn"
+            (click)="onTouchNextConfirm()">NEXT</button>
     </div>
 </div>

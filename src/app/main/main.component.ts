@@ -180,7 +180,7 @@ export class MainComponent implements OnInit {
   }
 
   /**
-   * Click : Previous dates on main screen calendar
+   * Touch : Previous dates on main screen calendar
    */
   onTouchPreDate() {
     this.countDate--;
@@ -191,7 +191,7 @@ export class MainComponent implements OnInit {
   }
 
   /**
-   * Click : Next dates on main screen calendar
+   * Touch : Next dates on main screen calendar
   */
   onTouchNextDate() {
     this.countDate++;
