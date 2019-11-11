@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LeftContentComponent } from './left-content.component';
+import { DialogDescriptionComponent } from './dialog-description.component';
 
-describe('LeftContentComponent', () => {
-  let component: LeftContentComponent;
-  let fixture: ComponentFixture<LeftContentComponent>;
+describe('DialogDescriptionComponent', () => {
+  let component: DialogDescriptionComponent;
+  let fixture: ComponentFixture<DialogDescriptionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LeftContentComponent ]
+      declarations: [ DialogDescriptionComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LeftContentComponent);
+    fixture = TestBed.createComponent(DialogDescriptionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,311 @@
+
+/******** Calendar ********/
+/* Calendar */
+
+.calendar {
+  position: absolute;
+  color: white;
+  top: 21%;
+  left: 5%;
+  font-size: 20px;
+  border-collapse: separate;
+  border-spacing: 0px;
+}
+
+
+.calendar td {
+  padding: 20px 15px 20px 20px;
+}
+
+.calendar tbody td {
+  border: 1px solid white;
+
+}
+
+.calendar tbody {
+  display: block;
+  height: 330px;
+  overflow-y: visible;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.calendar thead {
+  display: block;
+  width: 100%;
+}
+
+.td-left {
+  width: 195px;
+  text-align: center;
+}
+
+.td-right {
+  width: 370px;
+  text-align: center;
+}
+
+.td-right mat-icon {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+
+.calendar button:disabled,
+button[disabled] {
+  color: #666666;
+}
+
+.middle-date {
+  display: inline-block;
+  padding-top: 10px;
+}
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+.calendar tr td.unavailable {
+  background: #636363;
+
+}
+
+
+
+::ng-deep .mat-calendar {
+  height: 71vh !important;
+  font-size: 15px;
+}
+
+::ng-deep .mat-calendar-body-cell-content {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-body-label {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-table-header {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-spacer {
+  font-size: 19px;
+}
+
+::ng-deep .mat-button-wrapper {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-previous-button {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+::ng-deep .mat-calendar-next-button {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+/******** Left Content Section CSS ********/
+.left-content-available {
+  background: #2e7d32;
+  width: 30%;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+.left-inuse {
+  background: #b71d1c;
+
+}
+
+.left-text-top {
+  margin-top: 20px;
+}
+
+.left-text-top .name {
+  font-size: 30px;
+}
+
+.left-text-top .capacity {
+  font-size: 15px;
+  padding-top: 10px;
+  font-weight: normal;
+}
+
+.left-text-center {
+  font-size: 40px;
+  margin-top: 90%;
+}
+
+/****** Right Content Section CSS *******/
+
+.right-content-drawer {
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url('../../assets/images/background.jpeg');
+  background-repeat: no-repeat;
+  color: white;
+}
+
+.right-time-display {
+  font-size: 45px;
+  font-weight: bold;
+  margin: 20px 50px 0 0;
+  float: right;
+  text-align: right;
+}
+
+.top-date {
+  font-size: 30px;
+}
+
+/* Right - Button CSS */
+
+.bottom-btn-wraper {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+  margin: 0 10px 10px 0;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+}
+
+.bottom-btn {
+  text-align: center;
+  border: 3px solid white;
+  border-radius: 10px;
+  width: 230px;
+  height: 70px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.btn-reserve {
+  margin-right: 10px;
+}
+
+/** MODAL BOX - GENERAL **/
+.modal-box-title {
+  text-align: center;
+  font-size: 20px;
+}
+
+.modal-box-body {
+  height: 63%;
+  margin: auto;
+  width: 85%;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modal-box-button-wrapper {
+  /* width: 53%; */
+  padding-top: 50px;
+  text-align: center;
+  margin: 0 auto;
+
+}
+
+.modal-box-button {
+  margin-left: 10px;
+  border: 1px solid #cecece;
+  border-radius: 5px;
+  height: 50px;
+  width: 150px;
+}
+::ng-deep .mat-dialog-container {
+  padding: 10px 24px 24px 24px;
+}
+
+/** SELECT TIME MODAL BOX */
+.select-time-list {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+}
+
+.select-time-list li {
+  position: relative;
+  left: 0;
+  margin: .5em;
+  padding: .3em 0;
+  height: 2em;
+}
+
+.select-time-item {
+  display: flex;
+
+}
+
+.select-time-list li .available {
+  /* border: 1px solid green; */
+  background: #2e7d32;
+  color: white;
+}
+
+.select-time-list li .box {
+  width: 120px;
+  text-align: center;
+  padding: 5px;
+  margin: 5px 0 0 auto;
+  border-radius: 5px;
+  height: 20px;
+  float: right;
+
+}
+
+.select-time-list li .busy {
+  background: #b71d1c;
+  color: white;
+}
+
+.select-time-list li .seleted-text {
+  font-weight: bold;
+}
+
+.select-time-list li .selected {
+  background: #f59f16;
+  color: white;
+  font-weight: bold;
+}
+
+.time-display {
+  padding-left: 5px;
+  padding-top: .2em;
+}
+
+.unavailable-time {
+  text-decoration: line-through;
+  padding-left: 5px;
+}
+
+/** CONFIRMATION BOX **/
+.confirmation-table {
+  margin: 40px auto;
+}
+
+.confirmation-table tr {
+  vertical-align: top;
+}
+
+.td-content {
+  padding-left: 50px;
+}
+
+.td-label {
+  padding-top: 8px;
+}
+
+/* SWIPE CARD BOX */
+.swipe-button-wrapper {
+  margin-top: 60px;
+}

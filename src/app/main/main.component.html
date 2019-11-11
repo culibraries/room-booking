@@ -1,1 +1,99 @@
-<p>main works!</p>
+<mat-drawer-container fullscreen>
+  <!-- Left Contetn Section-->
+  <mat-drawer mode="side" opened class="left-content-available"
+    [class.left-inuse]="status=='inuse'">
+    <div class="left-text-top">
+      <span class="name">{{roomName}}</span><br />
+      <span class="capacity"> capacity: {{roomCapacity}}</span>
+    </div>
+    <div class="left-text-center">
+      <span *ngIf="status=='available'">AVAILABLE<br> NOW</span>
+      <span *ngIf="status=='inuse'">IN USE<br> NOW</span>
+    </div>
+
+  </mat-drawer>
+
+  <!-- Right Contetn Section-->
+  <mat-drawer-content class="right-content-drawer">
+    <!-- Date Time Display -->
+    <div class="right-time-display">
+      <div id="top-time">{{ time | date: 'hh : mm a' }}</div>
+      <div class="top-date">{{ time | date: 'EEEE, MMMM dd, yyyy' }}</div>
+    </div>
+
+    <!-- Display Calendar -->
+
+    <table class="calendar" cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <td class="td-left">
+            <button [disabled]="isToday(setDate)" mat-icon-button
+              class="calendar-icon left" (click)="onTouchPreDate()">
+              <mat-icon>arrow_back_ios</mat-icon>
+            </button>
+            <div class="middle-date">
+              <span *ngIf="!isToday(setDate); else today">{{setDate | date:'E,
+                MMM dd'}}</span>
+              <ng-template #today>Today</ng-template>
+            </div>
+            <button [disabled]="isNext3months(setDate)" mat-icon-button
+              class="calendar-icon right"
+              (click)="onTouchNextDate()">
+              <mat-icon>arrow_forward_ios</mat-icon>
+            </button>
+          </td>
+          <td class="td-right">
+            <mat-form-field style="visibility:hidden; display: table-column;">
+              <input matInput [matDatepicker]="picker" [value]="setDate"
+                [min]="minDateString" [max]="maxDateString"
+                (dateChange)="touchCalendarEvent('change', $event)">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker touchUi #picker></mat-datepicker>
+            </mat-form-field>
+            <img src="assets/icons/calendar.png" width="65px"
+              (click)="picker.open()" />
+
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let time of displayTime; trackBy: trackByFn"
+          (click)="onTouchCalendarTimeSlot(time)">
+          <div *ngIf="time.status; then unavailableDisplayTime else
+            availableDisplayTime"></div>
+          <ng-template #unavailableDisplayTime>
+            <td class="td-left" style="color: #636363">
+              {{time.displayValue}}
+            </td>
+          </ng-template>
+          <ng-template #availableDisplayTime>
+            <td class="td-left">
+              {{time.displayValue}}
+            </td>
+          </ng-template>
+
+          <div *ngIf="time.status; then unavailable else available"></div>
+          <ng-template #unavailable>
+            <td class="td-right unavailable"></td>
+          </ng-template>
+
+          <ng-template #available>
+            <td class="td-right"></td>
+          </ng-template>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <!-- Bottom Button -->
+    <div class="bottom-btn-wraper">
+
+      <button mat-button class="bottom-btn btn-reserve"
+        (click)="onTouchReserve()">RESERVE</button>
+      <button mat-button class="bottom-btn btn-browse"
+        (click)="onTouchBrowserRoom()">BROWSE ROOMS</button>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
+<ngx-spinner bdColor="rgba(255,255,255,2.0)" color="black"
+  type="ball-spin-clockwise"></ngx-spinner>

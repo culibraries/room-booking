@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RightContentComponent } from './right-content.component';
+import { DialogSelectTimesComponent } from './dialog-select-times.component';
 
-describe('RightContentComponent', () => {
-  let component: RightContentComponent;
-  let fixture: ComponentFixture<RightContentComponent>;
+describe('DialogSelectTimesComponent', () => {
+  let component: DialogSelectTimesComponent;
+  let fixture: ComponentFixture<DialogSelectTimesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RightContentComponent ]
+      declarations: [ DialogSelectTimesComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RightContentComponent);
+    fixture = TestBed.createComponent(DialogSelectTimesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

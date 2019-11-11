@@ -3,47 +3,45 @@ import { env } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-const API_URL = env.apiUrl;
 const LIBCAL_API_URL = env.libcalApiUrl;
 const headers = new HttpHeaders({
   Authorization: 'token ' + localStorage.getItem('token')
 });
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
   // API: GET
-  public get(path: string): Observable<any> {
-    return this.httpClient.get(LIBCAL_API_URL + path, { headers });
+  public get(url: string): Observable<any> {
+    return this.httpClient.get(url, { headers });
   }
 
   // API: POST
-  public post(path: string, body: {}): Observable<any> {
-    return this.httpClient.post(LIBCAL_API_URL + path, body, { headers });
+  public post(url: string, body: {}): Observable<any> {
+    return this.httpClient.post(url, body, { headers });
   }
 
-  // API: DELETE
-  public delete(path: string): Observable<any> {
-    return this.httpClient.delete(API_URL + path);
-  }
-
-  // API: PUT
-  public put(path: string, body: {}): Observable<any> {
-    return this.httpClient.put(API_URL + path, body);
-  }
-
-  // API: GET WITHOUT DEFAULT URL
-  public getWODURL(
+  // API: GET LIBCAL
+  public getLIBCAL(
     path: string,
     header: HttpHeaders = new HttpHeaders()
   ): Observable<any> {
-    return this.httpClient.get(path, { headers: header });
+    return this.httpClient.get(LIBCAL_API_URL + path, { headers: header });
   }
 
-  // API: POST WITHOUT DEFAULT URL
-  public postWODURL(path: string, body: {}): Observable<any> {
-    return this.httpClient.post(path, body);
+  // API: POST LIBCAL
+  public postLIBCAL(
+    path: string,
+    body: {},
+    header: HttpHeaders = new HttpHeaders()
+  ): Observable<any> {
+    return this.httpClient.post(LIBCAL_API_URL + path, body, {
+      headers: header
+    });
   }
+
+
 }
