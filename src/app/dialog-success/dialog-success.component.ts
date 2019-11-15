@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-dialog-success',
@@ -8,7 +8,10 @@ import { MatDialogRef } from '@angular/material';
 })
 export class DialogSuccessComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<DialogSuccessComponent>) { }
+  constructor(
+    private dialogRef: MatDialogRef<DialogSuccessComponent>,
+    private dialog: MatDialog,
+  ) { }
 
   ngOnInit(): void {
     // setTimeout(() => {
@@ -17,7 +20,6 @@ export class DialogSuccessComponent implements OnInit {
   }
 
   onTouchClose(): void {
-    this.dialogRef.close();
+    this.dialog.closeAll();
   }
-
 }

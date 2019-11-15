@@ -10,7 +10,7 @@ import { Room } from '../models/room.model';
 })
 export class RoomService {
   constructor(private apiService: ApiService) { }
-  get(date: string): Observable<Room> {
+  getRoom(date: string): Observable<Room> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: 'Bearer' + ' ' + sessionStorage.getItem('libcal_token')
@@ -37,24 +37,24 @@ export class RoomService {
       );
   }
 
-  // getAllCategories(token: string): Observable<any> {
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     Authorization: 'Bearer' + ' ' + token
-  //   });
+  getAllCategories(): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer' + ' ' + sessionStorage.getItem('libcal_token')
+    });
 
-  //   return this.apiService
-  //     .get('/space/categories/997', headers)
-  //     .pipe(map(data => data));
-  // }
+    return this.apiService
+      .getLIBCAL('/space/categories/' + sessionStorage.getItem('location_id'), headers)
+      .pipe(map(data => data));
+  }
 
-  // getAllRoom(token: string, categoryId: number): Observable<any> {
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     Authorization: 'Bearer' + ' ' + token
-  //   });
-  //   return this.apiService
-  //     .get('/space/category/' + categoryId + '?details=1', headers)
-  //     .pipe(map(data => data));
-  // }
+  getAllRooms(category_id: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer' + ' ' + sessionStorage.getItem('libcal_token')
+    });
+    return this.apiService
+      .getLIBCAL('/space/category/' + category_id + '?details=1', headers)
+      .pipe(map(data => data));
+  }
 }

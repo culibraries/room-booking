@@ -2,27 +2,40 @@
 /******** Calendar ********/
 /* Calendar */
 
-.calendar {
-  position: absolute;
+.time-display-main {
+  margin-top: 20%;
   color: white;
-  top: 21%;
-  left: 5%;
   font-size: 20px;
-  border-collapse: separate;
-  border-spacing: 0px;
+}
+.time-display-main table {
+  margin: 0 auto;
+}
+.time-display-main table>tbody{
+ padding-right: 20px;
+}
+.time-display-main-header {
+  width: 79%;
+  margin: 0 auto;
+}
+.time-display-main-move {
+  float: left;
+  width: 48%;
+  padding-left: 2px;
+}
+.time-display-main-icon {
+  float: right;
+  padding-right: 28px;
 }
 
-
-.calendar td {
+.time-display-main td {
   padding: 20px 15px 20px 20px;
 }
 
-.calendar tbody td {
+.time-display-main tbody td {
   border: 1px solid white;
 
 }
-
-.calendar tbody {
+.time-display-main tbody {
   display: block;
   height: 330px;
   overflow-y: visible;
@@ -30,18 +43,13 @@
   width: 100%;
 }
 
-.calendar thead {
-  display: block;
-  width: 100%;
-}
-
 .td-left {
-  width: 195px;
+  width: 300px;
   text-align: center;
 }
 
 .td-right {
-  width: 370px;
+  width: 300px;
   text-align: center;
 }
 
@@ -51,7 +59,7 @@
 }
 
 
-.calendar button:disabled,
+.time-display-main button:disabled,
 button[disabled] {
   color: #666666;
 }
@@ -59,6 +67,7 @@ button[disabled] {
 .middle-date {
   display: inline-block;
   padding-top: 10px;
+  padding-left: 25%;
 }
 
 .right {
@@ -69,11 +78,30 @@ button[disabled] {
   float: left;
 }
 
-.calendar tr td.unavailable {
+.time-display-main tr td.unavailable {
   background: #636363;
 
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 17px;
+  margin-left: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  -webkit-border-radius: 10px;
+
+}
 
 
 ::ng-deep .mat-calendar {
@@ -141,14 +169,13 @@ button[disabled] {
 
 .left-text-center {
   font-size: 40px;
-  margin-top: 90%;
+  margin-top: 75%;
 }
 
 /****** Right Content Section CSS *******/
 
 .right-content-drawer {
-  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url('../../assets/images/background.jpeg');
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('../../assets/images/preview.jpeg');
   background-repeat: no-repeat;
   color: white;
 }
@@ -202,7 +229,7 @@ button[disabled] {
   height: 63%;
   margin: auto;
   width: 85%;
-  padding: 10px;
+  padding: 0px 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -228,8 +255,6 @@ button[disabled] {
 
 /** SELECT TIME MODAL BOX */
 .select-time-list {
-  margin: 0 0 2em 0;
-  list-style-type: none;
   padding: 0;
 }
 
@@ -243,7 +268,6 @@ button[disabled] {
 
 .select-time-item {
   display: flex;
-
 }
 
 .select-time-list li .available {
@@ -260,7 +284,6 @@ button[disabled] {
   border-radius: 5px;
   height: 20px;
   float: right;
-
 }
 
 .select-time-list li .busy {
@@ -308,4 +331,47 @@ button[disabled] {
 /* SWIPE CARD BOX */
 .swipe-button-wrapper {
   margin-top: 60px;
+}
+
+/* BROWSE ROOM BOX */
+.browse-room-title{
+  display: flex;
+  align-items: center;
+}
+
+.browse-room-left {
+  width: 50%;
+  float: left;
+}
+
+.browse-room-right {
+  width: 50%;
+  float: right;
+}
+
+.browse-room-body{
+  height: 63%;
+  margin: 10px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.browse-room-left ul {
+  list-style: none;
+  padding: 0px;
+}
+
+.browse-room-left li {
+  display: block;
+  width: 300px;
+  height: 30px;
+  margin: 0 0 7px 0;
+  background: #F7F5F2 center no-repeat;
+  font-size: 18px;
+  color: #333;
+  padding: 5px 0 0 20px;
+  text-decoration: none;
+  border-left: 5px solid #F5876E;
+
 }

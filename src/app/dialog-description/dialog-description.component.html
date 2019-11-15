@@ -1,14 +1,14 @@
 <h1 mat-dialog-title class="modal-box-title">
+    <span> {{data.roomName}}</span><br>
     <span> DESCRIPTION</span>
 </h1>
 
-<div mat-dialog-content class="modal-box-body">
-    description
+<div mat-dialog-content class="modal-box-body" [innerHTML]="description">
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
     <div>
         <button mat-raised-button tabindex="-1" class="modal-box-button
-            btn-cancel" (click)="onCancel()">CLOSE</button>
+            btn-cancel" (click)="onClose()">CLOSE</button>
     </div>
 </div>

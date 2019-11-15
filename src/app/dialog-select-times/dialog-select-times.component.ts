@@ -37,8 +37,8 @@ export class DialogSelectTimesComponent implements OnInit {
     //if user touch a time slot from main calendar then, Next button will be enable
     this.isDisabledNextBtn = this.data.selectedTime === null ? true : false;
 
-    // Display time slots
-    this.times(this.data.date);
+    // Display Time Slots
+    this.displayTimes(this.data.date);
   }
 
 
@@ -46,7 +46,7 @@ export class DialogSelectTimesComponent implements OnInit {
    * Times dialog select times component
    * @param date
    */
-  private times(date: Date): void {
+  private displayTimes(date: Date): void {
     const dateString = this.helperService.formattedDate(date);
 
     this.hoursService.get().subscribe(res => {
@@ -56,7 +56,7 @@ export class DialogSelectTimesComponent implements OnInit {
         res.openingHours
       );
 
-      this.roomService.get(dateString).subscribe(resRoom => {
+      this.roomService.getRoom(dateString).subscribe(resRoom => {
         // GET AVAILABILITY TIME
 
         this.availableTime = this.helperService.convertRangeAvailabilityTime(
@@ -75,7 +75,7 @@ export class DialogSelectTimesComponent implements OnInit {
           this.helperService.upgradeIntervalTime(intervals)
         );
 
-        if (this.data) {
+        if (this.data.selectedTime !== null) {
           if (this.helperService.isTheDay(this.data.date, new Date())) {
             let flag = true;
             const displayTimeToday = [];
@@ -121,6 +121,7 @@ export class DialogSelectTimesComponent implements OnInit {
             });
           this.displayTime = displayTimeToday.slice().reverse();
         }
+
       });
     });
   }
@@ -132,28 +133,19 @@ export class DialogSelectTimesComponent implements OnInit {
   onTouchSelectTime(time: TimeDisplay) {
     // Toggle
     time.active = !time.active;
-
     // Only enable the next button if there are selected times
-    this.isDisabledNextBtn = (this.displayTime.find(e => { return e.active === true; })) ? true : false;
-
+    this.isDisabledNextBtn = this.displayTime.find(function (e) { return e.active === true; }) ? false : true;
   }
 
   /**
    * Touch : Next - go to confirmation component
    */
   onTouchNextConfirm(): void {
-    // TODO need to revise this update
-    // const selectedTime: TimeDisplay[] = [];
-    // this.displayTime.forEach(e => {
-    //   if (e.active) {
-    //     selectedTime.push(e);
-    //   }
-    // });
     this.dialog.open(DialogConfirmationComponent, {
       width: "65%",
       height: "70%",
       data: {
-        selectedTime: this.displayTime.map(e => { return e.active }),
+        selectedTime: this.displayTime.filter(e => { return e.active }),
         dateString: this.setDateString,
         date: this.data ? this.data.date : new Date(),
         roomName: this.data.roomName

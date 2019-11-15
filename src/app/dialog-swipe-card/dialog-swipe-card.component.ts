@@ -66,7 +66,6 @@ export class DialogSwipeCardComponent {
     const formatedStart = this.getFormatedDate(submittedTime.split("-")[0], date);
     const formatedEnd = this.getFormatedDate(submittedTime.split("-")[1], date);
 
-
     const body = {
       start: formatedStart,
       fname: this.firstName,
@@ -135,6 +134,6 @@ export class DialogSwipeCardComponent {
    * Touch - Cancel
    */
   onTouchCancel(): void {
-    this.dialogRef.close();
+    this.dialog.closeAll();
   }
 }

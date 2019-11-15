@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule, MatInputModule } from '@angular/material';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
 
 // Dialog Component
 import { DialogSelectTimesComponent } from './dialog-select-times/dialog-select-times.component';
@@ -53,7 +54,8 @@ import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatCardModule
   ],
   entryComponents: [
     DialogSelectTimesComponent,

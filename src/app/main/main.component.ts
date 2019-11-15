@@ -10,6 +10,7 @@ import { TimeDisplay } from "../models/time-display.model";
 import { NgxSpinnerService } from "ngx-spinner";
 import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 import { DialogBrowseRoomsComponent } from '../dialog-browse-rooms/dialog-browse-rooms.component';
+import { DialogDescriptionComponent } from '../dialog-description/dialog-description.component';
 
 @Component({
   selector: "app-main",
@@ -30,6 +31,7 @@ export class MainComponent implements OnInit {
   displayTime: TimeDisplay[];
   availableTime: string[];
   roomName = "";
+  roomDescription = "";
   roomCapacity = 0;
   constructor(
     private route: ActivatedRoute,
@@ -40,24 +42,24 @@ export class MainComponent implements OnInit {
     private configService: ConfigService,
     private spinner: NgxSpinnerService
   ) {
-    // setInterval(() => {
-    //   this.time = new Date();
-    // }, 1000);
+    setInterval(() => {
+      this.time = new Date();
+    }, 1000);
   }
 
   ngOnInit() {
-    this.uid = this.route.snapshot.params.uid;
-    if (
-      !sessionStorage.getItem("location_id") ||
-      !sessionStorage.getItem("space_id") ||
-      !sessionStorage.getItem("hours_view_id") ||
-      !sessionStorage.getItem("libcal_token")
-    ) {
-      this.configService.setConfig(this.uid);
-    }
-    this.spinner.show();
+    // this.uid = this.route.snapshot.params.uid;
+    // if (
+    //   !sessionStorage.getItem("location_id") ||
+    //   !sessionStorage.getItem("space_id") ||
+    //   !sessionStorage.getItem("hours_view_id") ||
+    //   !sessionStorage.getItem("libcal_token")
+    // ) {
+    //   this.configService.setConfig(this.uid);
+    // }
+    // this.spinner.show();
     this.displayTimeLine(this.setDate);
-    this.configService.setToken();
+    // this.configService.setToken();
     setTimeout(() => {
       this.spinner.hide();
     }, 2000);
@@ -67,7 +69,7 @@ export class MainComponent implements OnInit {
     // }, 5000);
   }
 
-  trackByFn(index: any) {
+  trackByFn(index, item) {
     return index;
   }
 
@@ -76,22 +78,32 @@ export class MainComponent implements OnInit {
    */
   onTouchBrowserRoom() {
     this.dialog.open(DialogBrowseRoomsComponent, {
+      width: "70%",
+      height: "75%",
+      data: {
+        date: this.setDate,
+        roomName: this.roomName.trim()
+      }
+    });
+  }
+
+  /**
+   * Touch : Information Icon
+   */
+  onTouchDescription() {
+    this.dialog.open(DialogDescriptionComponent, {
       width: "65%",
       height: "70%",
       data: {
-        selectedTime: null,
-        date: this.setDate,
+        description: this.roomDescription,
         roomName: this.roomName
       }
     });
   }
 
+  displayTimeLine(date: Date): void {
+    let dateString = this.helperService.formattedDate(date);
 
-  // FIXME Move this funtion to a service
-  displayTimeLine(currentDate: Date): void {
-    let dateString = this.helperService.formattedDate(currentDate);
-    this.displayTime = [];
-    this.availableTime = [];
     // FIXME Need to break the subscribe , should not have subscribe inside subsribe
     this.hoursService.get().subscribe(res => {
       // GET OPENING HOURS
@@ -99,9 +111,11 @@ export class MainComponent implements OnInit {
         dateString,
         res.openingHours
       );
-      this.roomService.get(dateString).subscribe(resRoom => {
+      this.roomService.getRoom(dateString).subscribe(resRoom => {
         this.roomName = resRoom.name;
         this.roomCapacity = resRoom.capacity;
+        // TODO check if resRoom.description exists from libcal response
+        this.roomDescription = resRoom.description;
         this.availableTime = this.helperService.convertRangeAvailabilityTime(
           resRoom.availability
         );
@@ -141,7 +155,7 @@ export class MainComponent implements OnInit {
         }
       },
         err => {
-          this.displayTimeLine(currentDate);
+          this.displayTimeLine(date);
         }
       );
     });

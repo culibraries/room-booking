@@ -1,28 +1,55 @@
 <h1 mat-dialog-title class="modal-box-title">
-    <span> Z-LIT-TEST</span><br>
-    <span> SELECT TIMES - {{setDateString | uppercase}}</span>
+    <span> {{locationName | uppercase}}</span><br>
 </h1>
-<div mat-dialog-content class="modal-box-body">
-    <ul class="select-time-list">
-        <li *ngFor="let time of displayTime;" class="select-time-item"
-            (click)="onSelectTime(time)">
-            <span>
-                <mat-icon>access_time</mat-icon>
-            </span>
-            <div *ngIf="!time.status; else inuse" style="display: contents">
-                <span class="time-display" [class.seleted-text]="time.active">
-                    {{time.displayValue}}
-                </span>
-                <span *ngIf="!time.active" class="box available">AVAILABLE</span>
-                <span *ngIf="time.active" class="box selected">SELECTED</span>
+<div mat-dialog-content class="browse-room-body">
+    <div class="browse-room-left">
+        <div *ngFor="let category of browseRoomsDisplay">
+            <h3>{{category.name}}</h3>
+            <ul>
+                <li *ngFor="let room of category.items"> {{room.name}}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="browse-room-right">
+        <div class="time-display-main-header">
+            <div class="time-display-main-move">
+                <button mat-icon-button
+                    class="left" (click)="onTouchPreDate()">
+                    <mat-icon>arrow_back_ios</mat-icon>
+                </button>
+                <div class="middle-date">
+                    Today
+                </div>
+                <button mat-icon-button
+                    class="right"
+                    (click)="onTouchNextDate()">
+                    <mat-icon>arrow_forward_ios</mat-icon>
+                </button>
             </div>
-            <ng-template #inuse style="display: contents">
-                <span class="time-display unavailable-time">
-                    {{time.displayValue}}
+        </div>
+        <div style="clear: both;"></div>
+        <ul class="select-time-list">
+            <li *ngFor="let time of displayTime;" class="select-time-item"
+                (click)="onSelectTime(time)">
+                <span>
+                    <mat-icon>access_time</mat-icon>
                 </span>
-                <span class="box busy">IN USE</span></ng-template>
-        </li>
-    </ul>
+                <div *ngIf="!time.status; else inuse" style="display: contents">
+                    <span class="time-display"
+                        [class.seleted-text]="time.active">
+                        {{time.displayValue}}
+                    </span>
+                    <span *ngIf="!time.active" class="box available">AVAILABLE</span>
+                    <span *ngIf="time.active" class="box selected">SELECTED</span>
+                </div>
+                <ng-template #inuse style="display: contents">
+                    <span class="time-display unavailable-time">
+                        {{time.displayValue}}
+                    </span>
+                    <span class="box busy">IN USE</span></ng-template>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">

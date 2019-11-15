@@ -35,7 +35,7 @@
             </td>
             <td class="td-content">
                 <strong>
-                    <span *ngFor="let time of selectedTime; trackBy: trackByFn">
+                    <span *ngFor="let time of selectedTime">
                         {{time.displayValue}}<br><br>
                     </span>
                 </strong>
@@ -50,7 +50,7 @@
             (click)="onTouchBackSelectTimes()">BACK</button>
         <button mat-raised-button tabindex="-1" class="modal-box-button
             btn-cancel" (click)="onTouchCancel()">CANCEL</button>
-        <button mat-raised-button class="modal-box-button"
+        <button mat-raised-button tabindex="-1" class="modal-box-button"
             (click)="onTouchNextSwipe()">NEXT</button>
     </div>
 </div>

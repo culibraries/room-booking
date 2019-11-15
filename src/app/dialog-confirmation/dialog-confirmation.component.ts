@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { TimeDisplay } from '../models/time-display.model';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { DialogSwipeCardComponent } from '../dialog-swipe-card/dialog-swipe-card.component';
+import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 
 @Component({
   selector: 'app-dialog-confirmation',
@@ -48,7 +49,7 @@ export class DialogConfirmationComponent implements OnInit {
    * Touch : Cancel - Close the dialog
    */
   onTouchCancel(): void {
-    this.dialogRef.close();
+    this.dialog.closeAll();
   }
 
 

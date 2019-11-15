@@ -29,8 +29,8 @@
     <div>
         <button class="modal-box-button" mat-raised-button tabindex="-1"
             (click)="onTouchCancel()">CANCEL</button>
-        <button class="modal-box-button" mat-raised-button
-            [disabled]="!isDisabledNextBtn"
+        <button class="modal-box-button" mat-raised-button tabindex="-1"
+            [disabled]="isDisabledNextBtn"
             (click)="onTouchNextConfirm()">NEXT</button>
     </div>
 </div>

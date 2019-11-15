@@ -51,21 +51,24 @@ export class HelperService {
   // Input:
   // Output:
   public upgradeIntervalTime(intervalTime: string[]): any {
-    const i = 0;
-    let j = 0;
-    return intervalTime.map((e, i) => {
-      j = i + 1;
-      return {
-        status: 0,
-        value: intervalTime[i] + '-' + intervalTime[j],
-        displayValue:
-          this.convertTo24Hour(this.getPeriod(intervalTime[i])) +
-          ' - ' +
-          this.convertTo24Hour(this.getPeriod(intervalTime[j])),
-        target: 0,
-        active: false
+    let output = [];
+    intervalTime.forEach((e, i, arr) => {
+      if (arr[i + 1]) {
+        output.push(
+          {
+            status: 0,
+            value: arr[i] + '-' + arr[i + 1],
+            displayValue:
+              this.convertTo24Hour(this.getPeriod(arr[i])) +
+              ' - ' +
+              this.convertTo24Hour(this.getPeriod(arr[i + 1])),
+            target: 0,
+            active: false
+          });
       }
-    });
+    })
+    return output;
+
   }
 
   // Input: 13:00, 14:00
@@ -75,9 +78,9 @@ export class HelperService {
     let convertedN = n;
     if (n > 12) {
       convertedN -= 12;
+      return longHours.replace(n.toString(), this.addZeroBefore(convertedN));
     }
-    return longHours.replace(n.toString(), this.addZeroBefore(convertedN));
-
+    return longHours.replace(n.toString(), convertedN.toString());
   }
 
   // Input:
@@ -107,7 +110,6 @@ export class HelperService {
       }
       return e;
     })
-
   }
 
   // Input: 23:00
