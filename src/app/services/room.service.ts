@@ -10,17 +10,14 @@ import { Room } from '../models/room.model';
 })
 export class RoomService {
   constructor(private apiService: ApiService) { }
-  getRoom(date: string): Observable<Room> {
+  getRoom(date: string, id: string): Observable<Room> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: 'Bearer' + ' ' + sessionStorage.getItem('libcal_token')
     });
     return this.apiService
       .getLIBCAL(
-        '/space/item/' +
-        sessionStorage.getItem('space_id') +
-        '?availability=' +
-        date,
+        '/space/item/' + id + '?availability=' + date,
         headers
       )
       .pipe(

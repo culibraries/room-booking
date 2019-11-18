@@ -33,6 +33,7 @@ export class MainComponent implements OnInit {
   roomName = "";
   roomDescription = "";
   roomCapacity = 0;
+  spaceId = sessionStorage.getItem('space_id');
   constructor(
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -58,7 +59,7 @@ export class MainComponent implements OnInit {
     //   this.configService.setConfig(this.uid);
     // }
     // this.spinner.show();
-    this.displayTimeLine(this.setDate);
+    this.displayTimeLine(this.setDate, this.spaceId);
     // this.configService.setToken();
     setTimeout(() => {
       this.spinner.hide();
@@ -78,10 +79,9 @@ export class MainComponent implements OnInit {
    */
   onTouchBrowserRoom() {
     this.dialog.open(DialogBrowseRoomsComponent, {
-      width: "70%",
-      height: "75%",
+      width: "75%",
+      height: "85%",
       data: {
-        date: this.setDate,
         roomName: this.roomName.trim()
       }
     });
@@ -101,7 +101,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-  displayTimeLine(date: Date): void {
+  displayTimeLine(date: Date, id: string): void {
     let dateString = this.helperService.formattedDate(date);
 
     // FIXME Need to break the subscribe , should not have subscribe inside subsribe
@@ -111,7 +111,7 @@ export class MainComponent implements OnInit {
         dateString,
         res.openingHours
       );
-      this.roomService.getRoom(dateString).subscribe(resRoom => {
+      this.roomService.getRoom(dateString, id).subscribe(resRoom => {
         this.roomName = resRoom.name;
         this.roomCapacity = resRoom.capacity;
         // TODO check if resRoom.description exists from libcal response
@@ -131,7 +131,7 @@ export class MainComponent implements OnInit {
           this.availableTime,
           this.helperService.upgradeIntervalTime(intervals)
         );
-
+        console.log(this.displayTime);
         if (this.isToday(this.setDate)) {
           let flag = true;
           let displayTimeToday = [];
@@ -153,11 +153,7 @@ export class MainComponent implements OnInit {
             });
           this.displayTime = displayTimeToday.slice().reverse();
         }
-      },
-        err => {
-          this.displayTimeLine(date);
-        }
-      );
+      });
     });
   }
 
@@ -201,7 +197,7 @@ export class MainComponent implements OnInit {
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
-    this.displayTimeLine(this.setDate);
+    this.displayTimeLine(this.setDate, this.spaceId);
   }
 
   /**
@@ -212,7 +208,7 @@ export class MainComponent implements OnInit {
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
-    this.displayTimeLine(this.setDate);
+    this.displayTimeLine(this.setDate, this.spaceId);
   }
 
 
@@ -224,7 +220,7 @@ export class MainComponent implements OnInit {
   touchCalendarEvent(type: string, event: MatDatepickerInputEvent<Date>) {
     this.setDate = event.value;
     this.countDate = this.helperService.dateDiffInDays(this.minDate, this.setDate);
-    this.displayTimeLine(this.setDate);
+    this.displayTimeLine(this.setDate, this.spaceId);
   }
 
   isNext3months(date: Date): boolean {

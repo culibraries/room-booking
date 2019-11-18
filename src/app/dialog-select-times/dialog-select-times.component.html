@@ -3,7 +3,10 @@
     <span> SELECT TIMES - {{setDateString | uppercase}}</span>
 </h1>
 <div mat-dialog-content class="modal-box-body">
-    <ul class="select-time-list">
+    <ul class="select-time-list" *ngIf="displayTime.length <= 0">
+        <li>Closed.</li>
+    </ul>
+    <ul class="select-time-list" *ngIf="displayTime.length> 0">
         <li *ngFor="let time of displayTime;" class="select-time-item"
             (click)="onTouchSelectTime(time)">
             <span>

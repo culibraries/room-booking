@@ -146,4 +146,16 @@ export class HelperService {
     const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
     return Math.floor((utc2 - utc1) / _MS_PER_DAY);
   }
+
+  /**
+* Generic array sorting
+*
+* @param property
+* @returns {Function}
+*/
+  public sortByProperty(property): any {
+    return function (x: any, y: any) {
+      return ((x[property] === y[property]) ? 0 : ((x[property] > y[property]) ? 1 : -1));
+    };
+  };
 }

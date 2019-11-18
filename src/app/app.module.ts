@@ -7,7 +7,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { MainComponent } from './main/main.component';
 import { ConfigService } from './services/config.service';
 
@@ -18,7 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule, MatInputModule } from '@angular/material';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material';
-import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatListModule } from '@angular/material/list';
 
 // Dialog Component
 import { DialogSelectTimesComponent } from './dialog-select-times/dialog-select-times.component';
@@ -29,6 +31,7 @@ import { DialogDescriptionComponent } from './dialog-description/dialog-descript
 import { DialogErrorComponent } from './dialog-error/dialog-error.component';
 import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-rooms.component';
 
+import { DebounceClickDirective } from './debounce-click.directive';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,12 +42,13 @@ import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-
     DialogSwipeCardComponent,
     DialogDescriptionComponent,
     DialogErrorComponent,
-    DialogBrowseRoomsComponent
+    DialogBrowseRoomsComponent,
+    DebounceClickDirective
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NoopAnimationsModule,
+    BrowserAnimationsModule,
     NgxSpinnerModule,
     HttpClientModule,
     HttpClientJsonpModule,
@@ -55,7 +59,8 @@ import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCardModule
+    MatExpansionModule,
+    MatListModule
   ],
   entryComponents: [
     DialogSelectTimesComponent,

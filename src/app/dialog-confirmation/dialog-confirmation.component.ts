@@ -27,6 +27,7 @@ export class DialogConfirmationComponent implements OnInit {
    * Touch : Next - go to swipe-card component
    */
   onTouchNextSwipe(): void {
+    this.dialog.closeAll();
     this.dialog.open(DialogSwipeCardComponent, {
       width: "65%",
       height: "70%",

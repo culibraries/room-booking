@@ -10,9 +10,11 @@
 .time-display-main table {
   margin: 0 auto;
 }
+
 .time-display-main table>tbody{
  padding-right: 20px;
 }
+
 .time-display-main-header {
   width: 79%;
   margin: 0 auto;
@@ -91,6 +93,9 @@ button[disabled] {
 
 /* Track */
 ::-webkit-scrollbar-track {
+  background: rgba(240, 239, 239, 0.103);
+  -webkit-border-radius: 10px;
+
 }
 
 ::-webkit-scrollbar-corner {
@@ -98,7 +103,7 @@ button[disabled] {
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: rgb(180, 179, 179);
   -webkit-border-radius: 10px;
 
 }
@@ -150,7 +155,6 @@ button[disabled] {
 
 .left-inuse {
   background: #b71d1c;
-
 }
 
 .left-text-top {
@@ -337,41 +341,73 @@ button[disabled] {
 .browse-room-title{
   display: flex;
   align-items: center;
+  color: #292929;
 }
 
 .browse-room-left {
-  width: 50%;
+  width: 45%;
   float: left;
 }
 
 .browse-room-right {
   width: 50%;
+  height: 64%;
   float: right;
+  padding-top: 5px;
+}
+.browse-room-right ul {
+  overflow: auto;
+  height: 130%;
+  width: auto;
 }
 
 .browse-room-body{
-  height: 63%;
+  height: 75%;
   margin: 10px;
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
-.browse-room-left ul {
-  list-style: none;
+.current-room {
+
+}
+.mat-list {
+
+}
+.mat-room-title {
+  font-weight: bold;
+  padding: 8px 0px 8px 0px;
+}
+.mat-expansion-room {
+box-shadow: none;
+}
+.list-room {
+  color: rgb(140, 140, 140);
+}
+
+::ng-deep .mat-expansion-room .mat-expansion-panel-body {
   padding: 0px;
 }
 
-.browse-room-left li {
+::ng-deep .mat-expansion-room .mat-expansion-panel-content {
+  padding: 0px;
+  width: 99%;
+}
+.mat-expansion-panel-header {
+}
+.current-room
+{
   display: block;
-  width: 300px;
   height: 30px;
   margin: 0 0 7px 0;
-  background: #F7F5F2 center no-repeat;
-  font-size: 18px;
-  color: #333;
-  padding: 5px 0 0 20px;
+  background: rgb(240, 245, 254) center no-repeat;
   text-decoration: none;
-  border-left: 5px solid #F5876E;
+  color: black;
+  border-radius: 5px;
+  border: 1px solid rgb(201, 218, 250);
+  font-weight: bold;
+}
 
+.current-room .mat-list-text
+{
+  font-weight: bold;
 }

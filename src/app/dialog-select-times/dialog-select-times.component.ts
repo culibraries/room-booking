@@ -38,7 +38,7 @@ export class DialogSelectTimesComponent implements OnInit {
     this.isDisabledNextBtn = this.data.selectedTime === null ? true : false;
 
     // Display Time Slots
-    this.displayTimes(this.data.date);
+    this.displayTimes(this.data.date, sessionStorage.getItem('space_id'));
   }
 
 
@@ -46,7 +46,7 @@ export class DialogSelectTimesComponent implements OnInit {
    * Times dialog select times component
    * @param date
    */
-  private displayTimes(date: Date): void {
+  private displayTimes(date: Date, id: string): void {
     const dateString = this.helperService.formattedDate(date);
 
     this.hoursService.get().subscribe(res => {
@@ -56,7 +56,7 @@ export class DialogSelectTimesComponent implements OnInit {
         res.openingHours
       );
 
-      this.roomService.getRoom(dateString).subscribe(resRoom => {
+      this.roomService.getRoom(dateString, id).subscribe(resRoom => {
         // GET AVAILABILITY TIME
 
         this.availableTime = this.helperService.convertRangeAvailabilityTime(
@@ -131,6 +131,9 @@ export class DialogSelectTimesComponent implements OnInit {
    * @param time
    */
   onTouchSelectTime(time: TimeDisplay) {
+    if (time.status) {
+      return;
+    }
     // Toggle
     time.active = !time.active;
     // Only enable the next button if there are selected times

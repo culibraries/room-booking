@@ -32,7 +32,6 @@ export class DialogSwipeCardComponent {
     } else {
 
       this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(data => {
-        // TODO Convert this forEach to array.find()
         data["varFields"].forEach(e => {
           if (e["fieldTag"] === "q") {
             this.identityKey = e["content"].trim();
