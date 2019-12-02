@@ -1,12 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;}
+html,
+body {
+}
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+}
 
 .right-aligned-header > .mat-content {
-    justify-content: space-between;
-  }
+  justify-content: space-between;
+}
 
-.mat-content > mat-panel-title, .mat-content > mat-panel-description {
+.mat-content > mat-panel-title,
+.mat-content > mat-panel-description {
   padding: 8px 0px 8px 0px;
-  }
+}
+
+.dialog-error > mat-dialog-container {
+  background: #b71c1c;
+  border: 1px #f4eeef solid;
+  border-radius: 5px;
+  color: white;
+}

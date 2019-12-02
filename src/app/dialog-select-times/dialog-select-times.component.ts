@@ -9,12 +9,14 @@ import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confi
 @Component({
   selector: 'app-dialog-select-times',
   templateUrl: './dialog-select-times.component.html',
-  styleUrls: ['../main/main.component.css']
+  styleUrls: ['../main/main.component.css'],
 })
 export class DialogSelectTimesComponent implements OnInit {
-  setDateString = "";
+  setDateString = '';
   displayTime: TimeDisplay[] = [];
   isDisabledNextBtn = true;
+  loading = true;
+  isOpen = true;
 
   private openingHours = {};
   private availableTime = [];
@@ -25,22 +27,21 @@ export class DialogSelectTimesComponent implements OnInit {
     private roomService: RoomService,
     private helperService: HelperService,
     private hoursService: HoursService,
-    @Inject(MAT_DIALOG_DATA) private data: any) { }
+    @Inject(MAT_DIALOG_DATA) private data: any
+  ) {}
 
   ngOnInit() {
+    // Set Date on the header of the dialog
+    this.setDateString = this.helperService.isTheDay(this.data.date, new Date())
+      ? (this.setDateString = 'TODAY')
+      : this.helperService.formatedDisplayDate(this.data.date);
 
-    //Set Date on the header of the dialog
-    this.setDateString = this.helperService.isTheDay(this.data.date, new Date()) ?
-      this.setDateString = "TODAY" :
-      this.helperService.formatedDisplayDate(this.data.date);
-
-    //if user touch a time slot from main calendar then, Next button will be enable
+    // if user touch a time slot from main calendar then, Next button will be enable
     this.isDisabledNextBtn = this.data.selectedTime === null ? true : false;
 
     // Display Time Slots
     this.displayTimes(this.data.date, sessionStorage.getItem('space_id'));
   }
-
 
   /**
    * Times dialog select times component
@@ -48,81 +49,44 @@ export class DialogSelectTimesComponent implements OnInit {
    */
   private displayTimes(date: Date, id: string): void {
     const dateString = this.helperService.formattedDate(date);
-
-    this.hoursService.get().subscribe(res => {
-      // GET OPENING HOURS
-      this.openingHours = this.helperService.getBusinessHoursByDate(
+    this.hoursService.getLocationHours().subscribe(res => {
+      // Get Opens/Closes Hours on a specific day
+      const hours = this.helperService.getBusinessHoursByDate(
         dateString,
         res.openingHours
       );
+      // Check if the library is close/open
+      if (hours.opens === '00:00' && hours.closes === '00:00') {
+        this.loading = false;
+        this.isOpen = false;
+      } else {
+        this.isOpen = true;
 
-      this.roomService.getRoom(dateString, id).subscribe(resRoom => {
-        // GET AVAILABILITY TIME
+        this.roomService.getRoom(dateString, id).subscribe(resRoom => {
+          this.availableTime = this.helperService.convertRangeAvailabilityTime(
+            resRoom.availability
+          );
 
-        this.availableTime = this.helperService.convertRangeAvailabilityTime(
-          resRoom.availability
-        );
+          const intervals = this.helperService.getTimeIntervals(
+            dateString,
+            res.openingHours
+          );
 
-        // GET INTERVAL TIME
-        const intervals = this.helperService.getTimeIntervals(
-          new Date(this.helperService.getNewDate(this.openingHours["opens"])),
-          new Date(this.helperService.getNewDate(this.openingHours["closes"]))
-        );
-
-        // DISPLAY TIMELINE
-        this.displayTime = this.helperService.convertToDisplayTime(
-          this.availableTime,
-          this.helperService.upgradeIntervalTime(intervals)
-        );
-
-        if (this.data.selectedTime !== null) {
-          if (this.helperService.isTheDay(this.data.date, new Date())) {
-            let flag = true;
-            const displayTimeToday = [];
-            this.displayTime
-              .slice()
-              .reverse()
-              .forEach(e => {
-                if (flag) {
-                  displayTimeToday.push(e);
-                  if (this.data.selectedTime !== null) {
-                    if (this.data.selectedTime.value === e.value) {
-                      e.active = true;
-                    }
-                  }
-                }
-                if (e.target === 1) {
-                  flag = false;
-                }
-              });
-            this.displayTime = displayTimeToday.slice().reverse();
-          } else {
-            this.displayTime.forEach(e => {
-              if (this.data) {
-                if (this.data.selectedTime.value === e.value) {
-                  e.active = true;
-                }
+          this.displayTime = this.helperService.process(
+            date,
+            this.availableTime,
+            intervals
+          );
+          if (this.data.selectedTime) {
+            this.displayTime.find((e, i) => {
+              if (e.value === this.data.selectedTime.value) {
+                this.displayTime[i].active = true;
               }
             });
           }
-        } else {
-          let flag = true;
-          const displayTimeToday = [];
-          this.displayTime
-            .slice()
-            .reverse()
-            .forEach(e => {
-              if (flag) {
-                displayTimeToday.push(e);
-              }
-              if (e.target === 1) {
-                flag = false;
-              }
-            });
-          this.displayTime = displayTimeToday.slice().reverse();
-        }
-
-      });
+          this.loading = false;
+        });
+      }
     });
   }
 
@@ -131,13 +95,17 @@ export class DialogSelectTimesComponent implements OnInit {
    * @param time
    */
   onTouchSelectTime(time: TimeDisplay) {
-    if (time.status) {
+    if (!time.status) {
       return;
     }
     // Toggle
     time.active = !time.active;
     // Only enable the next button if there are selected times
-    this.isDisabledNextBtn = this.displayTime.find(function (e) { return e.active === true; }) ? false : true;
+    this.isDisabledNextBtn = this.displayTime.find(function(e) {
+      return e.active === true;
+    })
+      ? false
+      : true;
   }
 
   /**
@@ -145,14 +113,17 @@ export class DialogSelectTimesComponent implements OnInit {
    */
   onTouchNextConfirm(): void {
     this.dialog.open(DialogConfirmationComponent, {
-      width: "65%",
-      height: "70%",
+      width: '65%',
+      height: '70%',
       data: {
-        selectedTime: this.displayTime.filter(e => { return e.active }),
+        selectedTime: this.displayTime.filter(e => {
+          return e.active;
+        }),
         dateString: this.setDateString,
         date: this.data ? this.data.date : new Date(),
-        roomName: this.data.roomName
-      }
+        roomName: this.data.roomName,
+        roomId: sessionStorage.getItem('space_id'),
+      },
     });
   }
 
@@ -162,5 +133,4 @@ export class DialogSelectTimesComponent implements OnInit {
   onTouchCancel(): void {
     this.dialogRef.close();
   }
-
 }

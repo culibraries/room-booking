@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { DatePipe } from '@angular/common';
@@ -21,6 +21,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 // Dialog Component
 import { DialogSelectTimesComponent } from './dialog-select-times/dialog-select-times.component';
@@ -32,6 +33,9 @@ import { DialogErrorComponent } from './dialog-error/dialog-error.component';
 import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-rooms.component';
 
 import { DebounceClickDirective } from './debounce-click.directive';
+import { ErrorService } from './services/error.service';
+import { SystemErrorComponent } from './system-error/system-error.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,7 +47,8 @@ import { DebounceClickDirective } from './debounce-click.directive';
     DialogDescriptionComponent,
     DialogErrorComponent,
     DialogBrowseRoomsComponent,
-    DebounceClickDirective
+    DebounceClickDirective,
+    SystemErrorComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,7 +65,8 @@ import { DebounceClickDirective } from './debounce-click.directive';
     MatDatepickerModule,
     MatNativeDateModule,
     MatExpansionModule,
-    MatListModule
+    MatListModule,
+    MatToolbarModule,
   ],
   entryComponents: [
     DialogSelectTimesComponent,
@@ -69,12 +75,15 @@ import { DebounceClickDirective } from './debounce-click.directive';
     DialogSuccessComponent,
     DialogBrowseRoomsComponent,
     DialogErrorComponent,
-    DialogDescriptionComponent
+    DialogDescriptionComponent,
   ],
   providers: [
     DatePipe,
-    ConfigService
+    {
+      provide: ErrorHandler,
+      useClass: ErrorService,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

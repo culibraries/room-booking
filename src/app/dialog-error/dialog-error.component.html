@@ -1,1 +1,22 @@
-<p>dialog-error works!</p>
+<h1 mat-dialog-title class="modal-box-title">
+  <mat-toolbar role="toolbar" class="task-header">
+    <span style="font-size: 30px;"> Oops ! </span>
+    <span class="fx-spacer"></span>
+    <button mat-icon-button (click)="onTouchClose()" tabindex="-1">
+      <mat-icon mat-list-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+</h1>
+
+<div mat-dialog-content class="modal-box-body" style="width: 100%; padding-top:
+  30px; font-size:18px;">
+  You are unable to book the room for one of following reasons:<br><br>
+  <strong>
+    1. The room has been reserved in one of your selected time slots.<br><br>
+    2. You are exceeded the limits for either number of booking slots or
+    booking duration.
+  </strong>
+  <br><br>
+  If you are still unable to book the room, please contact the <strong>Circ
+    Desk </strong>for assistance.
+</div>

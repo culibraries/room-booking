@@ -1,25 +1,42 @@
-import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatDatepickerInputEvent } from "@angular/material/datepicker";
-import { ConfigService } from "../services/config.service";
-import { RoomService } from "../services/room.service";
-import { HelperService } from "../services/helper.service";
-import { HoursService } from "../services/hours.service";
-import { TimeDisplay } from "../models/time-display.model";
-import { NgxSpinnerService } from "ngx-spinner";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { RoomService } from '../services/room.service';
+import { HelperService } from '../services/helper.service';
+import { HoursService } from '../services/hours.service';
+import { TimeDisplay } from '../models/time-display.model';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 import { DialogBrowseRoomsComponent } from '../dialog-browse-rooms/dialog-browse-rooms.component';
 import { DialogDescriptionComponent } from '../dialog-description/dialog-description.component';
+import { ApiService } from '../services/api.service';
+import { env } from '../../environments/environment';
+import { text } from '../config/text';
+import { forkJoin, interval } from 'rxjs';
+import {
+  startWith,
+  switchMap,
+  debounceTime,
+  distinctUntilChanged,
+} from 'rxjs/operators';
+
+// This is a fake ID for testing purpuses only
+const testID = '428a4544-9b7d-403d-bd3b-ab902ea8c967';
+const url =
+  env.apiUrl +
+  '/catalog/data/catalog/roomBooking/?query={%22filter%22:{%22unique_id%22:%22' +
+  testID +
+  '%22}}';
+const libcalURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Component({
-  selector: "app-main",
-  templateUrl: "./main.component.html",
-  styleUrls: ["./main.component.css"]
+  selector: 'app-main',
+  templateUrl: './main.component.html',
+  styleUrls: ['./main.component.css'],
 })
-export class MainComponent implements OnInit {
-  uid: string = "";
-  status = "available";
+export class MainComponent implements OnInit, OnDestroy {
+  uid: string = '';
+  status = 'available';
   time: Date;
   minDate = new Date();
   minDateString = this.minDate.toISOString();
@@ -27,47 +44,84 @@ export class MainComponent implements OnInit {
   maxDateString = this.maxDate.toISOString();
   setDate = new Date();
   countDate = 0;
-  private openingHours = {};
   displayTime: TimeDisplay[];
   availableTime: string[];
-  roomName = "";
-  roomDescription = "";
+  roomName = '';
+  roomDescription = '';
   roomCapacity = 0;
+  roomServiceInterval: any;
+  timetInterval: any;
   spaceId = sessionStorage.getItem('space_id');
+  isOpen = true;
   constructor(
-    private route: ActivatedRoute,
     private dialog: MatDialog,
     private helperService: HelperService,
     private hoursService: HoursService,
     private roomService: RoomService,
-    private configService: ConfigService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private apiService: ApiService
   ) {
-    setInterval(() => {
+    this.timetInterval = setInterval(() => {
       this.time = new Date();
     }, 1000);
+
+    this.spinner.show();
+    setTimeout(() => {
+      this.spinner.hide();
+    }, 3000);
   }
 
   ngOnInit() {
-    // this.uid = this.route.snapshot.params.uid;
-    // if (
-    //   !sessionStorage.getItem("location_id") ||
-    //   !sessionStorage.getItem("space_id") ||
-    //   !sessionStorage.getItem("hours_view_id") ||
-    //   !sessionStorage.getItem("libcal_token")
-    // ) {
-    //   this.configService.setConfig(this.uid);
-    // }
-    // this.spinner.show();
-    this.displayTimeLine(this.setDate, this.spaceId);
-    // this.configService.setToken();
-    setTimeout(() => {
-      this.spinner.hide();
-    }, 2000);
+    if (
+      !sessionStorage.getItem('libcal_token') ||
+      sessionStorage.getItem('libcal_token') === 'undefined'
+    ) {
+      forkJoin(
+        this.apiService.get(url),
+        this.apiService.post(libcalURL, {})
+      ).subscribe(([config, libcal]) => {
+        sessionStorage.setItem('libcal_token', libcal.access_token);
+        if (config.results.length > 0) {
+          sessionStorage.setItem(
+            'hours_view_id',
+            config.results[0].hours_view_id
+          );
+          sessionStorage.setItem('location_id', config.results[0].location_id);
+          sessionStorage.setItem('space_id', config.results[0].space_id);
+        } else {
+          return alert(text.error_wrong_uid);
+        }
+        location.reload();
+      });
+    } else {
+      interval(2700000)
+        .pipe(
+          startWith(0),
+          switchMap(() => this.apiService.post(libcalURL, {}))
+        )
+        .subscribe(res => {
+          sessionStorage.setItem('libcal_token', res.access_token);
+          this.displayTimeLine(this.setDate, this.spaceId);
+          this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
+            this.roomName = res.name;
+            this.roomCapacity = res.capacity;
+            this.roomDescription = res.description;
+          });
+        });
+    }
+  }
 
-    // setInterval(() => {
-    //   this.displayTimeLine(this.setDate);
-    // }, 5000);
+  updateLibcalToken() {
+    return this.apiService.post(libcalURL, {}).subscribe(res => {
+      sessionStorage.setItem('libcal_token', res.access_token);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
+    clearInterval(this.timetInterval);
   }
 
   trackByFn(index, item) {
@@ -79,11 +133,11 @@ export class MainComponent implements OnInit {
    */
   onTouchBrowserRoom() {
     this.dialog.open(DialogBrowseRoomsComponent, {
-      width: "75%",
-      height: "85%",
+      width: '75%',
+      height: '85%',
       data: {
-        roomName: this.roomName.trim()
-      }
+        roomName: this.roomName.trim(),
+      },
     });
   }
 
@@ -92,68 +146,55 @@ export class MainComponent implements OnInit {
    */
   onTouchDescription() {
     this.dialog.open(DialogDescriptionComponent, {
-      width: "65%",
-      height: "70%",
+      width: '65%',
+      height: '70%',
       data: {
         description: this.roomDescription,
-        roomName: this.roomName
-      }
+        roomName: this.roomName,
+      },
     });
   }
 
   displayTimeLine(date: Date, id: string): void {
-    let dateString = this.helperService.formattedDate(date);
-
-    // FIXME Need to break the subscribe , should not have subscribe inside subsribe
-    this.hoursService.get().subscribe(res => {
-      // GET OPENING HOURS
-      this.openingHours = this.helperService.getBusinessHoursByDate(
+    const dateString = this.helperService.formattedDate(date);
+    this.hoursService.getLocationHours().subscribe(res => {
+      // Get Opens/Closes Hours on a specific day
+      const hours = this.helperService.getBusinessHoursByDate(
         dateString,
         res.openingHours
       );
-      this.roomService.getRoom(dateString, id).subscribe(resRoom => {
-        this.roomName = resRoom.name;
-        this.roomCapacity = resRoom.capacity;
-        // TODO check if resRoom.description exists from libcal response
-        this.roomDescription = resRoom.description;
-        this.availableTime = this.helperService.convertRangeAvailabilityTime(
-          resRoom.availability
-        );
 
-        // GET INTERVAL TIME
-        const intervals = this.helperService.getTimeIntervals(
-          new Date(this.helperService.getNewDate(this.openingHours["opens"])),
-          new Date(this.helperService.getNewDate(this.openingHours["closes"]))
-        );
+      // Check if the library is close/open
+      if (hours.opens === '00:00' && hours.closes === '00:00') {
+        this.isOpen = false;
+        this.status = 'inuse';
+      } else {
+        this.isOpen = true;
+        this.roomServiceInterval = interval(60000)
+          .pipe(
+            startWith(0),
+            distinctUntilChanged(),
+            debounceTime(500),
+            switchMap(() => this.roomService.getRoom(dateString, id))
+          )
+          .subscribe(resRoom => {
+            this.availableTime = this.helperService.convertRangeAvailabilityTime(
+              resRoom.availability
+            );
 
-        // DISPLAY TIMELINE
-        this.displayTime = this.helperService.convertToDisplayTime(
-          this.availableTime,
-          this.helperService.upgradeIntervalTime(intervals)
-        );
-        console.log(this.displayTime);
-        if (this.isToday(this.setDate)) {
-          let flag = true;
-          let displayTimeToday = [];
-          this.displayTime
-            .slice()
-            .reverse()
-            .forEach(e => {
-              if (flag) {
-                displayTimeToday.push(e);
-              }
-              if (e.target === 1) {
-                flag = false;
-                if (e.status === 1) {
-                  this.status = "inuse";
-                } else {
-                  this.status = "available";
-                }
-              }
-            });
-          this.displayTime = displayTimeToday.slice().reverse();
-        }
-      });
+            const intervals = this.helperService.getTimeIntervals(
+              dateString,
+              res.openingHours
+            );
+
+            this.displayTime = this.helperService.process(
+              date,
+              this.availableTime,
+              intervals
+            );
+            this.status = this.displayTime[0].status ? 'available' : 'inuse';
+          });
+      }
     });
   }
 
@@ -162,16 +203,15 @@ export class MainComponent implements OnInit {
    */
   onTouchReserve() {
     this.dialog.open(DialogSelectTimesComponent, {
-      width: "65%",
-      height: "70%",
+      width: '65%',
+      height: '70%',
       data: {
         selectedTime: null,
         date: this.setDate,
-        roomName: this.roomName
-      }
+        roomName: this.roomName,
+      },
     });
   }
-
 
   /**
    * Touch: Time slot on main screen calendar
@@ -179,13 +219,13 @@ export class MainComponent implements OnInit {
    */
   onTouchCalendarTimeSlot(selectedTime: TimeDisplay) {
     this.dialog.open(DialogSelectTimesComponent, {
-      width: "65%",
-      height: "70%",
+      width: '65%',
+      height: '70%',
       data: {
         selectedTime: selectedTime,
         date: this.setDate,
-        roomName: this.roomName
-      }
+        roomName: this.roomName,
+      },
     });
   }
 
@@ -193,6 +233,9 @@ export class MainComponent implements OnInit {
    * Touch : Previous dates on main screen calendar
    */
   onTouchPreDate() {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
     this.countDate--;
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
@@ -202,15 +245,17 @@ export class MainComponent implements OnInit {
 
   /**
    * Touch : Next dates on main screen calendar
-  */
+   */
   onTouchNextDate() {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
     this.countDate++;
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
     this.displayTimeLine(this.setDate, this.spaceId);
   }
-
 
   /**
    * Touchs calendar event - touch dates on calendar
@@ -219,7 +264,10 @@ export class MainComponent implements OnInit {
    */
   touchCalendarEvent(type: string, event: MatDatepickerInputEvent<Date>) {
     this.setDate = event.value;
-    this.countDate = this.helperService.dateDiffInDays(this.minDate, this.setDate);
+    this.countDate = this.helperService.dateDiffInDays(
+      this.minDate,
+      this.setDate
+    );
     this.displayTimeLine(this.setDate, this.spaceId);
   }
 

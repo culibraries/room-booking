@@ -2,28 +2,40 @@ import { Injectable } from '@angular/core';
 import { env } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
+import { ConfigService } from './config.service';
+import { ApiService } from './api.service';
 const userUrl = env.apiUrl + '/user/?format=json';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient, private router: Router) { }
-  public isAuthenticated(uid: string) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private configService: ConfigService,
+    private apiService: ApiService
+  ) {}
+  public isAuthenticated() {
     return this.http.get(userUrl).subscribe(
       data => {
         if (!data['groups'].includes('study-room-admin')) {
-          this.router.navigate(['/error']);
+          alert('You are not authenticated !');
           return false;
         } else {
-          if (!localStorage.getItem('token') || localStorage.getItem('token') === 'undefined'
+          if (
+            !sessionStorage.getItem('token') ||
+            sessionStorage.getItem('token') === 'undefined'
           ) {
-            localStorage.setItem('token', data['authentication']['auth-token']);
+            sessionStorage.setItem(
+              'token',
+              data['authentication']['auth-token']
+            );
+            location.reload();
           }
         }
       },
-      err => this.login(uid),
+      err => this.login(),
       () => void 0
     );
   }
@@ -32,8 +44,8 @@ export class AuthService {
     return this.http.get(userUrl);
   }
 
-  public login(uid: string) {
+  public login() {
     return (window.location.href =
-      env.apiUrl + '/api-saml/sso/saml?next=room-booking/main/' + uid);
+      env.apiUrl + '/api-auth/login/?next=/room-booking-accessibility-testing');
   }
 }

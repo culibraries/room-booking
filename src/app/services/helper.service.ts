@@ -2,17 +2,14 @@ import { Injectable } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { TimeDisplay } from '../models/time-display.model';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperService {
-  constructor(private datePipe: DatePipe) { }
+  constructor(private datePipe: DatePipe) {}
 
-  public getBusinessHoursByDate(
-    dateString: string,
-    openingHours: []
-  ): any {
-    return openingHours.find(function (e) {
-      return e['validFrom'] === dateString;
+  public getBusinessHoursByDate(dateString: string, openingHours: []): any {
+    return openingHours.find((e: any) => {
+      return e.validFrom === dateString;
     });
   }
 
@@ -25,12 +22,14 @@ export class HelperService {
 
   // Input : LibCal availablity Time : {from: "2019-09-19T12:30:00-06:00", to: "2019-09-19T13:00:00-06:00"}
   // Output : Standard Hour : {"12:30 - 1:00"}
-  public convertRangeAvailabilityTime(availableTimes: []): string[] {
+  public convertRangeAvailabilityTime(availableTimes: {}[]): string[] {
     if (availableTimes.length > 0) {
       return availableTimes.map(e => {
-        return this.datePipe.transform(e['from'], 'HH:mm') +
+        return (
+          this.datePipe.transform(e['from'], 'HH:mm') +
           '-' +
           this.datePipe.transform(e['to'], 'HH:mm')
+        );
       });
     } else {
       return [];
@@ -39,7 +38,11 @@ export class HelperService {
 
   // Input: From : 2019-09-19 8:00:00 - To : 2019-09-19 23:00:00
   // Output: ["08:00", "08:30", "09:00", "09:30", .... "22:00", "22:30", "23:00"]
-  public getTimeIntervals(from: Date, to: Date): string[] {
+  public getTimeIntervals(dateString: string, openingHours: []): string[] {
+    const hoursByDate = this.getBusinessHoursByDate(dateString, openingHours);
+    const from = new Date(this.getNewDate(hoursByDate.opens));
+    const to = new Date(this.getNewDate(hoursByDate.closes));
+
     const arr = [];
     while (from <= to) {
       arr.push(from.toTimeString().substring(0, 5));
@@ -54,21 +57,19 @@ export class HelperService {
     let output = [];
     intervalTime.forEach((e, i, arr) => {
       if (arr[i + 1]) {
-        output.push(
-          {
-            status: 0,
-            value: arr[i] + '-' + arr[i + 1],
-            displayValue:
-              this.convertTo24Hour(this.getPeriod(arr[i])) +
-              ' - ' +
-              this.convertTo24Hour(this.getPeriod(arr[i + 1])),
-            target: 0,
-            active: false
-          });
+        output.push({
+          status: 0,
+          value: arr[i] + '-' + arr[i + 1],
+          displayValue:
+            this.convertTo24Hour(this.getPeriod(arr[i])) +
+            ' - ' +
+            this.convertTo24Hour(this.getPeriod(arr[i + 1])),
+          target: 0,
+          active: false,
+        });
       }
-    })
+    });
     return output;
-
   }
 
   // Input: 13:00, 14:00
@@ -109,7 +110,7 @@ export class HelperService {
         }
       }
       return e;
-    })
+    });
   }
 
   // Input: 23:00
@@ -148,14 +149,71 @@ export class HelperService {
   }
 
   /**
-* Generic array sorting
-*
-* @param property
-* @returns {Function}
-*/
+   * Generic array sorting
+   *
+   * @param property
+   * @returns {Function}
+   */
   public sortByProperty(property): any {
-    return function (x: any, y: any) {
-      return ((x[property] === y[property]) ? 0 : ((x[property] > y[property]) ? 1 : -1));
+    return (x: any, y: any) => {
+      return x[property] === y[property]
+        ? 0
+        : x[property] > y[property]
+        ? 1
+        : -1;
     };
-  };
+  }
+
+  public process(date: Date, availability: string[], interval: string[]) {
+    const output = [];
+    let status = 0;
+    const currentDate = new Date();
+    const getCurrentTime =
+      this.addZeroBefore(currentDate.getHours()) +
+      ':' +
+      this.addZeroBefore(currentDate.getMinutes());
+
+    interval.map((e, i, arr) => {
+      if (i === arr.length - 1) {
+        return;
+      }
+
+      if (arr[i + 1] === '00:00') {
+        arr[i + 1] = '24:00';
+      }
+
+      const timeValue = `${arr[i]}-${arr[i + 1]}`;
+
+      status = availability.find(el => {
+        return el === timeValue;
+      })
+        ? 1
+        : 0;
+
+      if (this.isTheDay(date, currentDate)) {
+        if (`${arr[i + 1]}` > getCurrentTime) {
+          output.push({
+            status,
+            value: timeValue,
+            displayValue:
+              this.convertTo24Hour(this.getPeriod(arr[i])) +
+              ' - ' +
+              this.convertTo24Hour(this.getPeriod(arr[i + 1])),
+            active: false,
+          });
+        }
+      } else {
+        output.push({
+          status,
+          value: timeValue,
+          displayValue:
+            this.convertTo24Hour(this.getPeriod(arr[i])) +
+            ' - ' +
+            this.convertTo24Hour(this.getPeriod(arr[i + 1])),
+          active: false,
+        });
+      }
+    });
+    return output;
+  }
 }
