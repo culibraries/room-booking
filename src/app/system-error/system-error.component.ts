@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { text } from '../config/text';
 import { MatDialog } from '@angular/material';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-system-error',
@@ -12,10 +13,16 @@ export class SystemErrorComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit() {
+    this.spinner.show();
+    setTimeout(() => {
+      this.spinner.hide();
+    }, 1000);
+
     this.dialog.closeAll();
     this.route.params.subscribe(params => {
       if (params.code === '0') {

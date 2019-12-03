@@ -1,21 +1,13 @@
 import { Injectable } from '@angular/core';
 import { env } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { ConfigService } from './config.service';
-import { ApiService } from './api.service';
 const userUrl = env.apiUrl + '/user/?format=json';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private configService: ConfigService,
-    private apiService: ApiService
-  ) {}
+  constructor(private http: HttpClient) {}
   public isAuthenticated() {
     return this.http.get(userUrl).subscribe(
       data => {

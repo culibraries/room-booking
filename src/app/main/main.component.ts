@@ -35,7 +35,7 @@ const libcalURL = env.apiUrl + '/room-booking/libcal/token';
   styleUrls: ['./main.component.css'],
 })
 export class MainComponent implements OnInit, OnDestroy {
-  uid: string = '';
+  uid = '';
   status = 'available';
   time: Date;
   minDate = new Date();
@@ -192,7 +192,10 @@ export class MainComponent implements OnInit, OnDestroy {
               this.availableTime,
               intervals
             );
-            this.status = this.displayTime[0].status ? 'available' : 'inuse';
+
+            if (this.isToday(date)) {
+              this.status = this.displayTime[0].status ? 'available' : 'inuse';
+            }
           });
       }
     });

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, interval } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { map, startWith, switchMap } from 'rxjs/operators';
-import { HttpHeaders } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 import { Room } from '../models/room.model';
 
 @Injectable({
