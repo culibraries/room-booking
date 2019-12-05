@@ -5,8 +5,7 @@
   <span style="font-weight: bold">
     ALL DONE !<br /><br />
     CONFIRMATION EMAILS WILL BE SENT TO YOUR INBOX AT <br /><br />
-    TESTING@COLORADO.EDU</span
-  >
+    {{email}}</span>
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
@@ -14,12 +13,7 @@
     BACK TO MAIN SCREEN IN: {{ counter }} (s)
   </div>
   <div>
-    <button
-      class="modal-box-button"
-      mat-raised-button
-      tabindex="-1"
-      (click)="onTouchClose()"
-    >
+    <button class="modal-box-button" mat-raised-button tabindex="-1" (click)="onTouchClose()">
       CLOSE
     </button>
   </div>

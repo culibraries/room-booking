@@ -4,6 +4,7 @@ import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { DatePipe } from '@angular/common';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -55,6 +56,7 @@ import { SystemErrorComponent } from './system-error/system-error.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     NgxSpinnerModule,
+    DeviceDetectorModule.forRoot(),
     HttpClientModule,
     HttpClientJsonpModule,
     MatSidenavModule,

@@ -26,7 +26,7 @@ export class DialogBrowseRoomsComponent implements OnInit {
   minDateString = this.minDate.toISOString();
   maxDate = new Date(new Date().setMonth(new Date().getMonth() + 3));
   maxDateString = this.maxDate.toISOString();
-  spaceId = sessionStorage.getItem('space_id');
+  spaceId = localStorage.getItem('space_id');
   isOpen = true;
   loading = true;
   private availableTime = [];

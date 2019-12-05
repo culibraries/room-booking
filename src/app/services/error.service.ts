@@ -21,21 +21,12 @@ export class ErrorService implements ErrorHandler {
       let code = 0;
       if (!navigator.onLine) {
         code = 0;
-      }
-      if (error.status === 400) {
-        this.dialog.closeAll();
-        this.ngZone.run(() =>
-          this.dialog.open(DialogErrorComponent, {
-            width: '60%',
-            height: '45%',
-            panelClass: 'dialog-error',
-          })
-        );
       } else {
         code = error.status;
+      }
+      if (code !== 400) {
         this.ngZone.run(() => router.navigate(['system-error/' + code]));
       }
-    } else {
     }
   }
 }

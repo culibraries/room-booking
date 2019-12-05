@@ -3,7 +3,8 @@ import { ApiService } from './api.service';
 import { env } from '../../environments/environment';
 import { map } from 'rxjs/operators';
 import { HttpHeaders } from '@angular/common/http';
-
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
@@ -17,10 +18,6 @@ export class BookService {
   }
 
   bookRoom(body: {}): any {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer' + ' ' + sessionStorage.getItem('libcal_token'),
-    });
     return this.apiService
       .postLIBCAL('/space/reserve', body)
       .pipe(map(data => data));

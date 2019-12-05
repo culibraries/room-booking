@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatDialogRef, MatDialog } from '@angular/material';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { interval } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -11,12 +11,14 @@ import { map } from 'rxjs/operators';
 export class DialogSuccessComponent implements OnInit, OnDestroy {
   counter = 5;
   runner: any;
+  email = '';
   constructor(
-    private dialogRef: MatDialogRef<DialogSuccessComponent>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
   ngOnInit(): void {
+    this.email = this.data.email;
     this.runner = setInterval(() => {
       this.counter -= 1;
       if (this.counter === 0) {
@@ -32,5 +34,6 @@ export class DialogSuccessComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.runner);
+    location.reload();
   }
 }

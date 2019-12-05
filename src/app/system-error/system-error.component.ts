@@ -35,4 +35,8 @@ export class SystemErrorComponent implements OnInit {
       }, 3600000);
     });
   }
+
+  onReload() {
+    this.router.navigate(['/']);
+  }
 }

@@ -45,7 +45,7 @@ export class RoomService {
 
   getAllCategories(): Observable<any> {
     return this.apiService
-      .getLIBCAL('/space/categories/' + sessionStorage.getItem('location_id'))
+      .getLIBCAL('/space/categories/' + localStorage.getItem('location_id'))
       .pipe(map(data => data));
   }
 

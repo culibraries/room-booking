@@ -12,11 +12,12 @@ RUN npm ci
 
 COPY . /app
 
-RUN npm run ng build -- --prod --output-path=dist --base-href /room-booking-accessibility-testing/
+RUN npm run ng build -- --prod --aot --vendor-chunk --common-chunk --output-path=dist --buildOptimizer  --base-href /room-booking/
+
 
 
 # ### STAGE 2: Setup ###
 
 FROM nginx:alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html/room-booking-accessibility-testing
+COPY --from=builder /app/dist /usr/share/nginx/html/room-booking

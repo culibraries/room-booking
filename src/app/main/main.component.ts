@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { RoomService } from '../services/room.service';
 import { HelperService } from '../services/helper.service';
@@ -12,7 +13,7 @@ import { DialogDescriptionComponent } from '../dialog-description/dialog-descrip
 import { ApiService } from '../services/api.service';
 import { env } from '../../environments/environment';
 import { text } from '../config/text';
-import { forkJoin, interval } from 'rxjs';
+import { forkJoin, interval, Subscription } from 'rxjs';
 import {
   startWith,
   switchMap,
@@ -20,14 +21,8 @@ import {
   distinctUntilChanged,
 } from 'rxjs/operators';
 
-// This is a fake ID for testing purpuses only
-const testID = '428a4544-9b7d-403d-bd3b-ab902ea8c967';
-const url =
-  env.apiUrl +
-  '/catalog/data/catalog/roomBooking/?query={%22filter%22:{%22unique_id%22:%22' +
-  testID +
-  '%22}}';
-const libcalURL = env.apiUrl + '/room-booking/libcal/token';
+const spaceId = localStorage.getItem('space_id');
+const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Component({
   selector: 'app-main',
@@ -51,8 +46,8 @@ export class MainComponent implements OnInit, OnDestroy {
   roomCapacity = 0;
   roomServiceInterval: any;
   timetInterval: any;
-  spaceId = sessionStorage.getItem('space_id');
   isOpen = true;
+  loadTimeLine: Subscription;
   constructor(
     private dialog: MatDialog,
     private helperService: HelperService,
@@ -72,87 +67,33 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (
-      !sessionStorage.getItem('libcal_token') ||
-      sessionStorage.getItem('libcal_token') === 'undefined'
-    ) {
-      forkJoin(
-        this.apiService.get(url),
-        this.apiService.post(libcalURL, {})
-      ).subscribe(([config, libcal]) => {
-        sessionStorage.setItem('libcal_token', libcal.access_token);
-        if (config.results.length > 0) {
-          sessionStorage.setItem(
-            'hours_view_id',
-            config.results[0].hours_view_id
-          );
-          sessionStorage.setItem('location_id', config.results[0].location_id);
-          sessionStorage.setItem('space_id', config.results[0].space_id);
-        } else {
-          return alert(text.error_wrong_uid);
-        }
-        location.reload();
-      });
-    } else {
-      interval(2700000)
-        .pipe(
-          startWith(0),
-          switchMap(() => this.apiService.post(libcalURL, {}))
-        )
-        .subscribe(res => {
-          sessionStorage.setItem('libcal_token', res.access_token);
-          this.displayTimeLine(this.setDate, this.spaceId);
-          this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
-            this.roomName = res.name;
-            this.roomCapacity = res.capacity;
-            this.roomDescription = res.description;
-          });
+    this.loadTimeLine = interval(2700000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.apiService.post(libcalTokenURL, {}))
+      )
+      .subscribe(res => {
+        localStorage.setItem('libcal_token', res.access_token);
+        this.displayTimeLine(this.setDate, spaceId);
+        this.roomService.getRoomInformation(spaceId).subscribe(res => {
+          this.roomName = res.name;
+          this.roomCapacity = res.capacity;
+          this.roomDescription = res.description;
         });
-    }
+      });
   }
 
-  updateLibcalToken() {
-    return this.apiService.post(libcalURL, {}).subscribe(res => {
-      sessionStorage.setItem('libcal_token', res.access_token);
-    });
-  }
+  // updateLibcalToken() {
+  //   return this.apiService.post(libcalURL, {}).subscribe(res => {
+  //     localStorage.setItem('libcal_token', res.access_token);
+  //   });
+  // }
 
   ngOnDestroy() {
     if (this.roomServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }
     clearInterval(this.timetInterval);
-  }
-
-  trackByFn(index, item) {
-    return index;
-  }
-
-  /**
-   * Touch : Browse Room Button
-   */
-  onTouchBrowserRoom() {
-    this.dialog.open(DialogBrowseRoomsComponent, {
-      width: '75%',
-      height: '85%',
-      data: {
-        roomName: this.roomName.trim(),
-      },
-    });
-  }
-
-  /**
-   * Touch : Information Icon
-   */
-  onTouchDescription() {
-    this.dialog.open(DialogDescriptionComponent, {
-      width: '65%',
-      height: '70%',
-      data: {
-        description: this.roomDescription,
-        roomName: this.roomName,
-      },
-    });
   }
 
   displayTimeLine(date: Date, id: string): void {
@@ -168,6 +109,8 @@ export class MainComponent implements OnInit, OnDestroy {
       if (hours.opens === '00:00' && hours.closes === '00:00') {
         this.isOpen = false;
         this.status = 'inuse';
+        this.loadTimeLine.unsubscribe();
+        this.roomServiceInterval.unsubscribe();
       } else {
         this.isOpen = true;
         this.roomServiceInterval = interval(60000)
@@ -243,7 +186,7 @@ export class MainComponent implements OnInit, OnDestroy {
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
-    this.displayTimeLine(this.setDate, this.spaceId);
+    this.displayTimeLine(this.setDate, spaceId);
   }
 
   /**
@@ -257,7 +200,34 @@ export class MainComponent implements OnInit, OnDestroy {
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
-    this.displayTimeLine(this.setDate, this.spaceId);
+    this.displayTimeLine(this.setDate, spaceId);
+  }
+
+  /**
+   * Touch : Browse Room Button
+   */
+  onTouchBrowserRoom() {
+    this.dialog.open(DialogBrowseRoomsComponent, {
+      width: '75%',
+      height: '85%',
+      data: {
+        roomName: this.roomName.trim(),
+      },
+    });
+  }
+
+  /**
+   * Touch : Information Icon
+   */
+  onTouchDescription() {
+    this.dialog.open(DialogDescriptionComponent, {
+      width: '65%',
+      height: '70%',
+      data: {
+        description: this.roomDescription,
+        roomName: this.roomName,
+      },
+    });
   }
 
   /**
@@ -266,12 +236,15 @@ export class MainComponent implements OnInit, OnDestroy {
    * @param event
    */
   touchCalendarEvent(type: string, event: MatDatepickerInputEvent<Date>) {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
     this.setDate = event.value;
     this.countDate = this.helperService.dateDiffInDays(
       this.minDate,
       this.setDate
     );
-    this.displayTimeLine(this.setDate, this.spaceId);
+    this.displayTimeLine(this.setDate, spaceId);
   }
 
   isNext3months(date: Date): boolean {
@@ -280,5 +253,8 @@ export class MainComponent implements OnInit, OnDestroy {
 
   isToday(date: Date) {
     return this.helperService.isTheDay(date, new Date());
+  }
+  trackByFn(index, item) {
+    return index;
   }
 }

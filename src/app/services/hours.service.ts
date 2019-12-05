@@ -14,7 +14,7 @@ export class HoursService {
     return this.http
       .jsonp(
         'https://api3.libcal.com/api_hours_grid.php?format=jsonld&iid=3251&lid=' +
-          sessionStorage.getItem('hours_view_id'),
+          localStorage.getItem('hours_view_id'),
         'callback'
       )
       .pipe(

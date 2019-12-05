@@ -3,6 +3,8 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { BookService } from '../services/book.service';
 import { DialogSuccessComponent } from '../dialog-success/dialog-success.component';
 import { TimeDisplay } from '../models/time-display.model';
+import { forkJoin } from 'rxjs';
+import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 
 @Component({
   selector: 'app-dialog-swipe-card',
@@ -11,10 +13,10 @@ import { TimeDisplay } from '../models/time-display.model';
 })
 export class DialogSwipeCardComponent {
   valueAfterSwipe = '';
-  identityKey = 'dutr5288';
-  firstName = 'test';
-  lastName = 'test';
-  email = 'dutr5288@colorado.edu';
+  identityKey = '';
+  firstName = '';
+  lastName = '';
+  email = '';
   body = [];
   constructor(
     private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
@@ -32,9 +34,49 @@ export class DialogSwipeCardComponent {
     if (event.key !== 'Enter') {
       this.valueAfterSwipe += event.key;
     } else {
-      this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-        this.bookRoom(this.buildBodyPayload(e, this.data.date));
-      });
+      this.bookService
+        .getIDInformation(this.valueAfterSwipe)
+        .subscribe(data => {
+          data.varFields.forEach(e => {
+            if (e.fieldTag === 'q') {
+              this.identityKey = e.content.trim();
+              this.email = this.identityKey + '@colorado.edu';
+            }
+            if (e.fieldTag === 'n') {
+              this.firstName = e.content.split(',')[1].trim();
+              this.lastName = e.content.split(',')[0].trim();
+            }
+          });
+
+          const bookingObservableHolder = [];
+          this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
+            bookingObservableHolder.push(
+              this.bookService.bookRoom(
+                this.buildBodyPayload(e, this.data.date)
+              )
+            );
+          });
+          forkJoin(bookingObservableHolder).subscribe(
+            res => {
+              this.dialogRef.close();
+              this.dialog.open(DialogSuccessComponent, {
+                width: '65%',
+                height: '70%',
+                data: {
+                  email: this.email,
+                },
+              });
+            },
+            err => {
+              this.dialogRef.close();
+              this.dialog.open(DialogErrorComponent, {
+                width: '60%',
+                height: '45%',
+                panelClass: 'dialog-error',
+              });
+            }
+          );
+        });
     }
   }
 
@@ -55,27 +97,6 @@ export class DialogSwipeCardComponent {
         },
       ],
     };
-  }
-  /**
-   * Books room
-   * @param submittedTime
-   * @param date
-   */
-  private bookRoom(body: any) {
-    this.bookService.bookRoom(body).subscribe(data => {
-      if (data.booking_id) {
-        this.dialog.open(DialogSuccessComponent, {
-          width: '65%',
-          height: '70%',
-        });
-        this.dialogRef.close();
-        this.dialog.open(DialogSuccessComponent, {
-          width: '65%',
-          height: '70%',
-        });
-      } else {
-      }
-    });
   }
 
   /**

@@ -40,7 +40,7 @@ export class DialogSelectTimesComponent implements OnInit {
     this.isDisabledNextBtn = this.data.selectedTime === null ? true : false;
 
     // Display Time Slots
-    this.displayTimes(this.data.date, sessionStorage.getItem('space_id'));
+    this.displayTimes(this.data.date, localStorage.getItem('space_id'));
   }
 
   /**
@@ -122,7 +122,7 @@ export class DialogSelectTimesComponent implements OnInit {
         dateString: this.setDateString,
         date: this.data ? this.data.date : new Date(),
         roomName: this.data.roomName,
-        roomId: sessionStorage.getItem('space_id'),
+        roomId: localStorage.getItem('space_id'),
       },
     });
   }

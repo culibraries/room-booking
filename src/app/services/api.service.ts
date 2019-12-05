@@ -5,12 +5,12 @@ import { Observable } from 'rxjs';
 
 const LIBCAL_API_URL = env.libcalApiUrl;
 const headers = new HttpHeaders({
-  Authorization: 'token ' + sessionStorage.getItem('token'),
+  Authorization: 'token ' + localStorage.getItem('token'),
 });
 
-const libcal_headers = new HttpHeaders({
+const libcalHeaders = new HttpHeaders({
   'Content-Type': 'application/json',
-  Authorization: 'Bearer' + ' ' + sessionStorage.getItem('libcal_token'),
+  Authorization: 'Bearer' + ' ' + localStorage.getItem('libcal_token'),
 });
 
 @Injectable({
@@ -32,14 +32,14 @@ export class ApiService {
   // API: GET LIBCAL
   public getLIBCAL(path: string): Observable<any> {
     return this.httpClient.get(LIBCAL_API_URL + path, {
-      headers: libcal_headers,
+      headers: libcalHeaders,
     });
   }
 
   // API: POST LIBCAL
   public postLIBCAL(path: string, body: {}): Observable<any> {
     return this.httpClient.post(LIBCAL_API_URL + path, body, {
-      headers: libcal_headers,
+      headers: libcalHeaders,
     });
   }
 }
