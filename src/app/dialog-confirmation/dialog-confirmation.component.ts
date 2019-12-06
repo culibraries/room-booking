@@ -36,6 +36,7 @@ export class DialogConfirmationComponent implements OnInit {
         submitedTime: this.selectedTime,
         date: this.data.date,
         roomId: this.data.roomId,
+        roomName: this.roomName,
       },
     });
     this.dialogRef.close();

@@ -20,6 +20,7 @@ import {
   debounceTime,
   distinctUntilChanged,
 } from 'rxjs/operators';
+import { LoggingService } from '../services/logging.service';
 
 const spaceId = localStorage.getItem('space_id');
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
@@ -54,7 +55,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private hoursService: HoursService,
     private roomService: RoomService,
     private spinner: NgxSpinnerService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private log: LoggingService
   ) {
     this.timetInterval = setInterval(() => {
       this.time = new Date();
@@ -67,12 +69,15 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.log.logDebug('Initilize Main component');
+    // Reload libcal token after 45 minutes
     this.loadTimeLine = interval(2700000)
       .pipe(
         startWith(0),
         switchMap(() => this.apiService.post(libcalTokenURL, {}))
       )
       .subscribe(res => {
+        this.log.logDebug('libcal_token is set');
         localStorage.setItem('libcal_token', res.access_token);
         this.displayTimeLine(this.setDate, spaceId);
         this.roomService.getRoomInformation(spaceId).subscribe(res => {
@@ -82,12 +87,6 @@ export class MainComponent implements OnInit, OnDestroy {
         });
       });
   }
-
-  // updateLibcalToken() {
-  //   return this.apiService.post(libcalURL, {}).subscribe(res => {
-  //     localStorage.setItem('libcal_token', res.access_token);
-  //   });
-  // }
 
   ngOnDestroy() {
     if (this.roomServiceInterval) {
@@ -113,7 +112,7 @@ export class MainComponent implements OnInit, OnDestroy {
         this.roomServiceInterval.unsubscribe();
       } else {
         this.isOpen = true;
-        this.roomServiceInterval = interval(60000)
+        this.roomServiceInterval = interval(45000)
           .pipe(
             startWith(0),
             distinctUntilChanged(),
@@ -168,7 +167,7 @@ export class MainComponent implements OnInit, OnDestroy {
       width: '65%',
       height: '70%',
       data: {
-        selectedTime: selectedTime,
+        selectedTime,
         date: this.setDate,
         roomName: this.roomName,
       },

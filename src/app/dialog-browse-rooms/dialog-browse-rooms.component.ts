@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { TimeDisplay } from '../models/time-display.model';
@@ -6,13 +6,14 @@ import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
 import { debounceTime } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-browse-rooms',
   templateUrl: './dialog-browse-rooms.component.html',
   styleUrls: ['../main/main.component.css'],
 })
-export class DialogBrowseRoomsComponent implements OnInit {
+export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   locationName = '';
   browseRoomsDisplay = [];
   setDate = new Date();
@@ -29,6 +30,8 @@ export class DialogBrowseRoomsComponent implements OnInit {
   spaceId = localStorage.getItem('space_id');
   isOpen = true;
   loading = true;
+  roomServiceInterval: Subscription;
+  hoursServiceInterval: Subscription;
   private availableTime = [];
 
   constructor(
@@ -72,42 +75,54 @@ export class DialogBrowseRoomsComponent implements OnInit {
     this.loading = true;
 
     const dateString = this.helperService.formattedDate(date);
-    this.hoursService.getLocationHours().subscribe(res => {
-      // Get Opens/Closes Hours on a specific day
-      const hours = this.helperService.getBusinessHoursByDate(
-        dateString,
-        res.openingHours
-      );
-      // Check if the library is close/open
-      if (hours.opens === '00:00' && hours.closes === '00:00') {
-        this.loading = false;
-        this.isOpen = false;
-      } else {
-        this.isOpen = true;
+    this.hoursServiceInterval = this.hoursService
+      .getLocationHours()
+      .subscribe(res => {
+        // Get Opens/Closes Hours on a specific day
+        const hours = this.helperService.getBusinessHoursByDate(
+          dateString,
+          res.openingHours
+        );
+        // Check if the library is close/open
+        if (hours.opens === '00:00' && hours.closes === '00:00') {
+          this.loading = false;
+          this.isOpen = false;
+        } else {
+          this.isOpen = true;
 
-        this.roomService
-          .getRoom(dateString, id)
-          .pipe(debounceTime(700))
-          .subscribe(resRoom => {
-            this.availableTime = this.helperService.convertRangeAvailabilityTime(
-              resRoom.availability
-            );
+          this.roomServiceInterval = this.roomService
+            .getRoom(dateString, id)
+            .pipe(debounceTime(700))
+            .subscribe(resRoom => {
+              this.availableTime = this.helperService.convertRangeAvailabilityTime(
+                resRoom.availability
+              );
 
-            const intervals = this.helperService.getTimeIntervals(
-              dateString,
-              res.openingHours
-            );
+              const intervals = this.helperService.getTimeIntervals(
+                dateString,
+                res.openingHours
+              );
 
-            this.displayTime = this.helperService.process(
-              date,
-              this.availableTime,
-              intervals
-            );
+              this.displayTime = this.helperService.process(
+                date,
+                this.availableTime,
+                intervals
+              );
 
-            this.loading = false;
-          });
-      }
-    });
+              this.loading = false;
+            });
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
+
+    if (this.hoursServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
   }
 
   onSelectRoom(room: any) {
@@ -121,6 +136,9 @@ export class DialogBrowseRoomsComponent implements OnInit {
    * Touch : Previous dates on main screen calendar
    */
   onTouchPreDate() {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
     this.isDisabledNextBtn = true;
     this.countDate--;
     const date = new Date();
@@ -134,6 +152,9 @@ export class DialogBrowseRoomsComponent implements OnInit {
    * Touch : Next dates on main screen calendar
    */
   onTouchNextDate() {
+    if (this.roomServiceInterval) {
+      this.roomServiceInterval.unsubscribe();
+    }
     this.isDisabledNextBtn = true;
     this.countDate++;
     const date = new Date();

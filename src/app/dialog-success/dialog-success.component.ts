@@ -23,17 +23,17 @@ export class DialogSuccessComponent implements OnInit, OnDestroy {
       this.counter -= 1;
       if (this.counter === 0) {
         clearInterval(this.runner);
-        location.reload();
+        // location.reload();
       }
     }, 1000);
   }
 
   onTouchClose(): void {
-    this.dialog.closeAll();
+    // this.dialog.closeAll();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.runner);
-    location.reload();
+    // location.reload();
   }
 }
