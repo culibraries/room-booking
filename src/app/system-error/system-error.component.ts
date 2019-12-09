@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { text } from '../config/text';
 import { MatDialog } from '@angular/material';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-system-error',
@@ -32,7 +33,7 @@ export class SystemErrorComponent implements OnInit {
       }
       setTimeout(() => {
         this.router.navigate(['/']);
-      }, 3600000);
+      }, delay.reload_if_getting_error_time);
     });
   }
 

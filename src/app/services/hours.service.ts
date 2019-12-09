@@ -10,11 +10,11 @@ import { HttpClient } from '@angular/common/http';
 export class HoursService {
   constructor(private http: HttpClient) {}
 
-  getLocationHours(): Observable<Hours> {
+  getLocationHours(hours_view_id: string): Observable<Hours> {
     return this.http
       .jsonp(
         'https://api3.libcal.com/api_hours_grid.php?format=jsonld&iid=3251&lid=' +
-          localStorage.getItem('hours_view_id'),
+          hours_view_id,
         'callback'
       )
       .pipe(

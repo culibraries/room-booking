@@ -1,13 +1,15 @@
 <h1 mat-dialog-title class="modal-box-title">
     <span style="display: inline-flex;
-        vertical-align: middle;"> <mat-icon style="padding-right: 10px;">account_balance</mat-icon>
-        {{locationName | uppercase}}</span>
+        vertical-align: middle;">
+        <mat-icon style="padding-right: 10px;">account_balance</mat-icon>
+        {{locationName | uppercase}}
+    </span>
 </h1>
 <div mat-dialog-content class="browse-room-body">
     <div class="browse-room-left">
         <mat-accordion multi="true">
-            <mat-expansion-panel *ngFor="let category of browseRoomsDisplay"
-                class="mat-expansion-room" [expanded]="true">
+            <mat-expansion-panel *ngFor="let category of browseRoomsDisplay" class="mat-expansion-room"
+                [expanded]="true">
                 <mat-expansion-panel-header class="right-aligned-header">
                     <mat-panel-title class="mat-room-title">
                         {{category.name | uppercase}}
@@ -19,8 +21,7 @@
                         category.items" [ngClass]="{'current-room':room.name ==
                         currentRoom}" (click)="onSelectRoom(room)">
                         <mat-icon matListIcon *ngIf="room.name ===
-                            currentRoom"
-                            style="color: #3F50B5">check_circle</mat-icon>
+                            currentRoom" style="color: #3F50B5">check_circle</mat-icon>
                         <mat-icon matListIcon *ngIf="room.name !==
                             currentRoom">check_circle_outline</mat-icon>
                         <h3 matLine>
@@ -36,10 +37,7 @@
     <div class="browse-room-right">
         <div style="width: auto; margin: 0 auto;">
             <div class="time-display-main-move" style="display: contents;">
-                <button mat-icon-button [disabled]="isToday(setDate)"
-                    class="left" (debounceClick)="onTouchPreDate()"
-                    appDebounceClick
-                    [debounceTime]="500">
+                <button mat-icon-button [disabled]="isToday(setDate)" class="left">
                     <mat-icon>arrow_back_ios</mat-icon>
                 </button>
 
@@ -49,11 +47,7 @@
                         {{setDate | date:'E, MMM dd'}}</span>
                     <ng-template #today>Today</ng-template>
                 </div>
-                <button mat-icon-button
-                    class="right"
-                    [disabled]="isNext3months(setDate)"
-                    (debounceClick)="onTouchNextDate()" appDebounceClick
-                    [debounceTime]="500">
+                <button mat-icon-button class="right" [disabled]="isNext3months(setDate)">
                     <mat-icon>arrow_forward_ios</mat-icon>
                 </button>
             </div>
@@ -63,21 +57,18 @@
             loading... </div>
 
         <ng-template #loaded>
-            <span style="text-align: center; margin-top: 30%; list-style: none;"
-                *ngIf="!isOpen; else display">
+            <span style="text-align: center; margin-top: 30%; list-style: none;" *ngIf="!isOpen; else display">
                 The library is closed</span>
             <ng-template #display>
                 <ul class="select-time-list" *ngIf="isOpen">
-                    <li *ngFor="let time of displayTime; trackBy: trackByFn"
-                        class="select-time-item"
+                    <li *ngFor="let time of displayTime; trackBy: trackByFn" class="select-time-item"
                         (click)="onTouchSelectTime(time)">
                         <span>
                             <mat-icon>access_time</mat-icon>
                         </span>
                         <div *ngIf="time.status; else inuse" style="display:
                             contents">
-                            <span class="time-display"
-                                [class.seleted-text]="time.active">
+                            <span class="time-display" [class.seleted-text]="time.active">
                                 {{time.displayValue}}
                             </span>
                             <span *ngIf="!time.active" class="box available">AVAILABLE</span>
@@ -100,10 +91,8 @@
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
     <div>
-        <button class="modal-box-button" mat-raised-button tabindex="-1"
-            (click)="onTouchClose()">CLOSE</button>
-        <button class="modal-box-button" mat-raised-button
-            [disabled]="isDisabledNextBtn"
+        <button class="modal-box-button" mat-raised-button tabindex="-1" (click)="onTouchClose()">CLOSE</button>
+        <button class="modal-box-button" mat-raised-button [disabled]="isDisabledNextBtn"
             (click)="onTouchNextConfirm()">NEXT</button>
     </div>
 </div>

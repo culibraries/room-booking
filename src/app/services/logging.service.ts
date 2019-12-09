@@ -34,9 +34,7 @@ export class LoggingService {
       message,
     };
     if (env.production) {
-      this.apiService
-        .post(env.apiUrl + '/api/s3-logging/log', body)
-        .subscribe();
+      this.apiService.post(env.apiUrl + '/s3-logging/log', body).subscribe();
     } else {
       console.log(message);
     }

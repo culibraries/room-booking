@@ -1,6 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+import {
+  HttpClientModule,
+  HttpClientJsonpModule,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 
 import { DatePipe } from '@angular/common';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -33,9 +37,9 @@ import { DialogDescriptionComponent } from './dialog-description/dialog-descript
 import { DialogErrorComponent } from './dialog-error/dialog-error.component';
 import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-rooms.component';
 
-import { DebounceClickDirective } from './debounce-click.directive';
-import { ErrorService } from './services/error.service';
 import { SystemErrorComponent } from './system-error/system-error.component';
+import { HttpConfigInterceptor } from './httpconfig.interceptor';
+import { DebounceClickDirective } from '../debounce-click.directive';
 
 @NgModule({
   declarations: [
@@ -48,8 +52,8 @@ import { SystemErrorComponent } from './system-error/system-error.component';
     DialogDescriptionComponent,
     DialogErrorComponent,
     DialogBrowseRoomsComponent,
-    DebounceClickDirective,
     SystemErrorComponent,
+    DebounceClickDirective,
   ],
   imports: [
     BrowserModule,
@@ -82,8 +86,9 @@ import { SystemErrorComponent } from './system-error/system-error.component';
   providers: [
     DatePipe,
     {
-      provide: ErrorHandler,
-      useClass: ErrorService,
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpConfigInterceptor,
+      multi: true,
     },
   ],
   bootstrap: [AppComponent],

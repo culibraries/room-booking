@@ -1,4 +1,10 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  OnDestroy,
+  HostListener,
+} from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { TimeDisplay } from '../models/time-display.model';
@@ -6,7 +12,9 @@ import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
 import { debounceTime } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-dialog-browse-rooms',
@@ -27,26 +35,48 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   minDateString = this.minDate.toISOString();
   maxDate = new Date(new Date().setMonth(new Date().getMonth() + 3));
   maxDateString = this.maxDate.toISOString();
-  spaceId = localStorage.getItem('space_id');
+  spaceId: string;
+  locationId: string;
   isOpen = true;
   loading = true;
   roomServiceInterval: Subscription;
   hoursServiceInterval: Subscription;
   private availableTime = [];
-
+  userActivity: any;
+  userInactive: Subject<any> = new Subject();
   constructor(
     private roomService: RoomService,
+    @Inject(LOCAL_STORAGE) private storage: StorageService,
     private dialogRef: MatDialogRef<DialogBrowseRoomsComponent>,
     private dialog: MatDialog,
     private helperService: HelperService,
     private hoursService: HoursService,
     @Inject(MAT_DIALOG_DATA) private data: any
-  ) {}
+  ) {
+    this.setTimeout();
+    this.userInactive.subscribe(() => {
+      this.dialog.closeAll();
+    });
+  }
+
+  setTimeout() {
+    this.userActivity = setTimeout(
+      () => this.userInactive.next(undefined),
+      delay.inactivities_timeout
+    );
+  }
+
+  @HostListener('window:click') refreshUserState() {
+    clearTimeout(this.userActivity);
+    this.setTimeout();
+  }
 
   ngOnInit() {
     this.setDateString = 'TODAY';
     this.currentRoom = this.data.roomName;
-    this.roomService.getAllCategories().subscribe(res => {
+    this.spaceId = this.storage.get('space_id');
+    this.locationId = this.storage.get('location_id');
+    this.roomService.getAllCategories(this.locationId).subscribe(res => {
       this.locationName = res[0].name;
       res[0].categories.forEach(e => {
         this.roomService.getAllRooms(e.cid).subscribe(resEachRoom => {
@@ -76,7 +106,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
 
     const dateString = this.helperService.formattedDate(date);
     this.hoursServiceInterval = this.hoursService
-      .getLocationHours()
+      .getLocationHours(this.data.hours_view_id)
       .subscribe(res => {
         // Get Opens/Closes Hours on a specific day
         const hours = this.helperService.getBusinessHoursByDate(
@@ -123,6 +153,8 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
     if (this.hoursServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }
+
+    clearTimeout(this.userActivity);
   }
 
   onSelectRoom(room: any) {

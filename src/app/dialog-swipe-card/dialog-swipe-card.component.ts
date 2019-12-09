@@ -1,33 +1,62 @@
-import { Component, HostListener, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import {
+  Component,
+  HostListener,
+  Inject,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { BookService } from '../services/book.service';
 import { DialogSuccessComponent } from '../dialog-success/dialog-success.component';
 import { TimeDisplay } from '../models/time-display.model';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 import { LoggingService } from '../services/logging.service';
+import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-dialog-swipe-card',
   templateUrl: './dialog-swipe-card.component.html',
   styleUrls: ['../main/main.component.css'],
 })
-export class DialogSwipeCardComponent implements OnInit {
+export class DialogSwipeCardComponent implements OnInit, OnDestroy {
   valueAfterSwipe = '';
   identityKey = '';
   firstName = '';
   lastName = '';
   email = '';
   body = [];
+  userActivity: any;
+  userInactive: Subject<any> = new Subject();
   constructor(
-    private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
     private dialog: MatDialog,
     private bookService: BookService,
     private log: LoggingService,
     @Inject(MAT_DIALOG_DATA) private data: any
-  ) {}
+  ) {
+    this.setTimeout();
+    this.userInactive.subscribe(() => {
+      this.dialog.closeAll();
+    });
+  }
+
+  setTimeout() {
+    this.userActivity = setTimeout(
+      () => this.userInactive.next(undefined),
+      delay.inactivities_timeout
+    );
+  }
+
+  @HostListener('window:click') refreshUserState() {
+    clearTimeout(this.userActivity);
+    this.setTimeout();
+  }
 
   ngOnInit() {}
+
+  ngOnDestroy() {
+    clearTimeout(this.userActivity);
+  }
   /**
    * Hosts listener - handleKeyboardEvent
    * @param event

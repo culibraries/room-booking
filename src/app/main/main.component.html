@@ -29,7 +29,8 @@
       <!-- Calendar - Header -->
       <div class="time-display-main-header">
         <div class="time-display-main-move">
-          <button [disabled]="isToday(setDate)" mat-icon-button class="left" (click)="onTouchPreDate()">
+          <button [disabled]="isToday(setDate)" mat-icon-button class="left" (debounceClick)="onTouchPreDate()"
+            appDebounceClick [debounceTime]="700">
             <mat-icon>arrow_back_ios</mat-icon>
           </button>
 
@@ -38,7 +39,8 @@
               {{ setDate | date: 'E, MMM dd' }}</span>
             <ng-template #today>Today</ng-template>
           </div>
-          <button [disabled]="isNext3months(setDate)" mat-icon-button class="right" (click)="onTouchNextDate()">
+          <button [disabled]="isNext3months(setDate)" mat-icon-button class="right" (debounceClick)="onTouchNextDate()"
+            appDebounceClick [debounceTime]="700">
             <mat-icon>arrow_forward_ios</mat-icon>
           </button>
         </div>
@@ -58,7 +60,7 @@
       <!-- Schedule Time Slot -->
       <span *ngIf="!isOpen; else display" style="position:
         absolute; top: 50%; left: 40%;">
-        The library is closed
+        {{closedMessage}}
       </span>
       <ng-template #display>
         <table cellpadding="0" cellspacing="0" border="0">
