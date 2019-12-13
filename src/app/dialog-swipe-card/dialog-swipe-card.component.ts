@@ -5,7 +5,7 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BookService } from '../services/book.service';
 import { DialogSuccessComponent } from '../dialog-success/dialog-success.component';
 import { TimeDisplay } from '../models/time-display.model';
@@ -16,6 +16,7 @@ import { ApiService } from '../services/api.service';
 import { env } from '../../environments/environment';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
@@ -33,83 +34,22 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
   body = [];
   isLoading;
   title = '';
-  isLoadInputInformation: boolean;
-  emailV = '';
-  formStudent = new FormGroup({
-    firstName: new FormControl('', Validators.required),
-    lastName: new FormControl('', Validators.required),
-    email: new FormControl('', [
-      Validators.required,
-      Validators.pattern('^[_A-z0-9]*((-|s)*[_A-z0-9])*$'),
-    ]),
-  });
 
   constructor(
     private dialog: MatDialog,
     private bookService: BookService,
     private log: LoggingService,
     private apiService: ApiService,
+    private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
     @Inject(LOCAL_STORAGE) private storage: StorageService
   ) {}
 
   ngOnInit() {
     this.isLoading = false;
-    this.isLoadInputInformation = false;
     this.title = 'SWIPE BUFF ONECARD TO COMPLETE RESERVATION';
   }
 
-  onSubmit(formGroup) {
-    if (formGroup.valid) {
-      this.firstName = formGroup.value.firstName;
-      this.lastName = formGroup.value.lastName;
-      this.email = formGroup.value.email + '@colorado.edu';
-
-      const bookingObservableHolder = [];
-
-      this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-        bookingObservableHolder.push(
-          this.bookService.bookRoom(this.buildBodyPayload(e, this.data.date))
-        );
-      });
-      forkJoin(bookingObservableHolder).subscribe(
-        res => {
-          this.apiService.post(libcalTokenURL, {}).subscribe(user => {
-            this.storage.set('libcal_token', user.access_token);
-          });
-
-          this.log.logInfo(
-            this.data.roomName +
-              ',' +
-              this.email +
-              ',' +
-              this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-          );
-          this.dialog.open(DialogSuccessComponent, {
-            width: '65%',
-            height: '70%',
-            data: {
-              email: this.email,
-            },
-          });
-        },
-        err => {
-          this.log.logInfo(
-            this.data.roomName +
-              ',' +
-              this.email +
-              ',' +
-              this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-          );
-          this.dialog.open(DialogErrorComponent, {
-            width: '60%',
-            height: '45%',
-            panelClass: 'dialog-error',
-          });
-        }
-      );
-    }
-  }
   ngOnDestroy() {}
   /**
    * Hosts listener - handleKeyboardEvent
@@ -137,9 +77,17 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               }
             });
           } catch {
-            this.title = 'Please Enter Your information below to continue';
-            this.isLoadInputInformation = true;
-            this.isLoading = false;
+            this.dialogRef.close();
+            this.dialog.open(DialogEnterStudentInfoComponent, {
+              width: '65%',
+              height: '70%',
+              data: {
+                submitedTime: this.data.submitedTime,
+                date: this.data.date,
+                roomName: this.data.roomName,
+                roomId: this.data.roomId,
+              },
+            });
             return;
           }
 

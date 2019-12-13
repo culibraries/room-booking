@@ -11,7 +11,7 @@
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <script>
-    var timeoutInMiliseconds = 30000;
+    var timeoutInMiliseconds = 45000;
     var timeoutId;
     var i = 0;
     function startTimer() {
@@ -32,6 +32,8 @@
 
     function setupTimers() {
       document.addEventListener("keypress", resetTimer, false);
+      document.addEventListener("keyup", resetTimer, false);
+      document.addEventListener("keydown", resetTimer, false);
       document.addEventListener("click", resetTimer, false);
       document.addEventListener("scroll", resetTimer, false);
       document.addEventListener("touchmove", resetTimer, false);
@@ -45,7 +47,7 @@
   </script>
 </head>
 
-<body>
+<body style="background-color: black;">
   <app-root></app-root>
 </body>
 

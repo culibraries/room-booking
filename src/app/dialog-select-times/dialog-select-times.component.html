@@ -4,7 +4,7 @@
 </h1>
 
 <div mat-dialog-content class="modal-box-body">
-    <div *ngIf="loading; else loaded"> loading...
+    <div *ngIf="loading; else loaded" class="loader-internal"> loading...
     </div>
 
     <ng-template #loaded>
@@ -12,15 +12,13 @@
         </span>
         <ng-template #display>
             <ul class="select-time-list">
-                <li *ngFor="let time of displayTime;" class="select-time-item"
-                    (click)="onTouchSelectTime(time)">
+                <li *ngFor="let time of displayTime;" class="select-time-item" (click)="onTouchSelectTime(time)">
                     <span>
                         <mat-icon>access_time</mat-icon>
                     </span>
                     <div *ngIf="time.status; else inuse" style="display:
                         contents">
-                        <span class="time-display"
-                            [class.seleted-text]="time.active">
+                        <span class="time-display" [class.seleted-text]="time.active">
                             {{time.displayValue}}
                         </span>
                         <span *ngIf="!time.active" class="box available">AVAILABLE</span>
@@ -40,10 +38,8 @@
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
     <div>
-        <button class="modal-box-button" mat-raised-button tabindex="-1"
-            (click)="onTouchCancel()">CANCEL</button>
-        <button class="modal-box-button" mat-raised-button tabindex="-1"
-            [disabled]="isDisabledNextBtn"
+        <button class="modal-box-button" mat-raised-button tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
+        <button class="modal-box-button" mat-raised-button tabindex="-1" [disabled]="isDisabledNextBtn"
             (click)="onTouchNextConfirm()">NEXT</button>
     </div>
 </div>

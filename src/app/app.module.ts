@@ -39,7 +39,7 @@ import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-
 
 import { SystemErrorComponent } from './system-error/system-error.component';
 import { HttpConfigInterceptor } from './httpconfig.interceptor';
-import { DebounceClickDirective } from '../debounce-click.directive';
+import { DialogEnterStudentInfoComponent } from './dialog-enter-student-info/dialog-enter-student-info.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +53,7 @@ import { DebounceClickDirective } from '../debounce-click.directive';
     DialogErrorComponent,
     DialogBrowseRoomsComponent,
     SystemErrorComponent,
-    DebounceClickDirective,
+    DialogEnterStudentInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,6 +84,7 @@ import { DebounceClickDirective } from '../debounce-click.directive';
     DialogBrowseRoomsComponent,
     DialogErrorComponent,
     DialogDescriptionComponent,
+    DialogEnterStudentInfoComponent,
   ],
   providers: [
     DatePipe,
