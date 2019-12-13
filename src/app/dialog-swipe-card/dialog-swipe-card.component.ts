@@ -9,7 +9,7 @@ import { MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { BookService } from '../services/book.service';
 import { DialogSuccessComponent } from '../dialog-success/dialog-success.component';
 import { TimeDisplay } from '../models/time-display.model';
-import { forkJoin, Subject } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 import { LoggingService } from '../services/logging.service';
 import { ApiService } from '../services/api.service';
