@@ -12,7 +12,12 @@ import { TimeDisplay } from '../models/time-display.model';
 import { forkJoin, Subject } from 'rxjs';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 import { LoggingService } from '../services/logging.service';
-import { delay } from '../config/delay';
+import { ApiService } from '../services/api.service';
+import { env } from '../../environments/environment';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
+
+const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Component({
   selector: 'app-dialog-swipe-card',
@@ -26,37 +31,86 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
   lastName = '';
   email = '';
   body = [];
-  userActivity: any;
-  userInactive: Subject<any> = new Subject();
+  isLoading;
+  title = '';
+  isLoadInputInformation: boolean;
+  emailV = '';
+  formStudent = new FormGroup({
+    firstName: new FormControl('', Validators.required),
+    lastName: new FormControl('', Validators.required),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^[_A-z0-9]*((-|s)*[_A-z0-9])*$'),
+    ]),
+  });
+
   constructor(
     private dialog: MatDialog,
     private bookService: BookService,
     private log: LoggingService,
-    @Inject(MAT_DIALOG_DATA) private data: any
-  ) {
-    this.setTimeout();
-    this.userInactive.subscribe(() => {
-      this.dialog.closeAll();
-    });
+    private apiService: ApiService,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    @Inject(LOCAL_STORAGE) private storage: StorageService
+  ) {}
+
+  ngOnInit() {
+    this.isLoading = false;
+    this.isLoadInputInformation = false;
+    this.title = 'SWIPE BUFF ONECARD TO COMPLETE RESERVATION';
   }
 
-  setTimeout() {
-    this.userActivity = setTimeout(
-      () => this.userInactive.next(undefined),
-      delay.inactivities_timeout
-    );
-  }
+  onSubmit(formGroup) {
+    if (formGroup.valid) {
+      this.firstName = formGroup.value.firstName;
+      this.lastName = formGroup.value.lastName;
+      this.email = formGroup.value.email + '@colorado.edu';
 
-  @HostListener('window:click') refreshUserState() {
-    clearTimeout(this.userActivity);
-    this.setTimeout();
-  }
+      const bookingObservableHolder = [];
 
-  ngOnInit() {}
+      this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
+        bookingObservableHolder.push(
+          this.bookService.bookRoom(this.buildBodyPayload(e, this.data.date))
+        );
+      });
+      forkJoin(bookingObservableHolder).subscribe(
+        res => {
+          this.apiService.post(libcalTokenURL, {}).subscribe(user => {
+            this.storage.set('libcal_token', user.access_token);
+          });
 
-  ngOnDestroy() {
-    clearTimeout(this.userActivity);
+          this.log.logInfo(
+            this.data.roomName +
+              ',' +
+              this.email +
+              ',' +
+              this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
+          );
+          this.dialog.open(DialogSuccessComponent, {
+            width: '65%',
+            height: '70%',
+            data: {
+              email: this.email,
+            },
+          });
+        },
+        err => {
+          this.log.logInfo(
+            this.data.roomName +
+              ',' +
+              this.email +
+              ',' +
+              this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
+          );
+          this.dialog.open(DialogErrorComponent, {
+            width: '60%',
+            height: '45%',
+            panelClass: 'dialog-error',
+          });
+        }
+      );
+    }
   }
+  ngOnDestroy() {}
   /**
    * Hosts listener - handleKeyboardEvent
    * @param event
@@ -66,58 +120,78 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     if (event.key !== 'Enter') {
       this.valueAfterSwipe += event.key;
     } else {
+      this.isLoading = true;
       event.preventDefault();
-      this.bookService.getIDInformation('000331466').subscribe(data => {
-        data.varFields.forEach(e => {
-          if (e.fieldTag === 'q') {
-            this.identityKey = e.content.trim();
-            this.email = this.identityKey + '@colorado.edu';
+      this.bookService
+        .getIDInformation(this.valueAfterSwipe)
+        .subscribe(data => {
+          try {
+            data.varFields.forEach(e => {
+              if (e.fieldTag === 'q') {
+                this.identityKey = e.content.trim();
+                this.email = this.identityKey + '@colorado.edu';
+              }
+              if (e.fieldTag === 'n') {
+                this.firstName = e.content.split(',')[1].trim();
+                this.lastName = e.content.split(',')[0].trim();
+              }
+            });
+          } catch {
+            this.title = 'Please Enter Your information below to continue';
+            this.isLoadInputInformation = true;
+            this.isLoading = false;
+            return;
           }
-          if (e.fieldTag === 'n') {
-            this.firstName = e.content.split(',')[1].trim();
-            this.lastName = e.content.split(',')[0].trim();
-          }
-        });
 
-        const bookingObservableHolder = [];
-        this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-          bookingObservableHolder.push(
-            this.bookService.bookRoom(this.buildBodyPayload(e, this.data.date))
+          const bookingObservableHolder = [];
+          this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
+            bookingObservableHolder.push(
+              this.bookService.bookRoom(
+                this.buildBodyPayload(e, this.data.date)
+              )
+            );
+          });
+          forkJoin(bookingObservableHolder).subscribe(
+            res => {
+              this.apiService.post(libcalTokenURL, {}).subscribe(user => {
+                this.storage.set('libcal_token', user.access_token);
+              });
+
+              this.log.logInfo(
+                this.data.roomName +
+                  ',' +
+                  this.email +
+                  ',' +
+                  this.reorganizeSubmittedTimes(this.data.submitedTime).join(
+                    '|'
+                  )
+              );
+              this.dialog.open(DialogSuccessComponent, {
+                width: '65%',
+                height: '70%',
+                data: {
+                  email: this.email,
+                },
+              });
+            },
+            err => {
+              this.log.logInfo(
+                this.data.roomName +
+                  ',' +
+                  this.email +
+                  ',' +
+                  this.reorganizeSubmittedTimes(this.data.submitedTime).join(
+                    '|'
+                  )
+              );
+              this.dialog.open(DialogErrorComponent, {
+                width: '60%',
+                height: '45%',
+                panelClass: 'dialog-error',
+              });
+            }
           );
         });
-        forkJoin(bookingObservableHolder).subscribe(
-          res => {
-            this.log.logInfo(
-              this.data.roomName +
-                ',' +
-                this.email +
-                ',' +
-                this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-            );
-            this.dialog.open(DialogSuccessComponent, {
-              width: '65%',
-              height: '70%',
-              data: {
-                email: this.email,
-              },
-            });
-          },
-          err => {
-            this.log.logInfo(
-              this.data.roomName +
-                ',' +
-                this.email +
-                ',' +
-                this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-            );
-            this.dialog.open(DialogErrorComponent, {
-              width: '60%',
-              height: '45%',
-              panelClass: 'dialog-error',
-            });
-          }
-        );
-      });
     }
   }
 

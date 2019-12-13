@@ -8,8 +8,6 @@ import {
 import { TimeDisplay } from '../models/time-display.model';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { DialogSwipeCardComponent } from '../dialog-swipe-card/dialog-swipe-card.component';
-import { Subject } from 'rxjs';
-import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-dialog-confirmation',
@@ -20,30 +18,12 @@ export class DialogConfirmationComponent implements OnInit, OnDestroy {
   selectedTime: TimeDisplay[] = [];
   roomName = '';
   dateString = '';
-  userActivity: any;
-  userInactive: Subject<any> = new Subject();
+
   constructor(
     private dialogRef: MatDialogRef<DialogConfirmationComponent>,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) private data: any
-  ) {
-    this.setTimeout();
-    this.userInactive.subscribe(() => {
-      this.dialog.closeAll();
-    });
-  }
-
-  setTimeout() {
-    this.userActivity = setTimeout(
-      () => this.userInactive.next(undefined),
-      delay.inactivities_timeout
-    );
-  }
-
-  @HostListener('window:click') refreshUserState() {
-    clearTimeout(this.userActivity);
-    this.setTimeout();
-  }
+  ) {}
 
   ngOnInit(): void {
     this.roomName = this.data.roomName;
@@ -51,9 +31,7 @@ export class DialogConfirmationComponent implements OnInit, OnDestroy {
     this.dateString = this.data.dateString;
   }
 
-  ngOnDestroy(): void {
-    clearTimeout(this.userActivity);
-  }
+  ngOnDestroy(): void {}
 
   /**
    * Touch : Next - go to swipe-card component

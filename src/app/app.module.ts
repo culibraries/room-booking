@@ -13,9 +13,9 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MainComponent } from './main/main.component';
-import { ConfigService } from './services/config.service';
 
 // Material Module
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -61,6 +61,8 @@ import { DebounceClickDirective } from '../debounce-click.directive';
     BrowserAnimationsModule,
     NgxSpinnerModule,
     DeviceDetectorModule.forRoot(),
+    FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     HttpClientJsonpModule,
     MatSidenavModule,

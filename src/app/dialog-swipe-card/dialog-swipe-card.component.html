@@ -1,19 +1,64 @@
 <h1 mat-dialog-title class="modal-box-title">
-    SWIPE BUFF ONECARD TO COMPLETE RESERVATION
+    {{title | uppercase}}
+
 </h1>
+<div *ngIf="!isLoading else loading">
+    <div *ngIf="!isLoadInputInformation else loadInput">
+        <div mat-dialog-content class="modal-box-content">
+            <div style="text-align: center;">
+                <img src="assets/images/static-swipe-card.jpg" style="width: 200px;
+                        padding-top: 100px;" />
+            </div>
+        </div>
 
-<div mat-dialog-content class="modal-box-content">
-    <div style="text-align: center;">
-        <img src="assets/images/static-swipe-card.png"
-            style="width: 200px;
-            padding-top: 100px;"
-            />
+        <div mat-dialog-actions class="modal-box-button-wrapper swipe-button-wrapper">
+            <div>
+                <button class="modal-box-button" tabindex="-1" mat-raised-button
+                    (click)="onTouchCancel()">CANCEL</button>
+            </div>
+        </div>
     </div>
+    <ng-template #loadInput>
+        <form class="unique-form" [formGroup]="formStudent" (submit)="onSubmit(formStudent)">
+            <mat-form-field class="unique-form-field">
+                <input matInput placeholder="First Name" formControlName="firstName"
+                    [formControl]="formStudent.get('firstName')" value="" required>
+                <mat-error *ngIf="formStudent.get('firstName').hasError('required')">
+                    Please enter your first name.
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="unique-form-field">
+                <input matInput placeholder="Last Name" formControlName="lastName"
+                    [formControl]="formStudent.get('lastName')" value="" required>
+                <mat-error *ngIf="formStudent.get('lastName').hasError('required')">
+                    Please enter your last name.
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="unique-form-field">
+                <input matInput placeholder="Email" [formControl]="formStudent.get('email')" formControlName="email"
+                    value="" required>
+                <span matSuffix>@Colorado.Edu</span>
+                <mat-error *ngIf="formStudent.get('email').hasError('required')">
+                    Please enter your email.
+                </mat-error>
+                <mat-error *ngIf="formStudent.get('email').hasError('pattern')">
+                    Please enter a valid email.
+                </mat-error>
+            </mat-form-field>
+
+            <div mat-dialog-actions class="modal-box-button-wrapper swipe-button-wrapper">
+                <div>
+                    <button class="modal-box-button" tabindex="-1" mat-raised-button
+                        (click)="onTouchCancel()">CANCEL</button>
+                    <button class="modal-box-button" tabindex="-1" mat-raised-button type="submit">RESERVE</button>
+                </div>
+            </div>
+        </form>
+
+
+    </ng-template>
 </div>
 
-<div mat-dialog-actions class="modal-box-button-wrapper swipe-button-wrapper">
-    <div>
-        <button class="modal-box-button" tabindex="-1" mat-raised-button
-            (click)="onTouchCancel()">CANCEL</button>
-    </div>
-</div>
+<ng-template #loading>
+    <div class="loader-internal"> Loading...</div>
+</ng-template>

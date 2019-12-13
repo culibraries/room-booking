@@ -42,8 +42,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   roomServiceInterval: Subscription;
   hoursServiceInterval: Subscription;
   private availableTime = [];
-  userActivity: any;
-  userInactive: Subject<any> = new Subject();
+
   constructor(
     private roomService: RoomService,
     @Inject(LOCAL_STORAGE) private storage: StorageService,
@@ -52,24 +51,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     private hoursService: HoursService,
     @Inject(MAT_DIALOG_DATA) private data: any
-  ) {
-    this.setTimeout();
-    this.userInactive.subscribe(() => {
-      this.dialog.closeAll();
-    });
-  }
-
-  setTimeout() {
-    this.userActivity = setTimeout(
-      () => this.userInactive.next(undefined),
-      delay.inactivities_timeout
-    );
-  }
-
-  @HostListener('window:click') refreshUserState() {
-    clearTimeout(this.userActivity);
-    this.setTimeout();
-  }
+  ) {}
 
   ngOnInit() {
     this.setDateString = 'TODAY';
@@ -153,8 +135,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
     if (this.hoursServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }
-
-    clearTimeout(this.userActivity);
   }
 
   onSelectRoom(room: any) {

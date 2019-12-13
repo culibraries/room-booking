@@ -45,8 +45,8 @@ export class MainComponent implements OnInit, OnDestroy {
   roomCapacity = 0;
   roomServiceInterval: any;
   timetInterval: any;
-  timeOut: any;
   isOpen = true;
+  isDone: boolean;
   closedMessage = 'The library is closed';
 
   constructor(
@@ -63,7 +63,7 @@ export class MainComponent implements OnInit, OnDestroy {
       if (this.dateNow.getDate() !== this.time.getDate()) {
         location.reload();
       }
-    }, 4000);
+    }, 2000);
 
     this.spinner.show();
     setTimeout(() => {
@@ -86,17 +86,15 @@ export class MainComponent implements OnInit, OnDestroy {
       this.roomServiceInterval.unsubscribe();
     }
     clearInterval(this.timetInterval);
-    clearTimeout(this.timeOut);
   }
 
   displayTimeLine(date: Date, id: string): void {
+    this.isDone = false;
     if (this.roomServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }
     const dateString = this.helperService.formattedDate(date);
     this.hoursService.getLocationHours(this.hours_view_id).subscribe(res => {
-      console.log(res);
-
       this.maxDate = new Date(
         res['openingHours'][res['openingHours'].length - 1]['validFrom']
       );
@@ -113,6 +111,7 @@ export class MainComponent implements OnInit, OnDestroy {
         hours.closes === '00:00' &&
         this.isToday(date)
       ) {
+        this.isDone = true;
         this.isOpen = false;
         this.status = 'inuse';
         if (this.roomServiceInterval) {
@@ -132,6 +131,7 @@ export class MainComponent implements OnInit, OnDestroy {
               resRoom.availability
             );
             if (this.availableTime.length === 0 && this.isToday(date)) {
+              this.isDone = true;
               this.isOpen = false;
               this.status = 'inuse';
               this.roomServiceInterval.unsubscribe();
@@ -139,6 +139,7 @@ export class MainComponent implements OnInit, OnDestroy {
               return;
             }
             if (this.availableTime.length === 0 && !this.isToday(date)) {
+              this.isDone = true;
               this.isOpen = false;
               this.roomServiceInterval.unsubscribe();
               this.closedMessage = 'Unavailable';
@@ -158,6 +159,7 @@ export class MainComponent implements OnInit, OnDestroy {
             if (this.isToday(date)) {
               this.status = this.displayTime[0].status ? 'available' : 'inuse';
             }
+            this.isDone = true;
           });
       }
     });
@@ -202,40 +204,22 @@ export class MainComponent implements OnInit, OnDestroy {
    * Touch : Previous dates on main screen calendar
    */
   onTouchPreDate() {
-    if (this.timeOut) {
-      clearTimeout(this.timeOut);
-    }
     this.countDate--;
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
     this.displayTimeLine(this.setDate, this.spaceId);
-    if (this.countDate > 0) {
-      this.timeOut = setTimeout(() => {
-        this.countDate = 0;
-        this.setDate = new Date();
-        this.displayTimeLine(this.setDate, this.spaceId);
-      }, delay.inactivities_timeout);
-    }
   }
 
   /**
    * Touch : Next dates on main screen calendar
    */
   onTouchNextDate() {
-    if (this.timeOut) {
-      clearTimeout(this.timeOut);
-    }
     this.countDate++;
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
     this.displayTimeLine(this.setDate, this.spaceId);
-    this.timeOut = setTimeout(() => {
-      this.countDate = 0;
-      this.setDate = new Date();
-      this.displayTimeLine(this.setDate, this.spaceId);
-    }, delay.inactivities_timeout);
   }
 
   /**
@@ -272,20 +256,12 @@ export class MainComponent implements OnInit, OnDestroy {
    * @param event
    */
   touchCalendarEvent(type: string, event: MatDatepickerInputEvent<Date>) {
-    if (this.timeOut) {
-      clearTimeout(this.timeOut);
-    }
     this.setDate = event.value;
     this.countDate = this.helperService.dateDiffInDays(
       this.minDate,
       this.setDate
     );
     this.displayTimeLine(this.setDate, this.spaceId);
-    this.timeOut = setTimeout(() => {
-      this.countDate = 0;
-      this.setDate = new Date();
-      this.displayTimeLine(this.setDate, this.spaceId);
-    }, delay.inactivities_timeout);
   }
 
   isNext3months(date: Date): boolean {

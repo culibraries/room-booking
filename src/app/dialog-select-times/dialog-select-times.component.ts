@@ -21,8 +21,6 @@ export class DialogSelectTimesComponent implements OnInit {
   isOpen = true;
 
   private availableTime = [];
-  userActivity: any;
-  userInactive: Subject<any> = new Subject();
 
   constructor(
     private dialogRef: MatDialogRef<DialogSelectTimesComponent>,
@@ -31,25 +29,7 @@ export class DialogSelectTimesComponent implements OnInit {
     private helperService: HelperService,
     private hoursService: HoursService,
     @Inject(MAT_DIALOG_DATA) private data: any
-  ) {
-    clearTimeout(this.userActivity);
-    this.setTimeout();
-    this.userInactive.subscribe(() => {
-      this.dialog.closeAll();
-    });
-  }
-
-  setTimeout() {
-    this.userActivity = setTimeout(
-      () => this.userInactive.next(undefined),
-      delay.inactivities_timeout
-    );
-  }
-
-  @HostListener('window:click') refreshUserState() {
-    clearTimeout(this.userActivity);
-    this.setTimeout();
-  }
+  ) {}
 
   ngOnInit() {
     // Set Date on the header of the dialog
