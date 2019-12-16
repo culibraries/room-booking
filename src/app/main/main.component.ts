@@ -11,7 +11,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 import { DialogBrowseRoomsComponent } from '../dialog-browse-rooms/dialog-browse-rooms.component';
 import { DialogDescriptionComponent } from '../dialog-description/dialog-description.component';
-import { interval } from 'rxjs';
+import { interval, forkJoin, combineLatest } from 'rxjs';
 import { delay } from '../config/delay';
 import {
   startWith,
@@ -37,6 +37,7 @@ export class MainComponent implements OnInit, OnDestroy {
   maxDateString = '';
   setDate = new Date();
   dateNow = new Date();
+  dateNext3Day = new Date(new Date().setDate(new Date().getDate() + 3));
   countDate = 0;
   displayTime: TimeDisplay[];
   availableTime: string[];
@@ -73,6 +74,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.log.logDebug('Initilize Main component');
+
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;

@@ -37,7 +37,7 @@ export class RoomService {
               data[0].name,
               data[0].capacity,
               data[0].description,
-              []
+              data[0].availability
             )
         )
       );

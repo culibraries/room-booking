@@ -25,6 +25,8 @@ import {
 } from 'rxjs/operators';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { ApiService } from './services/api.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material';
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Injectable()
@@ -33,7 +35,9 @@ export class HttpConfigInterceptor implements HttpInterceptor {
   tokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   constructor(
     @Inject(LOCAL_STORAGE) private storage: StorageService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   intercept(
@@ -83,7 +87,10 @@ export class HttpConfigInterceptor implements HttpInterceptor {
               case 401:
                 return this.handle401Error(request, next);
               case 400:
-                return throwError(err);
+                this.dialog.closeAll();
+                return this.router.navigate(['/error']);
+              default:
+                return this.router.navigate(['system-error', err.status]);
             }
           } else {
             return throwError(err);
@@ -97,8 +104,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
     if (!this.isRefreshingToken) {
       this.isRefreshingToken = true;
 
-      // Reset here so that the following requests wait until the token
-      // comes back from the refreshToken call.
       this.tokenSubject.next(null);
 
       return this.apiService.post(libcalTokenURL, {}).pipe(

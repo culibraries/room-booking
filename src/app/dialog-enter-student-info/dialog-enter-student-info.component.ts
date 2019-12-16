@@ -29,7 +29,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
     lastName: new FormControl('', Validators.required),
     email: new FormControl('', [
       Validators.required,
-      Validators.pattern('^[_A-z0-9]*((-|s)*[_A-z0-9])*$'),
+      Validators.pattern('^[a-zA-Z0-9.]{3,30}$'),
     ]),
   });
   constructor(

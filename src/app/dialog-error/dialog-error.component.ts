@@ -13,5 +13,6 @@ export class DialogErrorComponent implements OnInit {
 
   onTouchClose() {
     this.dialogRef.close();
+    location.reload();
   }
 }

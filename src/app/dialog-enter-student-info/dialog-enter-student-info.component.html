@@ -27,7 +27,7 @@
                 Please enter your email.
             </mat-error>
             <mat-error *ngIf="formStudent.get('email').hasError('pattern')">
-                Please enter a valid email.
+                Please enter a valid email. Hint: Do not need to enter: "@Colorado.EDU". It is already included.
             </mat-error>
         </mat-form-field>
 
