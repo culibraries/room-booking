@@ -13,30 +13,25 @@ import {
 import { env } from '../environments/environment';
 
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import {
-  map,
-  catchError,
-  mergeMap,
-  switchMap,
-  finalize,
-  filter,
-  take,
-} from 'rxjs/operators';
+import { catchError, switchMap, finalize, filter, take } from 'rxjs/operators';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { ApiService } from './services/api.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
+import { DialogErrorComponent } from './dialog-error/dialog-error.component';
+import { LoggingService } from './services/logging.service';
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
-  isRefreshingToken: boolean = false;
+  isRefreshingToken = false;
   tokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   constructor(
     @Inject(LOCAL_STORAGE) private storage: StorageService,
     private apiService: ApiService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private log: LoggingService
   ) {}
 
   intercept(
@@ -84,12 +79,23 @@ export class HttpConfigInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse) {
             switch (err.status) {
               case 401:
+                this.log.logDebug(
+                  'libcalToken Expired : Request new libcal token'
+                );
                 return this.handle401Error(request, next);
               case 400:
                 this.dialog.closeAll();
-                return this.router.navigate(['/error']);
+                this.dialog.open(DialogErrorComponent, {
+                  width: '60%',
+                  height: 'auto',
+                  data: {
+                    code: 400,
+                  },
+                });
+                return [];
               default:
-                return this.router.navigate(['system-error', err.status]);
+                this.log.logError(err.message);
+                return this.router.navigate(['system-error']);
             }
           } else {
             return throwError(err);
@@ -129,7 +135,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
       );
     } else {
       this.isRefreshingToken = false;
-
       return this.tokenSubject.pipe(
         filter(token => token != null),
         take(1),

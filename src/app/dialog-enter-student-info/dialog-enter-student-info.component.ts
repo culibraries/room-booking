@@ -16,7 +16,6 @@ const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 @Component({
   selector: 'app-dialog-enter-student-info',
   templateUrl: './dialog-enter-student-info.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogEnterStudentInfoComponent implements OnInit {
   firstName = '';

@@ -17,13 +17,13 @@ import { env } from '../../environments/environment';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
+import { Router } from '@angular/router';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Component({
   selector: 'app-dialog-swipe-card',
   templateUrl: './dialog-swipe-card.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogSwipeCardComponent implements OnInit, OnDestroy {
   valueAfterSwipe = '';
@@ -42,7 +42,8 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
-    @Inject(LOCAL_STORAGE) private storage: StorageService
+    @Inject(LOCAL_STORAGE) private storage: StorageService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -62,81 +63,97 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     } else {
       this.isLoading = true;
       event.preventDefault();
-      this.bookService.getIDInformation('000331466').subscribe(data => {
-        console.log(data);
-        // if (data.patronType !== 2) {
-        // redirecto error page : Only student can book this room
-        // return;
-        // }
-        // try {
-        //   data.varFields.forEach(e => {
-        //     if (e.fieldTag === 'q') {
-        //       this.identityKey = e.content.trim();
-        //       this.email = this.identityKey + '@colorado.edu';
-        //     }
-        //     if (e.fieldTag === 'n') {
-        //       this.firstName = e.content.split(',')[1].trim();
-        //       this.lastName = e.content.split(',')[0].trim();
-        //     }
-        //   });
-        // } catch {
-        //   this.dialogRef.close();
-        //   this.dialog.open(DialogEnterStudentInfoComponent, {
-        //     width: '65%',
-        //     height: '70%',
-        //     data: {
-        //       submitedTime: this.data.submitedTime,
-        //       date: this.data.date,
-        //       roomName: this.data.roomName,
-        //       roomId: this.data.roomId,
-        //     },
-        //   });
-        //   return;
-        // }
+      this.bookService
+        .getIDInformation(this.valueAfterSwipe)
+        .subscribe(data => {
+          // TODO data.patronType !== 2 need to be set when go live to only allow undergraduate student
+          //if (data.patronType !== 2) {
+          if (data.patronType === 2) {
+            this.dialog.closeAll();
+            this.dialog.open(DialogErrorComponent, {
+              width: '50%',
+              height: 'auto',
+              data: {
+                code: 0,
+              },
+            });
+            return;
+          }
+          try {
+            data.varFields.forEach(e => {
+              if (e.fieldTag === 'q') {
+                this.identityKey = e.content.trim();
+                this.email = this.identityKey + '@colorado.edu';
+              }
+              if (e.fieldTag === 'n') {
+                this.firstName = e.content.split(',')[1].trim();
+                this.lastName = e.content.split(',')[0].trim();
+              }
+            });
+          } catch {
+            this.dialogRef.close();
+            this.dialog.open(DialogEnterStudentInfoComponent, {
+              width: '65%',
+              height: '70%',
+              data: {
+                submitedTime: this.data.submitedTime,
+                date: this.data.date,
+                roomName: this.data.roomName,
+                roomId: this.data.roomId,
+              },
+            });
+            return;
+          }
 
-        // const bookingObservableHolder = [];
-        // this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-        //   bookingObservableHolder.push(
-        //     this.bookService.bookRoom(this.buildBodyPayload(e, this.data.date))
-        //   );
-        // });
-        // forkJoin(bookingObservableHolder).subscribe(
-        //   res => {
-        //     this.apiService.post(libcalTokenURL, {}).subscribe(user => {
-        //       this.storage.set('libcal_token', user.access_token);
-        //     });
+          const bookingObservableHolder = [];
+          this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
+            bookingObservableHolder.push(
+              this.bookService.bookRoom(
+                this.buildBodyPayload(e, this.data.date)
+              )
+            );
+          });
+          forkJoin(bookingObservableHolder).subscribe(
+            res => {
+              this.apiService.post(libcalTokenURL, {}).subscribe(user => {
+                this.storage.set('libcal_token', user.access_token);
+              });
 
-        //     this.log.logInfo(
-        //       this.data.roomName +
-        //         ',' +
-        //         this.email +
-        //         ',' +
-        //         this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-        //     );
-        //     this.dialog.open(DialogSuccessComponent, {
-        //       width: '65%',
-        //       height: '70%',
-        //       data: {
-        //         email: this.email,
-        //       },
-        //     });
-        //   },
-        //   err => {
-        //     this.log.logInfo(
-        //       this.data.roomName +
-        //         ',' +
-        //         this.email +
-        //         ',' +
-        //         this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-        //     );
-        //     this.dialog.open(DialogErrorComponent, {
-        //       width: '60%',
-        //       height: '45%',
-        //       panelClass: 'dialog-error',
-        //     });
-        //   }
-        // );
-      });
+              this.log.logInfo(
+                this.data.roomName +
+                  ',' +
+                  this.email +
+                  ',' +
+                  this.reorganizeSubmittedTimes(this.data.submitedTime).join(
+                    '|'
+                  )
+              );
+              this.dialog.open(DialogSuccessComponent, {
+                width: '65%',
+                height: '70%',
+                data: {
+                  email: this.email,
+                },
+              });
+            },
+            err => {
+              this.log.logInfo(
+                this.data.roomName +
+                  ',' +
+                  this.email +
+                  ',' +
+                  this.reorganizeSubmittedTimes(this.data.submitedTime).join(
+                    '|'
+                  )
+              );
+              this.dialog.open(DialogErrorComponent, {
+                width: '60%',
+                height: '45%',
+                panelClass: 'dialog-error',
+              });
+            }
+          );
+        });
     }
   }
 

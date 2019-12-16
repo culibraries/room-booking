@@ -26,7 +26,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
-import { MatToolbarModule } from '@angular/material/toolbar';
 
 // Dialog Component
 import { DialogSelectTimesComponent } from './dialog-select-times/dialog-select-times.component';
@@ -74,7 +73,6 @@ import { DialogEnterStudentInfoComponent } from './dialog-enter-student-info/dia
     MatNativeDateModule,
     MatExpansionModule,
     MatListModule,
-    MatToolbarModule,
   ],
   entryComponents: [
     DialogSelectTimesComponent,

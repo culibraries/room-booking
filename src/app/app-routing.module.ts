@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { SystemErrorComponent } from './system-error/system-error.component';
-import { DialogErrorComponent } from './dialog-error/dialog-error.component';
 
 const routes: Routes = [
   {
@@ -12,12 +11,8 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'system-error/:code',
+    path: 'system-error',
     component: SystemErrorComponent,
-  },
-  {
-    path: 'error',
-    component: DialogErrorComponent,
   },
 ];
 

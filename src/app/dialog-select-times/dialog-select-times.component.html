@@ -38,9 +38,7 @@
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
-    <div>
-        <button class="modal-box-button" mat-raised-button tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
-        <button class="modal-box-button" mat-raised-button tabindex="-1" [disabled]="isDisabledNextBtn"
-            (click)="onTouchNextConfirm()">NEXT</button>
-    </div>
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
+    <button type="button" mat-stroked-button tabindex="-1" [disabled]="isDisabledNextBtn"
+        (click)="onTouchNextConfirm()">NEXT</button>
 </div>

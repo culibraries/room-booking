@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Inject,
-  OnDestroy,
-  HostListener,
-} from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { TimeDisplay } from '../models/time-display.model';
@@ -12,14 +6,12 @@ import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
 import { debounceTime } from 'rxjs/operators';
-import { Subscription, Subject } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
-import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-dialog-browse-rooms',
   templateUrl: './dialog-browse-rooms.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   locationName = '';
@@ -38,7 +30,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   spaceId: string;
   locationId: string;
   isOpen = true;
-  loading = true;
+  isLoading = true;
   roomServiceInterval: Subscription;
   hoursServiceInterval: Subscription;
   private availableTime = [];
@@ -54,8 +46,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loading = true;
-
     this.setDateString = 'TODAY';
     this.currentRoom = this.data.roomName;
     this.spaceId = this.storage.get('space_id');
@@ -97,14 +87,14 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
         );
         // Check if the library is close/open
         if (hours.opens === '00:00' && hours.closes === '00:00') {
-          this.loading = false;
+          this.isLoading = false;
           this.isOpen = false;
         } else {
           this.isOpen = true;
 
           this.roomServiceInterval = this.roomService
             .getRoom(dateString, id)
-            .pipe(debounceTime(700))
+            .pipe(debounceTime(500))
             .subscribe(resRoom => {
               this.availableTime = this.helperService.convertRangeAvailabilityTime(
                 resRoom.availability
@@ -121,7 +111,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
                 intervals
               );
 
-              this.loading = false;
+              this.isLoading = false;
             });
         }
       });
@@ -133,7 +123,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
     }
 
     if (this.hoursServiceInterval) {
-      this.roomServiceInterval.unsubscribe();
+      this.hoursServiceInterval.unsubscribe();
     }
   }
 

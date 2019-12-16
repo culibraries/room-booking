@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-dialog-success',
   templateUrl: './dialog-success.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogSuccessComponent implements OnInit, OnDestroy {
   counter = 5;

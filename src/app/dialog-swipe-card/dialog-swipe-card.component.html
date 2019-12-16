@@ -2,21 +2,15 @@
     {{title | uppercase}}
 
 </h1>
-<div *ngIf="!isLoading else loading">
-    <div mat-dialog-content class="modal-box-content">
-        <div style="text-align: center;">
-            <img src="assets/images/static-swipe-card.jpg" style="width: 200px;
+<div mat-dialog-content class="modal-box-body" style="text-align: center;height: 70%;" *ngIf="!isLoading else loading">
+    <img src="assets/images/static-swipe-card.jpg" style="width: 200px;
                         padding-top: 100px;" />
-        </div>
-    </div>
-
-    <div mat-dialog-actions class="modal-box-button-wrapper swipe-button-wrapper">
-        <div>
-            <button class="modal-box-button" type="button" mat-raised-button (click)="onTouchCancel()">CANCEL</button>
-        </div>
-    </div>
 </div>
-
 <ng-template #loading>
     <div class="loader-internal"> Loading...</div>
 </ng-template>
+<div mat-dialog-actions class="modal-box-button-wrapper">
+    <div>
+        <button mat-stroked-button type="button" tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
+    </div>
+</div>

@@ -4,7 +4,7 @@
 </h1>
 <div *ngIf="!isLoading else loading">
 
-    <form class="unique-form" [formGroup]="formStudent">
+    <form class="unique-form" [formGroup]="formStudent" (submit)="onSubmit(formStudent)">
         <mat-form-field class="unique-form-field">
             <input matInput placeholder="First Name" formControlName="firstName"
                 [formControl]="formStudent.get('firstName')" value="" required>
@@ -31,11 +31,11 @@
             </mat-error>
         </mat-form-field>
 
-        <div mat-dialog-actions class="modal-box-button-wrapper swipe-button-wrapper">
+        <div mat-dialog-actions class="modal-box-button-wrapper">
             <div>
-                <button type="button" class="modal-box-button" mat-raised-button (click)="onTouchCancel()">CANCEL
+                <button type="button" mat-stroked-button (click)="onTouchCancel()">CANCEL
                 </button>
-                <button class="modal-box-button" mat-raised-button type="submit">RESERVE</button>
+                <button type="submit" mat-stroked-button>RESERVE</button>
 
             </div>
         </div>

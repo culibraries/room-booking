@@ -1,18 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-dialog-error',
   templateUrl: './dialog-error.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogErrorComponent implements OnInit {
-  constructor(private dialogRef: MatDialogRef<DialogErrorComponent>) {}
+  code: number;
+  constructor(
+    private dialogRef: MatDialogRef<DialogErrorComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.code = this.data.code;
+  }
 
-  onTouchClose() {
+  onClickOk() {
     this.dialogRef.close();
-    location.reload();
   }
 }

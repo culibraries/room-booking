@@ -1,12 +1,9 @@
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Subject } from 'rxjs';
-import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-dialog-description',
   templateUrl: './dialog-description.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogDescriptionComponent implements OnInit {
   description = '';

@@ -11,7 +11,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 import { DialogBrowseRoomsComponent } from '../dialog-browse-rooms/dialog-browse-rooms.component';
 import { DialogDescriptionComponent } from '../dialog-description/dialog-description.component';
-import { interval, forkJoin, combineLatest } from 'rxjs';
+import { interval } from 'rxjs';
 import { delay } from '../config/delay';
 import {
   startWith,
@@ -73,8 +73,9 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.log.logDebug('Initilize Main component');
-
+    this.log.logDebug(
+      'Initilize Main component - Set room name, capacity, description'
+    );
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;
@@ -84,6 +85,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.log.logDebug('Main Component: Destroy');
     if (this.roomServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }
@@ -97,81 +99,67 @@ export class MainComponent implements OnInit, OnDestroy {
     }
     const dateString = this.helperService.formattedDate(date);
     this.hoursService.getLocationHours(this.hours_view_id).subscribe(res => {
+      // Get latest opening hours to set to the calendar
       this.maxDate = new Date(
         res['openingHours'][res['openingHours'].length - 1]['validFrom']
       );
       this.maxDateString = this.maxDate.toISOString();
+
       // Get Opens/Closes Hours on a specific day
       const hours = this.helperService.getBusinessHoursByDate(
         dateString,
         res.openingHours
       );
 
-      // Check if the library is close/open
-      if (
-        hours.opens === '00:00' &&
-        hours.closes === '00:00' &&
-        this.isToday(date)
-      ) {
-        this.isDone = true;
+      //  If the library is close
+      if (hours.opens === '00:00' && hours.closes === '00:00') {
         this.isOpen = false;
-        this.status = 'inuse';
+        this.isDone = true;
+
+        // Only set current status of the room for today
+        if (this.isToday(date)) {
+          this.status = 'inuse';
+        }
+
         if (this.roomServiceInterval) {
           this.roomServiceInterval.unsubscribe();
         }
-      } else if (
-        hours.opens === '00:00' &&
-        hours.closes === '00:00' &&
-        !this.isToday(date)
-      ) {
-        this.isDone = true;
-        this.isOpen = false;
-        this.status = 'inuse';
-        this.closedMessage = 'The library is closed';
-      } else {
-        this.isOpen = true;
-        this.roomServiceInterval = interval(delay.update_libcal_time)
-          .pipe(
-            startWith(0),
-            distinctUntilChanged(),
-            debounceTime(500),
-            switchMap(() => this.roomService.getRoom(dateString, id))
-          )
-          .subscribe(resRoom => {
-            this.availableTime = this.helperService.convertRangeAvailabilityTime(
-              resRoom.availability
-            );
-            if (this.availableTime.length === 0 && this.isToday(date)) {
-              this.isDone = true;
-              this.isOpen = false;
-              this.status = 'inuse';
-              this.closedMessage = 'The library is closed';
-              return;
-            }
-            if (this.availableTime.length === 0 && !this.isToday(date)) {
-              this.isDone = true;
-              this.isOpen = false;
-              this.roomServiceInterval.unsubscribe();
-              this.closedMessage = 'Unavailable';
-              return;
-            }
-            const intervals = this.helperService.getTimeIntervals(
-              dateString,
-              res.openingHours
-            );
-
-            this.displayTime = this.helperService.process(
-              date,
-              this.availableTime,
-              intervals
-            );
-
-            if (this.isToday(date)) {
-              this.status = this.displayTime[0].status ? 'available' : 'inuse';
-            }
-            this.isDone = true;
-          });
+        return;
       }
+
+      // If the library is Open
+      this.isOpen = true;
+      this.roomServiceInterval = interval(delay.update_libcal_time)
+        .pipe(
+          startWith(0),
+          distinctUntilChanged(),
+          debounceTime(500),
+          switchMap(() => this.roomService.getRoom(dateString, id))
+        )
+        .subscribe(resRoom => {
+          this.availableTime = this.helperService.convertRangeAvailabilityTime(
+            resRoom.availability
+          );
+
+          const intervals = this.helperService.getTimeIntervals(
+            dateString,
+            res.openingHours
+          );
+
+          this.displayTime = this.helperService.process(
+            date,
+            this.availableTime,
+            intervals
+          );
+
+          if (this.isToday(date) && this.displayTime.length > 0) {
+            this.status = this.displayTime[0].status ? 'available' : 'inuse';
+          } else {
+            this.status = 'inuse';
+            this.isOpen = false;
+          }
+          this.isDone = true;
+        });
     });
   }
 
@@ -262,8 +250,6 @@ export class MainComponent implements OnInit, OnDestroy {
 
   /**
    * Touchs calendar event - touch dates on calendar
-   * @param type
-   * @param event
    */
   touchCalendarEvent(type: string, event: MatDatepickerInputEvent<Date>) {
     this.setDate = event.value;
@@ -274,7 +260,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.displayTimeLine(this.setDate, this.spaceId);
   }
 
-  isNext3months(date: Date): boolean {
+  isMaxDate(date: Date): boolean {
     return this.helperService.isTheDay(date, this.maxDate);
   }
 

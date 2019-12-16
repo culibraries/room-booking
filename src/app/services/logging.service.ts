@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { env } from '../../environments/environment';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 @Injectable({
   providedIn: 'root',
 })
 export class LoggingService {
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    @Inject(LOCAL_STORAGE) private storage: StorageService
+  ) {}
   logError(message: string) {
     this.log(message, 'ERROR');
   }
@@ -27,6 +31,8 @@ export class LoggingService {
       envType +
       '.' +
       type +
+      ', ' +
+      this.storage.get('location_id') +
       ', ' +
       message;
     const body = {

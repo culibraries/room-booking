@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Inject,
-  HostListener,
-  OnDestroy,
-} from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { TimeDisplay } from '../models/time-display.model';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { DialogSwipeCardComponent } from '../dialog-swipe-card/dialog-swipe-card.component';
@@ -12,7 +6,6 @@ import { DialogSwipeCardComponent } from '../dialog-swipe-card/dialog-swipe-card
 @Component({
   selector: 'app-dialog-confirmation',
   templateUrl: './dialog-confirmation.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogConfirmationComponent implements OnInit, OnDestroy {
   selectedTime: TimeDisplay[] = [];

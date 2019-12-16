@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Inject,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
 import { TimeDisplay } from '../models/time-display.model';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { RoomService } from '../services/room.service';
@@ -16,7 +9,6 @@ import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confi
 @Component({
   selector: 'app-dialog-select-times',
   templateUrl: './dialog-select-times.component.html',
-  styleUrls: ['../main/main.component.css'],
 })
 export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
   setDateString = '';
