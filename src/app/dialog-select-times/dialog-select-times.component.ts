@@ -1,19 +1,24 @@
-import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { TimeDisplay } from '../models/time-display.model';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { RoomService } from '../services/room.service';
 import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
-import { Subject } from 'rxjs';
-import { delay } from '../config/delay';
 
 @Component({
   selector: 'app-dialog-select-times',
   templateUrl: './dialog-select-times.component.html',
   styleUrls: ['../main/main.component.css'],
 })
-export class DialogSelectTimesComponent implements OnInit {
+export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
   setDateString = '';
   displayTime: TimeDisplay[] = [];
   isDisabledNextBtn = true;
@@ -42,6 +47,17 @@ export class DialogSelectTimesComponent implements OnInit {
 
     // Display Time Slots
     this.displayTimes(this.data.date, this.data.roomId);
+  }
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (document.getElementById('target')) {
+        document.getElementById('target').scrollIntoView({
+          behavior: 'auto',
+          block: 'center',
+          inline: 'center',
+        });
+      }
+    }, 200);
   }
 
   /**

@@ -119,6 +119,15 @@ export class MainComponent implements OnInit, OnDestroy {
         if (this.roomServiceInterval) {
           this.roomServiceInterval.unsubscribe();
         }
+      } else if (
+        hours.opens === '00:00' &&
+        hours.closes === '00:00' &&
+        !this.isToday(date)
+      ) {
+        this.isDone = true;
+        this.isOpen = false;
+        this.status = 'inuse';
+        this.closedMessage = 'The library is closed';
       } else {
         this.isOpen = true;
         this.roomServiceInterval = interval(delay.update_libcal_time)
@@ -136,8 +145,7 @@ export class MainComponent implements OnInit, OnDestroy {
               this.isDone = true;
               this.isOpen = false;
               this.status = 'inuse';
-              this.roomServiceInterval.unsubscribe();
-              this.closedMessage = 'Unavailable';
+              this.closedMessage = 'The library is closed';
               return;
             }
             if (this.availableTime.length === 0 && !this.isToday(date)) {

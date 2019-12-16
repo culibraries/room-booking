@@ -12,7 +12,8 @@
         </span>
         <ng-template #display>
             <ul class="select-time-list">
-                <li *ngFor="let time of displayTime;" class="select-time-item" (click)="onTouchSelectTime(time)">
+                <li *ngFor="let time of displayTime;" class="select-time-item" (click)="onTouchSelectTime(time)"
+                    [id]="time.active ? 'target':''">
                     <span>
                         <mat-icon>access_time</mat-icon>
                     </span>

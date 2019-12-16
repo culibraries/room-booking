@@ -4,7 +4,6 @@ import {
   HttpRequest,
   HttpResponse,
   HttpHandler,
-  HttpEvent,
   HttpErrorResponse,
   HttpSentEvent,
   HttpHeaderResponse,

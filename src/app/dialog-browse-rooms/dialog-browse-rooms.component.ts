@@ -54,6 +54,8 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.loading = true;
+
     this.setDateString = 'TODAY';
     this.currentRoom = this.data.roomName;
     this.spaceId = this.storage.get('space_id');
@@ -84,8 +86,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    * @param date
    */
   private displayTimes(date: Date, id: string): void {
-    this.loading = true;
-
     const dateString = this.helperService.formattedDate(date);
     this.hoursServiceInterval = this.hoursService
       .getLocationHours(this.data.hours_view_id)
