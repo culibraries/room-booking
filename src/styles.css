@@ -12,9 +12,6 @@ body {
   padding: 8px 0px 8px 0px;
 }
 
-/******** Calendar ********/
-/* Calendar */
-
 /** MODAL BOX - GENERAL **/
 .modal-box-title {
   text-align: center;
@@ -313,4 +310,7 @@ body {
 .wrapper button {
   -webkit-flex: 1;
   flex: 1;
+}
+.mat-expansion-indicator {
+  display: none;
 }

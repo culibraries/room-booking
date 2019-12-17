@@ -42,10 +42,11 @@
                     <mat-icon>arrow_back_ios</mat-icon>
                 </button>
 
-                <span *ngIf="!isToday(setDate); else today" style="font-weight: bold;">
-                    <button type="button" mat-button tabindex="-1">{{setDate | date:'E, MMM dd'}}</button></span>
-                <ng-template #today style="font-weight: bold;">
-                    <button type="button" mat-button tabindex="-1">Today</button>
+                <button type="button" tabindex="-1" *ngIf="!isToday(setDate); else today"><span
+                        style="font-size: 15px;font-weight: bold;">{{setDate | date:'E, MMM dd'}}</span></button>
+                <ng-template #today>
+                    <button type="button" tabindex="-1"> <span
+                            style="font-size: 15px;font-weight: bold;">Today</span></button>
                 </ng-template>
 
                 <button mat-button [disabled]="isNext3months(setDate)" (click)="onTouchNextDate()" tabindex="-1">
@@ -56,8 +57,8 @@
             <div style="clear: both;"></div>
 
 
-            <span style="text-align: center; margin-top: 30%; list-style: none;" *ngIf="!isOpen; else display">
-                The library is closed</span>
+            <div style="text-align: center; padding-top: 50px;" *ngIf="!isOpen; else display">
+                The library is closed</div>
             <ng-template #display>
                 <ul class="select-time-list" *ngIf="isOpen">
                     <li *ngFor="let time of displayTime; trackBy: trackByFn" class="select-time-item"

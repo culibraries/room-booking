@@ -152,11 +152,13 @@ export class MainComponent implements OnInit, OnDestroy {
             intervals
           );
 
-          if (this.isToday(date) && this.displayTime.length > 0) {
-            this.status = this.displayTime[0].status ? 'available' : 'inuse';
-          } else {
-            this.status = 'inuse';
-            this.isOpen = false;
+          if (this.isToday(date)) {
+            if (this.displayTime.length > 0) {
+              this.status = this.displayTime[0].status ? 'available' : 'inuse';
+            } else {
+              this.status = 'inuse';
+              this.isOpen = false;
+            }
           }
           this.isDone = true;
         });

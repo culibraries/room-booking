@@ -5,8 +5,8 @@ import { TimeDisplay } from '../models/time-display.model';
 import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
-import { debounceTime } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { debounceTime, mergeMap, map } from 'rxjs/operators';
+import { Subscription, forkJoin } from 'rxjs';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 
 @Component({
@@ -46,7 +46,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.setDateString = 'TODAY';
     this.currentRoom = this.data.roomName;
     this.spaceId = this.storage.get('space_id');
     this.locationId = this.storage.get('location_id');
@@ -63,12 +62,10 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
           this.browseRoomsDisplay.sort(
             this.helperService.sortByProperty('name')
           );
+          this.displayTimes(this.setDate, this.spaceId);
         });
       });
     });
-
-    // Display Time Slots
-    this.displayTimes(this.setDate, this.spaceId);
   }
 
   /**
@@ -85,35 +82,36 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
           dateString,
           res.openingHours
         );
-        // Check if the library is close/open
+        // If the library is close
         if (hours.opens === '00:00' && hours.closes === '00:00') {
           this.isLoading = false;
           this.isOpen = false;
-        } else {
-          this.isOpen = true;
-
-          this.roomServiceInterval = this.roomService
-            .getRoom(dateString, id)
-            .pipe(debounceTime(500))
-            .subscribe(resRoom => {
-              this.availableTime = this.helperService.convertRangeAvailabilityTime(
-                resRoom.availability
-              );
-
-              const intervals = this.helperService.getTimeIntervals(
-                dateString,
-                res.openingHours
-              );
-
-              this.displayTime = this.helperService.process(
-                date,
-                this.availableTime,
-                intervals
-              );
-
-              this.isLoading = false;
-            });
+          return;
         }
+
+        // If the library is open
+        this.isOpen = true;
+        this.roomServiceInterval = this.roomService
+          .getRoom(dateString, id)
+          .pipe(debounceTime(500))
+          .subscribe(resRoom => {
+            this.availableTime = this.helperService.convertRangeAvailabilityTime(
+              resRoom.availability
+            );
+
+            const intervals = this.helperService.getTimeIntervals(
+              dateString,
+              res.openingHours
+            );
+
+            this.displayTime = this.helperService.process(
+              date,
+              this.availableTime,
+              intervals
+            );
+
+            this.isLoading = false;
+          });
       });
   }
 

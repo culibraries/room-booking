@@ -8,8 +8,8 @@
     </div>
 
     <ng-template #loaded>
-        <span *ngIf="!isOpen; else display"> The library is closed
-        </span>
+        <div *ngIf="!isOpen; else display" style="text-align: center; padding-top: 100px;"> The library is closed
+        </div>
         <ng-template #display>
             <ul class="select-time-list">
                 <li *ngFor="let time of displayTime;" class="select-time-item" (click)="onTouchSelectTime(time)"
