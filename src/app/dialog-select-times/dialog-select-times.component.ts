@@ -1,22 +1,33 @@
-import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
 import { TimeDisplay } from '../models/time-display.model';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import { RoomService } from '../services/room.service';
 import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-select-times',
   templateUrl: './dialog-select-times.component.html',
 })
-export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
+export class DialogSelectTimesComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   setDateString = '';
+  roomName = '';
   displayTime: TimeDisplay[] = [];
   isDisabledNextBtn = true;
   loading = true;
   isOpen = true;
-
+  checkTargetInterval: any;
+  roomSubscribe: Subscription;
+  hoursSubscribe: Subscription;
   private availableTime = [];
 
   constructor(
@@ -29,6 +40,7 @@ export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
+    this.roomName = this.data.roomName;
     // Set Date on the header of the dialog
     this.setDateString = this.helperService.isTheDay(this.data.date, new Date())
       ? (this.setDateString = 'TODAY')
@@ -40,16 +52,23 @@ export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
     // Display Time Slots
     this.displayTimes(this.data.date, this.data.roomId);
   }
+
   ngAfterViewInit() {
-    setTimeout(() => {
+    let i = 0;
+    this.checkTargetInterval = setInterval(() => {
+      i++;
+      if (i === 30) {
+        clearInterval(this.checkTargetInterval);
+      }
       if (document.getElementById('target')) {
         document.getElementById('target').scrollIntoView({
           behavior: 'auto',
           block: 'center',
           inline: 'center',
         });
+        clearInterval(this.checkTargetInterval);
       }
-    }, 200);
+    }, 100);
   }
 
   /**
@@ -58,7 +77,7 @@ export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
    */
   private displayTimes(date: Date, id: string): void {
     const dateString = this.helperService.formattedDate(date);
-    this.hoursService
+    this.hoursSubscribe = this.hoursService
       .getLocationHours(this.data.hours_view_id)
       .subscribe(res => {
         // Get Opens/Closes Hours on a specific day
@@ -73,30 +92,32 @@ export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
         } else {
           this.isOpen = true;
 
-          this.roomService.getRoom(dateString, id).subscribe(resRoom => {
-            this.availableTime = this.helperService.convertRangeAvailabilityTime(
-              resRoom.availability
-            );
+          this.roomSubscribe = this.roomService
+            .getRoom(dateString, id)
+            .subscribe(resRoom => {
+              this.availableTime = this.helperService.convertRangeAvailabilityTime(
+                resRoom.availability
+              );
 
-            const intervals = this.helperService.getTimeIntervals(
-              dateString,
-              res.openingHours
-            );
+              const intervals = this.helperService.getTimeIntervals(
+                dateString,
+                res.openingHours
+              );
 
-            this.displayTime = this.helperService.process(
-              date,
-              this.availableTime,
-              intervals
-            );
-            if (this.data.selectedTime) {
-              this.displayTime.find((e, i) => {
-                if (e.value === this.data.selectedTime.value) {
-                  this.displayTime[i].active = true;
-                }
-              });
-            }
-            this.loading = false;
-          });
+              this.displayTime = this.helperService.process(
+                date,
+                this.availableTime,
+                intervals
+              );
+              if (this.data.selectedTime) {
+                this.displayTime.find((e, i) => {
+                  if (e.value === this.data.selectedTime.value) {
+                    this.displayTime[i].active = true;
+                  }
+                });
+              }
+              this.loading = false;
+            });
         }
       });
   }
@@ -112,13 +133,24 @@ export class DialogSelectTimesComponent implements OnInit, AfterViewInit {
     // Toggle
     time.active = !time.active;
     // Only enable the next button if there are selected times
-    this.isDisabledNextBtn = this.displayTime.find(function(e) {
+    this.isDisabledNextBtn = this.displayTime.find(e => {
       return e.active === true;
     })
       ? false
       : true;
   }
 
+  ngOnDestroy() {
+    if (this.checkTargetInterval) {
+      clearInterval(this.checkTargetInterval);
+    }
+    if (this.hoursSubscribe) {
+      this.hoursSubscribe.unsubscribe();
+    }
+    if (this.roomSubscribe) {
+      this.roomSubscribe.unsubscribe();
+    }
+  }
   /**
    * Touch : Next - go to confirmation component
    */

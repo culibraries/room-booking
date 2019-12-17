@@ -73,9 +73,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.log.logDebug(
-      'Initilize Main component - Set room name, capacity, description'
-    );
+    this.log.logDebug('Initilize Main component');
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;

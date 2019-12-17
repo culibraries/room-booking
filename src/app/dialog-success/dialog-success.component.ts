@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material';
-import { interval } from 'rxjs';
-import { map } from 'rxjs/operators';
-
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { delay } from '../config/delay';
 @Component({
   selector: 'app-dialog-success',
   templateUrl: './dialog-success.component.html',
 })
 export class DialogSuccessComponent implements OnInit, OnDestroy {
-  counter = 5;
+  counter = delay.success_back_to_main_screen / 1000;
   runner: any;
   email = '';
   constructor(
@@ -28,11 +26,12 @@ export class DialogSuccessComponent implements OnInit, OnDestroy {
   }
 
   onTouchClose(): void {
-    // this.dialog.closeAll();
+    this.dialog.closeAll();
   }
 
   ngOnDestroy(): void {
+    this.dialog.closeAll();
     clearInterval(this.runner);
-    // location.reload();
+    location.reload();
   }
 }

@@ -23,8 +23,8 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     if (
-      // this.deviceService.getDeviceInfo().device === 'Android' &&
-      // this.deviceService.getDeviceInfo().os === 'Android' &&
+      this.deviceService.getDeviceInfo().device === 'Android' &&
+      this.deviceService.getDeviceInfo().os === 'Android' &&
       this.storage.has('token') &&
       this.storage.has('uid') &&
       this.storage.has('location_id') &&

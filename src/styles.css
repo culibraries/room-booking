@@ -152,7 +152,8 @@ body {
   padding-top: 5px;
 }
 .browse-room-right ul {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 420px;
   width: auto;
 }

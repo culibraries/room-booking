@@ -18,13 +18,11 @@
                     </mat-expansion-panel-header>
 
                     <mat-list class="mat-list">
-                        <mat-list-item class="list-room" *ngFor="let room of
-                            category.items" [ngClass]="{'current-room':room.name ==
-                            currentRoom}" (click)="onSelectRoom(room)">
-                            <mat-icon matListIcon *ngIf="room.name ===
-                                currentRoom" style="color: #3F50B5">check_circle</mat-icon>
-                            <mat-icon matListIcon *ngIf="room.name !==
-                                currentRoom">check_circle_outline</mat-icon>
+                        <mat-list-item class="list-room" *ngFor="let room of category.items"
+                            [ngClass]="{'current-room':room.name == currentRoom}" (click)="onSelectRoom(room)">
+                            <mat-icon matListIcon *ngIf="room.name == currentRoom" style="color: #3F50B5">check_circle
+                            </mat-icon>
+                            <mat-icon matListIcon *ngIf="room.name !== currentRoom">check_circle_outline</mat-icon>
                             <h3 matLine>
                                 {{room.name}}
                             </h3>
@@ -42,10 +40,10 @@
                     <mat-icon>arrow_back_ios</mat-icon>
                 </button>
 
-                <button type="button" tabindex="-1" *ngIf="!isToday(setDate); else today"><span
+                <button type="button" mat-button tabindex="-1" *ngIf="!isToday(setDate); else today"><span
                         style="font-size: 15px;font-weight: bold;">{{setDate | date:'E, MMM dd'}}</span></button>
                 <ng-template #today>
-                    <button type="button" tabindex="-1"> <span
+                    <button type="button" tabindex="-1" mat-button> <span
                             style="font-size: 15px;font-weight: bold;">Today</span></button>
                 </ng-template>
 

@@ -2,18 +2,16 @@
 
 <div mat-dialog-content class="modal-box-body" style="text-align: center;">
   <img src="assets/images/success.png" style="width: 120px;" /><br />
-  <span style="font-weight: bold">
-    ALL DONE !<br /><br />
-    CONFIRMATION EMAILS WILL BE SENT TO YOUR INBOX AT <br /><br />
-    {{email}}</span>
+  <div style="font-weight: bold; font-size: 35px; color: #2e7d32">SUCCESS</div>
+  <div style="margin-top: 17px; font-weight: bold; color: #2e7d32">CHECK YOUR EMAIL FOR CONFIRMATIONS</div>
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
-  <div style="font-weight: bold; margin-bottom: 27px;">
+  <div style="margin-bottom: 27px;">
     BACK TO MAIN SCREEN IN: {{ counter }} (s)
   </div>
   <div>
-    <button class="modal-box-button" mat-raised-button tabindex="-1" (click)="onTouchClose()">
+    <button class="modal-box-button" type="button" mat-stroked-button tabindex="-1" (click)="onTouchClose()">
       CLOSE
     </button>
   </div>

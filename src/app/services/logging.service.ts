@@ -33,6 +33,8 @@ export class LoggingService {
       type +
       ', ' +
       this.storage.get('location_id') +
+      '-' +
+      this.storage.get('space_id') +
       ', ' +
       message;
     const body = {

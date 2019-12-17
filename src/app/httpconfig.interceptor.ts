@@ -86,7 +86,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
               case 400:
                 this.dialog.closeAll();
                 this.dialog.open(DialogErrorComponent, {
-                  width: '60%',
+                  width: '65%',
                   height: 'auto',
                   data: {
                     code: 400,

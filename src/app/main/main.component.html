@@ -3,7 +3,7 @@
   <mat-drawer mode="side" opened class="left-content-available" [class.left-inuse]="status == 'inuse'">
     <div class="left-text-top">
       <div class="name">
-        {{ roomName }}
+        {{ roomName | uppercase}}
         <mat-icon style="color: white;" (click)="onTouchDescription()" *ngIf="roomDescription">info_outline</mat-icon>
       </div>
       <span class="capacity"> capacity: {{ roomCapacity || 0 }}</span><br />

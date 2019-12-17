@@ -5,8 +5,8 @@ import { TimeDisplay } from '../models/time-display.model';
 import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { DialogConfirmationComponent } from '../dialog-confirmation/dialog-confirmation.component';
-import { debounceTime, mergeMap, map } from 'rxjs/operators';
-import { Subscription, forkJoin } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 
 @Component({
@@ -74,6 +74,10 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    */
   private displayTimes(date: Date, id: string): void {
     const dateString = this.helperService.formattedDate(date);
+    this.setDateString = this.isToday(date)
+      ? 'Today'
+      : this.helperService.formatedDisplayDate(this.setDate);
+
     this.hoursServiceInterval = this.hoursService
       .getLocationHours(this.data.hours_view_id)
       .subscribe(res => {
@@ -144,7 +148,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
-    this.setDateString = this.helperService.formatedDisplayDate(this.setDate);
     this.displayTimes(this.setDate, this.spaceId);
   }
 
@@ -160,7 +163,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
     const date = new Date();
     date.setDate(date.getDate() + this.countDate);
     this.setDate = date;
-    this.setDateString = this.helperService.formatedDisplayDate(this.setDate);
     this.displayTimes(this.setDate, this.spaceId);
   }
 
@@ -202,6 +204,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    * Touch : Next - go to confirmation component
    */
   onTouchNextConfirm(): void {
+    console.log(this.setDateString, this.setDate, this.currentRoom);
     this.dialog.open(DialogConfirmationComponent, {
       width: '75%',
       height: '85%',
