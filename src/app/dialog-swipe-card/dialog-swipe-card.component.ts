@@ -63,34 +63,38 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     } else {
       this.isLoading = true;
       event.preventDefault();
-      this.bookService
-        .getIDInformation(this.valueAfterSwipe)
-        .subscribe(data => {
+      this.log.logDebug(this.valueAfterSwipe);
+      this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(
+        data => {
+          this.log.logDebug(data.patronType);
           // TODO data.patronType !== 2 need to be set when go live to only allow undergraduate student
           //if (data.patronType !== 2) {
-          if (data.patronType === 2) {
-            this.dialog.closeAll();
-            this.dialog.open(DialogErrorComponent, {
-              width: '50%',
-              height: 'auto',
-              data: {
-                code: 0,
-              },
-            });
-            return;
-          }
           try {
-            data.varFields.forEach(e => {
-              if (e.fieldTag === 'q') {
-                this.identityKey = e.content.trim();
-                this.email = this.identityKey + '@colorado.edu';
-              }
-              if (e.fieldTag === 'n') {
-                this.firstName = e.content.split(',')[1].trim();
-                this.lastName = e.content.split(',')[0].trim();
-              }
-            });
-          } catch {
+            if (data.patronType === 2) {
+              this.dialog.closeAll();
+              this.dialog.open(DialogErrorComponent, {
+                width: '50%',
+                height: 'auto',
+                data: {
+                  code: 0,
+                },
+              });
+              return;
+            }
+
+            if (data.varFields && data.varFields.length > 0) {
+              data.varFields.forEach(e => {
+                if (e.fieldTag === 'q') {
+                  this.identityKey = e.content.trim();
+                  this.email = this.identityKey + '@colorado.edu';
+                }
+                if (e.fieldTag === 'n') {
+                  this.firstName = e.content.split(',')[1].trim();
+                  this.lastName = e.content.split(',')[0].trim();
+                }
+              });
+            }
+          } catch (e) {
             this.dialogRef.close();
             this.dialog.open(DialogEnterStudentInfoComponent, {
               width: '65%',
@@ -148,7 +152,22 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               );
             }
           );
-        });
+        },
+        err => {
+          this.dialogRef.close();
+          this.dialog.open(DialogEnterStudentInfoComponent, {
+            width: '65%',
+            height: '70%',
+            data: {
+              submitedTime: this.data.submitedTime,
+              date: this.data.date,
+              roomName: this.data.roomName,
+              roomId: this.data.roomId,
+            },
+          });
+          return;
+        }
+      );
     }
   }
 

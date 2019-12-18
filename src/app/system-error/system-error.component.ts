@@ -22,11 +22,11 @@ export class SystemErrorComponent implements OnInit {
     this.errorMessage = text.system_error + text.assistance_message;
 
     setTimeout(() => {
-      location.replace('/');
+      location.replace('/room-booking');
     }, delay.reload_if_getting_error_time);
   }
 
   onReload() {
-    location.replace('/');
+    location.replace('/room-booking');
   }
 }
