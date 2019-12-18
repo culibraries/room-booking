@@ -31,6 +31,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   locationId: string;
   isOpen = true;
   isLoading = true;
+  isLoadingByDate = true;
   roomServiceInterval: Subscription;
   hoursServiceInterval: Subscription;
   private availableTime = [];
@@ -89,6 +90,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
         // If the library is close
         if (hours.opens === '00:00' && hours.closes === '00:00') {
           this.isLoading = false;
+          this.isLoadingByDate = false;
           this.isOpen = false;
           return;
         }
@@ -115,6 +117,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
             );
 
             this.isLoading = false;
+            this.isLoadingByDate = false;
           });
       });
   }
@@ -140,6 +143,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    * Touch : Previous dates on main screen calendar
    */
   onTouchPreDate() {
+    this.isLoadingByDate = true;
     if (this.roomServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }
@@ -155,6 +159,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    * Touch : Next dates on main screen calendar
    */
   onTouchNextDate() {
+    this.isLoadingByDate = true;
     if (this.roomServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }

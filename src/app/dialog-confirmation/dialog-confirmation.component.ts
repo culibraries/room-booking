@@ -6,6 +6,7 @@ import { DialogSwipeCardComponent } from '../dialog-swipe-card/dialog-swipe-card
 @Component({
   selector: 'app-dialog-confirmation',
   templateUrl: './dialog-confirmation.component.html',
+  styleUrls: ['./dialog-confirmation.component.css'],
 })
 export class DialogConfirmationComponent implements OnInit, OnDestroy {
   selectedTime: TimeDisplay[] = [];

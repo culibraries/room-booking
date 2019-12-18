@@ -41,7 +41,11 @@
       startTimer();
     }
 
-    // do some other initialization
+    window.oncontextmenu = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
 
     setupTimers();
   </script>
