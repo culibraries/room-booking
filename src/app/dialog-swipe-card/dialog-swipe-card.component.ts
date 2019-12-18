@@ -63,10 +63,10 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     } else {
       this.isLoading = true;
       event.preventDefault();
-      this.log.logDebug(this.valueAfterSwipe);
+      this.log.logDebug('Card value: ' + this.valueAfterSwipe);
       this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(
         data => {
-          this.log.logDebug(data.patronType);
+          this.log.logDebug('PType value: ' + data.patronType);
           // TODO data.patronType !== 2 need to be set when go live to only allow undergraduate student
           //if (data.patronType !== 2) {
           try {
