@@ -172,7 +172,7 @@ export class MainComponent implements OnInit, OnDestroy {
             if (this.displayTime.length > 0) {
               this.status = this.displayTime[0].status ? 'available' : 'inuse';
             } else {
-              this.status = 'inuse';
+              this.status = 'closed';
               this.isOpen = false;
             }
           }
