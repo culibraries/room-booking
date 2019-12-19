@@ -15,7 +15,6 @@ import { LoggingService } from '../services/logging.service';
 import { ApiService } from '../services/api.service';
 import { env } from '../../environments/environment';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
 import { Router } from '@angular/router';
 
@@ -93,6 +92,64 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
                   this.lastName = e.content.split(',')[0].trim();
                 }
               });
+              const bookingObservableHolder = [];
+              this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(
+                e => {
+                  bookingObservableHolder.push(
+                    this.bookService.bookRoom(
+                      this.buildBodyPayload(e, this.data.date)
+                    )
+                  );
+                }
+              );
+              forkJoin(bookingObservableHolder).subscribe(
+                res => {
+                  this.apiService.post(libcalTokenURL, {}).subscribe(user => {
+                    this.storage.set('libcal_token', user.access_token);
+                  });
+
+                  this.log.logInfo(
+                    this.data.roomName +
+                      ',' +
+                      this.email +
+                      ',' +
+                      this.reorganizeSubmittedTimes(
+                        this.data.submitedTime
+                      ).join('|')
+                  );
+                  this.dialog.open(DialogSuccessComponent, {
+                    width: '65%',
+                    height: '70%',
+                    data: {
+                      email: this.email,
+                    },
+                  });
+                },
+                err => {
+                  this.log.logError(
+                    this.data.roomName +
+                      ',' +
+                      this.email +
+                      ',' +
+                      this.reorganizeSubmittedTimes(
+                        this.data.submitedTime
+                      ).join('|')
+                  );
+                }
+              );
+            } else {
+              this.dialogRef.close();
+              this.dialog.open(DialogEnterStudentInfoComponent, {
+                width: '65%',
+                height: '70%',
+                data: {
+                  submitedTime: this.data.submitedTime,
+                  date: this.data.date,
+                  roomName: this.data.roomName,
+                  roomId: this.data.roomId,
+                },
+              });
+              return;
             }
           } catch (e) {
             this.dialogRef.close();
@@ -108,50 +165,6 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
             });
             return;
           }
-
-          const bookingObservableHolder = [];
-          this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-            bookingObservableHolder.push(
-              this.bookService.bookRoom(
-                this.buildBodyPayload(e, this.data.date)
-              )
-            );
-          });
-          forkJoin(bookingObservableHolder).subscribe(
-            res => {
-              this.apiService.post(libcalTokenURL, {}).subscribe(user => {
-                this.storage.set('libcal_token', user.access_token);
-              });
-
-              this.log.logInfo(
-                this.data.roomName +
-                  ',' +
-                  this.email +
-                  ',' +
-                  this.reorganizeSubmittedTimes(this.data.submitedTime).join(
-                    '|'
-                  )
-              );
-              this.dialog.open(DialogSuccessComponent, {
-                width: '65%',
-                height: '70%',
-                data: {
-                  email: this.email,
-                },
-              });
-            },
-            err => {
-              this.log.logInfo(
-                this.data.roomName +
-                  ',' +
-                  this.email +
-                  ',' +
-                  this.reorganizeSubmittedTimes(this.data.submitedTime).join(
-                    '|'
-                  )
-              );
-            }
-          );
         },
         err => {
           this.dialogRef.close();
@@ -165,7 +178,6 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               roomId: this.data.roomId,
             },
           });
-          return;
         }
       );
     }
