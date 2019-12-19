@@ -1,6 +1,7 @@
 <mat-drawer-container fullscreen>
   <!-- Left Content Section-->
-  <mat-drawer mode="side" opened class="left-content-available" [class.left-inuse]="status == 'inuse'">
+  <mat-drawer mode="side" opened class="left-content-available"
+    [class.left-inuse]="status == 'inuse' || status == 'closed'">
     <div class="left-text-top">
       <div class="name">
         {{ roomName | uppercase}}
@@ -13,6 +14,8 @@
         NOW</span>
       <span *ngIf="status == 'inuse'">IN USE<br />
         NOW</span>
+      <span *ngIf="status == 'closed'">CLOSED<br />
+      </span>
     </div>
   </mat-drawer>
   <!-- Right Content Section-->

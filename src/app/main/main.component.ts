@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { env } from '../../environments/environment';
 
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { RoomService } from '../services/room.service';
@@ -20,6 +21,7 @@ import {
   distinctUntilChanged,
 } from 'rxjs/operators';
 import { LoggingService } from '../services/logging.service';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-main',
@@ -57,12 +59,28 @@ export class MainComponent implements OnInit, OnDestroy {
     private hoursService: HoursService,
     private roomService: RoomService,
     private spinner: NgxSpinnerService,
-    private log: LoggingService
+    private log: LoggingService,
+    private apiService: ApiService
   ) {
     this.timetInterval = setInterval(() => {
       this.time = new Date();
       if (this.dateNow.getDate() !== this.time.getDate()) {
-        location.reload();
+        this.apiService
+          .get(
+            env.apiUrl +
+              '/catalog/data/catalog/roomBooking/?query={%22filter%22:{%22unique_id%22:%22' +
+              this.storage.get('uid') +
+              '%22}}'
+          )
+          .subscribe(res => {
+            this.log.logDebug(
+              'set location_id, space_id, hours_view_id into localStorage'
+            );
+            this.storage.set('location_id', res.results[0].location_id);
+            this.storage.set('space_id', res.results[0].space_id);
+            this.storage.set('hours_view_id', res.results[0].hours_view_id);
+            location.reload();
+          });
       }
     }, 2000);
 
@@ -116,7 +134,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
         // Only set current status of the room for today
         if (this.isToday(date)) {
-          this.status = 'inuse';
+          this.status = 'closed';
         }
 
         if (this.roomServiceInterval) {
