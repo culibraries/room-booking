@@ -174,6 +174,7 @@ export class MainComponent implements OnInit, OnDestroy {
             } else {
               this.status = 'closed';
               this.isOpen = false;
+              this.roomServiceInterval.unsubscribe();
             }
           }
           this.isDone = true;

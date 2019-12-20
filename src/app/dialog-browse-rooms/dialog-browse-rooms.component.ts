@@ -133,6 +133,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
   }
 
   onSelectRoom(room: any) {
+    this.isLoadingByDate = true;
     this.isDisabledNextBtn = true;
     this.currentRoom = room.name;
     this.spaceId = room.id;
