@@ -19,7 +19,6 @@ import { ApiService } from './services/api.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DialogErrorComponent } from './dialog-error/dialog-error.component';
-import { LoggingService } from './services/logging.service';
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Injectable()
@@ -30,8 +29,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
     @Inject(LOCAL_STORAGE) private storage: StorageService,
     private apiService: ApiService,
     private router: Router,
-    private dialog: MatDialog,
-    private log: LoggingService
+    private dialog: MatDialog
   ) {}
 
   intercept(
@@ -79,9 +77,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse) {
             switch (err.status) {
               case 401:
-                this.log.logDebug(
-                  'libcalToken Expired : Request new libcal token'
-                );
                 return this.handle401Error(request, next);
               case 400:
                 this.dialog.closeAll();
@@ -94,7 +89,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 });
                 return [];
               default:
-                this.log.logError(err.message);
                 return this.router.navigate(['system-error']);
             }
           } else {

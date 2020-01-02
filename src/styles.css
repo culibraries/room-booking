@@ -57,7 +57,6 @@ body {
 /** SELECT TIME MODAL BOX */
 .select-time-list {
   padding: 0;
-  height: 100%;
 }
 
 .select-time-list li {
@@ -138,11 +137,13 @@ body {
 }
 
 .browse-room-left {
-  width: 45%;
+  direction: rtl;
   float: left;
   height: 485px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: visible;
+  overflow-y: scroll;
+  max-height: 400px;
+  width: 48%;
 }
 
 .browse-room-right {
@@ -155,7 +156,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   height: 420px;
-  width: auto;
+  width: 95%;
 }
 
 .browse-room-body {
@@ -169,6 +170,7 @@ body {
 
 .mat-room-title {
   font-weight: bold;
+  direction: ltr;
   padding: 8px 0px 8px 0px;
 }
 .mat-expansion-room {
@@ -176,6 +178,7 @@ body {
 }
 .list-room {
   color: rgb(140, 140, 140);
+  direction: ltr;
 }
 
 ::ng-deep .mat-expansion-room .mat-expansion-panel-body {

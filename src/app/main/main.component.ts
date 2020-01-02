@@ -91,7 +91,6 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.log.logDebug('Initilize Main component');
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;
@@ -101,7 +100,6 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.log.logDebug('Main Component: Destroy');
     if (this.roomServiceInterval) {
       this.roomServiceInterval.unsubscribe();
     }

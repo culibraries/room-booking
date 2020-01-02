@@ -2,6 +2,10 @@
 
 FROM node:lts-alpine as builder
 
+#This is default value
+#Use 'app' as an argument from command line to build PROD or TESTING enviroment
+ARG app=room-booking-test
+
 RUN mkdir /app
 
 WORKDIR /app
@@ -12,7 +16,7 @@ RUN npm ci
 
 COPY . /app
 
-RUN npm run ng build -- --prod --aot --vendor-chunk --common-chunk --output-path=dist --buildOptimizer  --base-href /room-booking/
+RUN npm run ng build -- --prod --aot --vendor-chunk --common-chunk --output-path=dist --buildOptimizer  --base-href /${app}/
 
 
 
@@ -20,4 +24,8 @@ RUN npm run ng build -- --prod --aot --vendor-chunk --common-chunk --output-path
 
 FROM nginx:alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html/room-booking
+#This is default value
+#Use app as an argument from command line to build PROD or STAGING enviroment
+ARG app=room-booking-test
+
+COPY --from=builder /app/dist /usr/share/nginx/html/${app}

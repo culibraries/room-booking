@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-dialog-select-times',
   templateUrl: './dialog-select-times.component.html',
+  styleUrls: ['./dialog-select-times.component.css'],
 })
 export class DialogSelectTimesComponent
   implements OnInit, AfterViewInit, OnDestroy {
