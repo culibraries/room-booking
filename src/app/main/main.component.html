@@ -1,24 +1,24 @@
 <mat-drawer-container fullscreen>
-  <!-- Left Contetn Section-->
+  <!-- Left Content Section-->
   <mat-drawer mode="side" opened class="left-content-available"
-    [class.left-inuse]="status=='inuse'">
+    [class.left-inuse]="status == 'inuse' || status == 'closed'">
     <div class="left-text-top">
-      <div class="name">{{roomName}} <button mat-icon style="color: white;"
-          (click)="onTouchDescription()"
-          *ngIf="roomDescription">
-          <mat-icon>info_outline</mat-icon>
-        </button></div>
-      <br />
-      <span class="capacity"> capacity: {{roomCapacity}}</span><br>
-
+      <div class="name">
+        {{ roomName | uppercase}}
+        <mat-icon style="color: white;" (click)="onTouchDescription()" *ngIf="roomDescription">info_outline</mat-icon>
+      </div>
+      <span class="capacity"> capacity: {{ roomCapacity || 0 }}</span><br />
     </div>
     <div class="left-text-center">
-      <span *ngIf="status=='available'">AVAILABLE<br> NOW</span>
-      <span *ngIf="status=='inuse'">IN USE<br> NOW</span>
+      <span *ngIf="status == 'available'">AVAILABLE<br />
+        NOW</span>
+      <span *ngIf="status == 'inuse'">IN USE<br />
+        NOW</span>
+      <span *ngIf="status == 'closed'">CLOSED<br />
+      </span>
     </div>
   </mat-drawer>
-
-  <!-- Right Contetn Section-->
+  <!-- Right Content Section-->
   <mat-drawer-content class="right-content-drawer">
     <!-- Date Time Display -->
     <div class="right-time-display">
@@ -28,92 +28,91 @@
 
     <!-- Display Calendar -->
     <div class="time-display-main">
+      <!-- Calendar - Header -->
       <div class="time-display-main-header">
         <div class="time-display-main-move">
-          <button appDebounceClick [debounceTime]="700"
-            [disabled]="isToday(setDate)" mat-icon-button
-            class="left" (debounceClick)="onTouchPreDate()">
+          <button [disabled]="isToday(setDate)" mat-icon-button class="left" (click)="onTouchPreDate()">
             <mat-icon>arrow_back_ios</mat-icon>
           </button>
 
           <div class="middle-date">
             <span *ngIf="!isToday(setDate); else today">
-              {{setDate | date:'E, MMM dd'}}</span>
+              {{ setDate | date: 'E, MMM dd' }}</span>
             <ng-template #today>Today</ng-template>
           </div>
-          <button [disabled]="isNext3months(setDate)" mat-icon-button
-            class="right"
-            (debounceClick)="onTouchNextDate()" appDebounceClick
-            [debounceTime]="700">
+          <button [disabled]="isMaxDate(setDate)" mat-icon-button class="right" (click)="onTouchNextDate()">
             <mat-icon>arrow_forward_ios</mat-icon>
           </button>
         </div>
         <div class="time-display-main-icon">
           <mat-form-field style="visibility:hidden; display: table-column;">
-            <input matInput
-              [matDatepicker]="picker"
-              [value]="setDate"
-              [min]="minDateString"
-              [max]="maxDateString"
-              (dateChange)="touchCalendarEvent('change', $event)">
+            <input matInput [matDatepicker]="picker" [value]="setDate" [min]="minDateString" [max]="maxDateString"
+              (dateChange)="touchCalendarEvent('change', $event)" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker touchUi #picker></mat-datepicker>
           </mat-form-field>
-          <img src="assets/icons/calendar.png" width="60px"
-            style="margin-bottom: 7px;"
-            (click)="picker.open()" />
+          <img src="assets/icons/calendar.png" width="60px" style="margin-bottom: 7px;" (click)="picker.open()" />
         </div>
       </div>
+
       <div style="clear: both;"></div>
-      <div>
-        <table cellpadding="0" cellspacing="0" border="0"
-          *ngIf="displayTime.length <= 0">
-          <tr>
-            <td>The library is closed</td>
-          </tr>
-        </table>
-        <table cellpadding="0" cellspacing="0" border="0"
-          *ngIf="displayTime.length> 0">
-          <tbody>
-            <tr *ngFor="let time of displayTime; trackBy: trackByFn">
-              <div *ngIf="time.status; then unavailableDisplayTime else
-                availableDisplayTime"></div>
-              <ng-template #unavailableDisplayTime>
-                <td class="td-left" style="color: #636363;">
-                  {{time.displayValue}}
-                </td>
-              </ng-template>
-              <ng-template #availableDisplayTime>
-                <td class="td-left" (click)="onTouchCalendarTimeSlot(time)">
-                  {{time.displayValue}}
-                </td>
-              </ng-template>
 
-              <div *ngIf="time.status; then unavailable else available"></div>
-              <ng-template #unavailable>
+
+      <div *ngIf="isDone else loading">
+        <!-- Schedule Time Slot -->
+        <span *ngIf="!isOpen; else display" style="position:
+          absolute; top: 50%; left: 40%;">
+          {{closedMessage}}
+        </span>
+        <ng-template #display>
+          <table cellpadding="0" cellspacing="0" border="0" width="710px">
+            <tbody>
+              <tr *ngFor="let time of displayTime;">
+                <!-- Begin : First Column-->
+                <td class="td-left" style="color: #636363;" *ngIf="!time.status; else availableDisplayTime">
+                  {{ time.displayValue }}
+                </td>
+                <ng-template #availableDisplayTime>
+                  <td class="td-left" (click)="onTouchCalendarTimeSlot(time)">
+                    {{ time.displayValue }}
+                  </td>
+                </ng-template>
+                <!-- End : First Column-->
+
+                <!-- Begin : Second Column-->
+
                 <td class="td-right unavailable" style="border-right: 5px solid
-                  #b71d1c"></td>
-              </ng-template>
+                  #b71d1c" *ngIf="!time.status; else available"></td>
 
-              <ng-template #available>
-                <td class="td-right" (click)="onTouchCalendarTimeSlot(time)"
-                  style="border-right: 5px solid #2e7d32"></td>
-              </ng-template>
-            </tr>
-          </tbody>
-        </table>
+                <ng-template #available>
+                  <td class="td-right" (click)="onTouchCalendarTimeSlot(time)" style="border-right: 5px solid #2e7d32">
+                  </td>
+                </ng-template>
+                <!-- End : Second Column-->
+              </tr>
+            </tbody>
+
+          </table>
+        </ng-template>
       </div>
-    </div>
 
+    </div>
 
     <!-- Bottom Button -->
     <div class="bottom-btn-wraper">
-      <button mat-button class="bottom-btn btn-reserve"
-        (click)="onTouchReserve()">RESERVE</button>
-      <button mat-button class="bottom-btn btn-browse"
-        (click)="onTouchBrowserRoom()">BROWSE ROOMS</button>
+      <ng-template #loading>
+        <div class="loader"> Loading...
+        </div>
+
+      </ng-template>
+
+      <button mat-button class="bottom-btn btn-reserve" (click)="onTouchReserve()">
+        RESERVE
+      </button>
+      <button mat-button class="bottom-btn btn-browse" (click)="onTouchBrowserRoom()">
+        BROWSE ROOMS
+      </button>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
-<ngx-spinner bdColor="rgba(255,255,255,2.0)" color="black"
-  type="ball-spin-clockwise"></ngx-spinner>
+<ngx-spinner bdColor="rgba(0,0,0,2.0)" color="white" type="line-scale"></ngx-spinner>

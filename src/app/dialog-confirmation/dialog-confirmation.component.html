@@ -1,8 +1,8 @@
 <h1 mat-dialog-title class="modal-box-title">
-    <span> CONFIRM SELECTED DATE AND TIME(S)</span>
+    <span> CONFIRM SELECTED DATE AND TIME(S)</span><br><br>
 </h1>
 
-<div mat-dialog-content class="modal-box-body">
+<div mat-dialog-content class="modal-box-body confirm-body">
     <table cellpadding=5 cellspacing=5 border=0 class="confirmation-table">
         <tr>
             <td>
@@ -45,12 +45,7 @@
 </div>
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
-    <div>
-        <button mat-raised-button tabindex="-1" class="modal-box-button"
-            (click)="onTouchBackSelectTimes()">BACK</button>
-        <button mat-raised-button tabindex="-1" class="modal-box-button
-            btn-cancel" (click)="onTouchCancel()">CANCEL</button>
-        <button mat-raised-button tabindex="-1" class="modal-box-button"
-            (click)="onTouchNextSwipe()">NEXT</button>
-    </div>
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchBackSelectTimes()">BACK</button>
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchNextSwipe()">NEXT</button>
 </div>

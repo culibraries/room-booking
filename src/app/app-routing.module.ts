@@ -2,29 +2,22 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { AuthGuard } from './services/auth-guard.service';
+import { SystemErrorComponent } from './system-error/system-error.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/main',
-    pathMatch: 'full'
-  },
-  {
-    path: 'main',
-    component: MainComponent
-    // canActivate: [AuthGuard]
-  },
-  {
-    path: 'main/:uid',
     component: MainComponent,
-    // canActivate: [AuthGuard]
-  }
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'system-error',
+    component: SystemErrorComponent,
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes)
-  ],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

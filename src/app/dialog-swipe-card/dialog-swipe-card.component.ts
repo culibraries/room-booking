@@ -1,88 +1,203 @@
-import { Component, HostListener, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import {
+  Component,
+  HostListener,
+  Inject,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BookService } from '../services/book.service';
 import { DialogSuccessComponent } from '../dialog-success/dialog-success.component';
 import { TimeDisplay } from '../models/time-display.model';
+import { forkJoin } from 'rxjs';
+import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
+import { LoggingService } from '../services/logging.service';
+import { ApiService } from '../services/api.service';
+import { env } from '../../environments/environment';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
+import { Router } from '@angular/router';
+
+const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Component({
   selector: 'app-dialog-swipe-card',
   templateUrl: './dialog-swipe-card.component.html',
-  styleUrls: ['../main/main.component.css']
 })
-export class DialogSwipeCardComponent {
-  valueAfterSwipe = "";
-  identityKey = "";
-  firstName = "";
-  lastName = "";
-  email = "";
+export class DialogSwipeCardComponent implements OnInit, OnDestroy {
+  valueAfterSwipe = '';
+  identityKey = '';
+  firstName = '';
+  lastName = '';
+  email = '';
+  body = [];
+  isLoading;
+  title = '';
+
   constructor(
-    private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
     private dialog: MatDialog,
     private bookService: BookService,
-    @Inject(MAT_DIALOG_DATA) private data: any) { }
+    private log: LoggingService,
+    private apiService: ApiService,
+    private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    @Inject(LOCAL_STORAGE) private storage: StorageService,
+    private router: Router
+  ) {}
 
+  ngOnInit() {
+    this.isLoading = false;
+    this.title = 'SWIPE BUFF ONECARD TO COMPLETE RESERVATION';
+  }
+
+  ngOnDestroy() {}
   /**
    * Hosts listener - handleKeyboardEvent
    * @param event
    */
-  @HostListener("document:keypress", ["$event"])
+  @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key !== "Enter") {
+    if (event.key !== 'Enter') {
       this.valueAfterSwipe += event.key;
     } else {
+      this.isLoading = true;
+      event.preventDefault();
+      this.log.logDebug('Card value: ' + this.valueAfterSwipe);
+      this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(
+        data => {
+          this.log.logDebug('PType value: ' + data.patronType);
+          try {
+            if (data.patronType !== 2) {
+              this.dialog.closeAll();
+              this.dialog.open(DialogErrorComponent, {
+                width: '50%',
+                height: 'auto',
+                data: {
+                  code: 0,
+                },
+              });
+              return;
+            }
 
-      this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(data => {
-        data["varFields"].forEach(e => {
-          if (e["fieldTag"] === "q") {
-            this.identityKey = e["content"].trim();
-            this.email = this.identityKey + "@colorado.edu";
+            if (data.varFields && data.varFields.length > 0) {
+              data.varFields.forEach(e => {
+                if (e.fieldTag === 'q') {
+                  this.identityKey = e.content.trim();
+                  this.email = this.identityKey + '@colorado.edu';
+                }
+                if (e.fieldTag === 'n') {
+                  this.firstName = e.content.split(',')[1].trim();
+                  this.lastName = e.content.split(',')[0].trim();
+                }
+              });
+              const bookingObservableHolder = [];
+              this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(
+                e => {
+                  bookingObservableHolder.push(
+                    this.bookService.bookRoom(
+                      this.buildBodyPayload(e, this.data.date)
+                    )
+                  );
+                }
+              );
+              forkJoin(bookingObservableHolder).subscribe(
+                res => {
+                  this.apiService.post(libcalTokenURL, {}).subscribe(user => {
+                    this.storage.set('libcal_token', user.access_token);
+                  });
+
+                  this.log.logInfo(
+                    this.data.roomName +
+                      ',' +
+                      this.email +
+                      ',' +
+                      this.reorganizeSubmittedTimes(
+                        this.data.submitedTime
+                      ).join('|')
+                  );
+                  this.dialog.open(DialogSuccessComponent, {
+                    width: '65%',
+                    height: '70%',
+                    data: {
+                      email: this.email,
+                    },
+                  });
+                },
+                err => {
+                  this.log.logError(
+                    this.data.roomName +
+                      ',' +
+                      this.email +
+                      ',' +
+                      this.reorganizeSubmittedTimes(
+                        this.data.submitedTime
+                      ).join('|')
+                  );
+                }
+              );
+            } else {
+              this.dialogRef.close();
+              this.dialog.open(DialogEnterStudentInfoComponent, {
+                width: '65%',
+                height: '70%',
+                data: {
+                  submitedTime: this.data.submitedTime,
+                  date: this.data.date,
+                  roomName: this.data.roomName,
+                  roomId: this.data.roomId,
+                },
+              });
+              return;
+            }
+          } catch (e) {
+            this.dialogRef.close();
+            this.dialog.open(DialogEnterStudentInfoComponent, {
+              width: '65%',
+              height: '70%',
+              data: {
+                submitedTime: this.data.submitedTime,
+                date: this.data.date,
+                roomName: this.data.roomName,
+                roomId: this.data.roomId,
+              },
+            });
+            return;
           }
-          if (e["fieldTag"] === "n") {
-            this.firstName = e["content"].split(",")[1].trim();
-            this.lastName = e["content"].split(",")[0].trim();
-          }
-        });
-
-        this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-          this.bookRoom(e, this.data.date);
-        });
-      });
-
-      this.dialog.open(DialogSuccessComponent, {
-        width: "65%",
-        height: "70%"
-      });
-      this.dialogRef.close();
+        },
+        err => {
+          this.dialogRef.close();
+          this.dialog.open(DialogEnterStudentInfoComponent, {
+            width: '65%',
+            height: '70%',
+            data: {
+              submitedTime: this.data.submitedTime,
+              date: this.data.date,
+              roomName: this.data.roomName,
+              roomId: this.data.roomId,
+            },
+          });
+        }
+      );
     }
   }
 
-  /**
-   * Books room
-   * @param submittedTime
-   * @param date
-   */
-  private bookRoom(submittedTime: string, date: Date) {
-    const formatedStart = this.getFormatedDate(submittedTime.split("-")[0], date);
-    const formatedEnd = this.getFormatedDate(submittedTime.split("-")[1], date);
+  private buildBodyPayload(dateString, date): any {
+    const formatedStart = this.getFormatedDate(dateString.split('-')[0], date);
+    const formatedEnd = this.getFormatedDate(dateString.split('-')[1], date);
 
-    const body = {
+    return {
       start: formatedStart,
       fname: this.firstName,
       lname: this.lastName,
-      q5253: "Other",
+      q5253: 'Other',
       email: this.email,
       bookings: [
         {
-          id: sessionStorage.getItem("space_id"),
-          to: formatedEnd
-        }
-      ]
+          id: this.data.roomId,
+          to: formatedEnd,
+        },
+      ],
     };
-
-    this.bookService.bookRoom(body).subscribe(data => {
-      /* TODO if it returns a booking id => success */
-      console.log(data);
-    });
   }
 
   /**
@@ -92,41 +207,37 @@ export class DialogSwipeCardComponent {
    * @returns
    */
   private getFormatedDate(time: string, date: Date) {
-    date.setHours(Number(time.split(":")[0]));
-    date.setMinutes(Number(time.split(":")[1]));
+    date.setHours(Number(time.split(':')[0]));
+    date.setMinutes(Number(time.split(':')[1]));
     date.setSeconds(0);
     return date.toISOString();
   }
 
   /**
-   * Reorganizes submitted times
+   * Reorganiaze Submitted Times
    * @param submitedTimes
    * @returns
    */
   private reorganizeSubmittedTimes(submitedTimes: TimeDisplay[]) {
-    this.convertSubmittedTimesValueToArray(submitedTimes).forEach((e, i, arr) => {
-      if (i % 2 === 0 && arr[i] === arr[i + 1]) {
-        delete (arr[i]);
-        delete (arr[i + 1]);
+    const timesArray = submitedTimes.map(e => {
+      return e.value;
+    });
+    const solution = timesArray.sort().reduce((acc, item, index) => {
+      if (index === 0) {
+        acc.push(item);
+        return acc;
       }
-    });
+      const currentValueParsed = acc[acc.length - 1].split('-');
+      const newValueParsed = item.split('-');
+      if (currentValueParsed[1] === newValueParsed[0]) {
+        acc[acc.length - 1] = `${currentValueParsed[0]}-${newValueParsed[1]}`;
+        return acc;
+      }
+      acc.push(item);
+      return acc;
+    }, []);
 
-    // TODO return new submitted array
-    return [];
-  }
-
-  /**
-   * Converts submitted times value to array
-   * @param submitedTimes
-   * @returns
-   */
-  private convertSubmittedTimesValueToArray(submitedTimes: TimeDisplay[]) {
-    const timesArray = [];
-    submitedTimes.forEach(e => {
-      timesArray.push(e.value.split("-")[0].trim());
-      timesArray.push(e.value.split("-")[1].trim());
-    });
-    return timesArray;
+    return solution;
   }
 
   /**

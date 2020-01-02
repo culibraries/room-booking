@@ -1,16 +1,21 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+import {
+  HttpClientModule,
+  HttpClientJsonpModule,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 
 import { DatePipe } from '@angular/common';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MainComponent } from './main/main.component';
-import { ConfigService } from './services/config.service';
 
 // Material Module
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -31,7 +36,10 @@ import { DialogDescriptionComponent } from './dialog-description/dialog-descript
 import { DialogErrorComponent } from './dialog-error/dialog-error.component';
 import { DialogBrowseRoomsComponent } from './dialog-browse-rooms/dialog-browse-rooms.component';
 
-import { DebounceClickDirective } from './debounce-click.directive';
+import { SystemErrorComponent } from './system-error/system-error.component';
+import { HttpConfigInterceptor } from './httpconfig.interceptor';
+import { DialogEnterStudentInfoComponent } from './dialog-enter-student-info/dialog-enter-student-info.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,13 +51,17 @@ import { DebounceClickDirective } from './debounce-click.directive';
     DialogDescriptionComponent,
     DialogErrorComponent,
     DialogBrowseRoomsComponent,
-    DebounceClickDirective
+    SystemErrorComponent,
+    DialogEnterStudentInfoComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     NgxSpinnerModule,
+    DeviceDetectorModule.forRoot(),
+    FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     HttpClientJsonpModule,
     MatSidenavModule,
@@ -60,7 +72,7 @@ import { DebounceClickDirective } from './debounce-click.directive';
     MatDatepickerModule,
     MatNativeDateModule,
     MatExpansionModule,
-    MatListModule
+    MatListModule,
   ],
   entryComponents: [
     DialogSelectTimesComponent,
@@ -69,12 +81,17 @@ import { DebounceClickDirective } from './debounce-click.directive';
     DialogSuccessComponent,
     DialogBrowseRoomsComponent,
     DialogErrorComponent,
-    DialogDescriptionComponent
+    DialogDescriptionComponent,
+    DialogEnterStudentInfoComponent,
   ],
   providers: [
     DatePipe,
-    ConfigService
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpConfigInterceptor,
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

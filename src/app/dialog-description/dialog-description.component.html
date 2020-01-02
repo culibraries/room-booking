@@ -1,5 +1,5 @@
 <h1 mat-dialog-title class="modal-box-title">
-    <span> {{data.roomName}}</span><br>
+    <span> {{data.roomName | uppercase}}</span><br>
     <span> DESCRIPTION</span>
 </h1>
 
@@ -8,7 +8,7 @@
 
 <div mat-dialog-actions class="modal-box-button-wrapper">
     <div>
-        <button mat-raised-button tabindex="-1" class="modal-box-button
+        <button mat-stroked-button tabindex="-1" class="modal-box-button
             btn-cancel" (click)="onClose()">CLOSE</button>
     </div>
 </div>
