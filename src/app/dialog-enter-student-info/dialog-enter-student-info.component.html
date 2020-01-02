@@ -1,0 +1,47 @@
+<h1 mat-dialog-title class="modal-box-title">
+    {{title | uppercase}}
+
+</h1>
+<div *ngIf="!isLoading else loading">
+
+    <form class="unique-form" [formGroup]="formStudent" (submit)="onSubmit(formStudent)">
+        <mat-form-field class="unique-form-field">
+            <input matInput placeholder="First Name" formControlName="firstName"
+                [formControl]="formStudent.get('firstName')" value="" required>
+            <mat-error *ngIf="formStudent.get('firstName').hasError('required')">
+                Please enter your first name.
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="unique-form-field">
+            <input matInput placeholder="Last Name" formControlName="lastName"
+                [formControl]="formStudent.get('lastName')" value="" required>
+            <mat-error *ngIf="formStudent.get('lastName').hasError('required')">
+                Please enter your last name.
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="unique-form-field">
+            <input matInput placeholder="Email" [formControl]="formStudent.get('email')" formControlName="email"
+                value="" required>
+            <span matSuffix>@Colorado.Edu</span>
+            <mat-error *ngIf="formStudent.get('email').hasError('required')">
+                Please enter your email.
+            </mat-error>
+            <mat-error *ngIf="formStudent.get('email').hasError('pattern')">
+                Please enter a valid email. Hint: Do not need to enter: "@Colorado.EDU". It is already included.
+            </mat-error>
+        </mat-form-field>
+
+        <div mat-dialog-actions class="modal-box-button-wrapper">
+            <div>
+                <button type="button" mat-stroked-button (click)="onTouchCancel()">CANCEL
+                </button>
+                <button type="submit" mat-stroked-button>RESERVE</button>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<ng-template #loading>
+    <div class="loader-internal"> Loading...</div>
+</ng-template>

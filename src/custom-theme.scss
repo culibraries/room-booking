@@ -1,0 +1,11 @@
+@import '~@angular/material/theming';
+@include mat-core();
+$room-booking-primary: mat-palette($mat-indigo);
+$room-booking-accent: mat-palette($mat-pink, A200, A100, A400);
+$room-booking-warn: mat-palette($mat-red);
+$room-booking-theme: mat-light-theme(
+  $room-booking-primary,
+  $room-booking-accent,
+  $room-booking-warn
+);
+@include angular-material-theme($room-booking-theme);

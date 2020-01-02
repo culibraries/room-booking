@@ -1,3 +1,5 @@
-export const environment = {
-  production: true
+export const env = {
+  production: true,
+  apiUrl: 'https://libapps.colorado.edu/api',
+  libcalApiUrl: 'https://colorado.libcal.com/1.1',
 };

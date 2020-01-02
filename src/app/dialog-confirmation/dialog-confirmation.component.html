@@ -1,0 +1,51 @@
+<h1 mat-dialog-title class="modal-box-title">
+    <span> CONFIRM SELECTED DATE AND TIME(S)</span><br><br>
+</h1>
+
+<div mat-dialog-content class="modal-box-body confirm-body">
+    <table cellpadding=5 cellspacing=5 border=0 class="confirmation-table">
+        <tr>
+            <td>
+                <mat-icon>room</mat-icon>
+            </td>
+            <td class="td-label">
+                Room
+            </td>
+            <td class="td-content">
+                <strong>{{roomName}}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-icon>calendar_today</mat-icon>
+            </td>
+            <td class="td-label">
+                Date
+            </td>
+            <td class="td-content">
+                <strong>{{dateString}}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-icon>access_time</mat-icon>
+            </td>
+            <td class="td-label">
+                Selected Times
+            </td>
+            <td class="td-content">
+                <strong>
+                    <span *ngFor="let time of selectedTime">
+                        {{time.displayValue}}<br><br>
+                    </span>
+                </strong>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div mat-dialog-actions class="modal-box-button-wrapper">
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchBackSelectTimes()">BACK</button>
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
+    <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchNextSwipe()">NEXT</button>
+</div>

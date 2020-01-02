@@ -1,0 +1,99 @@
+<h1 mat-dialog-title class="modal-box-title">
+    <div style="display: inline-flex;
+        vertical-align: middle;" *ngIf="locationName">
+        <mat-icon style="padding-right: 10px;">account_balance</mat-icon>
+        <span style="margin-top: 2px">{{locationName | uppercase}}</span>
+    </div><br><br>
+</h1>
+<div *ngIf="!isLoading else loading">
+    <div mat-dialog-content class="browse-room-body">
+        <div class="browse-room-left">
+            <mat-accordion multi="true">
+                <mat-expansion-panel class="mat-elevation-z0" *ngFor="let category of browseRoomsDisplay"
+                    [expanded]="true">
+                    <mat-expansion-panel-header class="right-aligned-header">
+                        <mat-panel-title class="mat-room-title">
+                            {{category.name | uppercase}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <mat-list class="mat-list">
+                        <mat-list-item class="list-room" *ngFor="let room of category.items"
+                            [ngClass]="{'current-room':room.name == currentRoom}" (click)="onSelectRoom(room)">
+                            <mat-icon matListIcon *ngIf="room.name == currentRoom" style="color: #3F50B5">check_circle
+                            </mat-icon>
+                            <mat-icon matListIcon *ngIf="room.name !== currentRoom">check_circle_outline</mat-icon>
+                            <h3 matLine>
+                                {{room.name}}
+                            </h3>
+                        </mat-list-item>
+                    </mat-list>
+
+                </mat-expansion-panel>
+            </mat-accordion>
+        </div>
+
+        <div class="browse-room-right">
+            <div class="wrapper">
+
+                <button mat-button [disabled]="isToday(setDate)" (click)="onTouchPreDate()" tabindex="-1">
+                    <mat-icon>arrow_back_ios</mat-icon>
+                </button>
+
+                <button type="button" mat-button tabindex="-1" *ngIf="!isToday(setDate); else today"><span
+                        style="font-size: 15px;font-weight: bold;">{{setDate | date:'E, MMM dd'}}</span></button>
+                <ng-template #today>
+                    <button type="button" tabindex="-1" mat-button> <span
+                            style="font-size: 15px;font-weight: bold;">Today</span></button>
+                </ng-template>
+
+                <button mat-button [disabled]="isNext3months(setDate)" (click)="onTouchNextDate()" tabindex="-1">
+                    <mat-icon>arrow_forward_ios</mat-icon>
+                </button>
+
+            </div>
+            <div style="clear: both;"></div>
+
+
+            <div style="text-align: center; padding-top: 50px;" *ngIf="!isOpen; else display">
+                The library is closed</div>
+            <ng-template #display>
+                <div class="loader-internal" *ngIf="isLoadingByDate else loadedByDate"> Loading...</div>
+                <ng-template #loadedByDate>
+                    <ul class="select-time-list" *ngIf="isOpen">
+                        <li *ngFor="let time of displayTime; trackBy: trackByFn" class="select-time-item"
+                            (click)="onTouchSelectTime(time)">
+                            <span>
+                                <mat-icon>access_time</mat-icon>
+                            </span>
+                            <div *ngIf="time.status; else inuse" style="display:
+                                contents">
+                                <span class="time-display" [class.seleted-text]="time.active">
+                                    {{time.displayValue}}
+                                </span>
+                                <span *ngIf="!time.active" class="box available">AVAILABLE</span>
+                                <span *ngIf="time.active" class="box selected">SELECTED</span>
+                            </div>
+                            <ng-template #inuse style="display: contents">
+                                <span class="time-display unavailable-time">
+                                    {{time.displayValue}}
+                                </span>
+                                <span class="box busy">IN USE</span>
+                            </ng-template>
+                        </li>
+                    </ul>
+                </ng-template>
+            </ng-template>
+        </div>
+
+    </div>
+
+    <div mat-dialog-actions class="modal-box-button-wrapper-browse-room">
+        <button type="button" mat-stroked-button tabindex="-1" (click)="onTouchClose()">CANCEL</button>
+        <button type="button" mat-stroked-button tabindex="-1" [disabled]="isDisabledNextBtn"
+            (click)="onTouchNextConfirm()">NEXT</button>
+    </div>
+</div>
+<ng-template #loading>
+    <div class="loader-internal"> Loading...</div>
+</ng-template>

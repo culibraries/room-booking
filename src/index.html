@@ -1,14 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>RoomBooking</title>
-  <base href="/">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+<head>
+  <meta charset="utf-8" />
+  <title>UC Boulder - University Libraries - Room Booking</title>
+  <base href="/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <script>
+    var timeoutInMiliseconds = 30000;
+    var timeoutId;
+    var i = 0;
+    function startTimer() {
+      timeoutId = window.setTimeout(doInactive, timeoutInMiliseconds)
+    }
+
+    function doInactive() {
+      if (i === 1) {
+        location.reload();
+      }
+    }
+
+    function resetTimer() {
+      i = 1;
+      window.clearTimeout(timeoutId)
+      startTimer();
+    }
+
+    function setupTimers() {
+      document.addEventListener("keypress", resetTimer, false);
+      document.addEventListener("keyup", resetTimer, false);
+      document.addEventListener("keydown", resetTimer, false);
+      document.addEventListener("click", resetTimer, false);
+      document.addEventListener("scroll", resetTimer, false);
+      document.addEventListener("touchmove", resetTimer, false);
+
+      startTimer();
+    }
+
+    window.oncontextmenu = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
+
+    setupTimers();
+  </script>
 </head>
-<body>
+
+<body style="background-color: black;">
   <app-root></app-root>
 </body>
+
 </html>
