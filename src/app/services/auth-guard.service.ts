@@ -36,9 +36,6 @@ export class AuthGuard implements CanActivate {
     ) {
       return true;
     } else {
-      this.log.logError(
-        'Missing one or all of the follow items: token, uid, location_id, space_id, hours_view_id, libcal_token'
-      );
       this.router.navigate(['system-error']);
       return false;
     }

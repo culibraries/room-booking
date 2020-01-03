@@ -49,4 +49,10 @@ export class LoggingService {
       console.log(message);
     }
   }
+  uploadLog() {
+    if (env.production) {
+      this.logDebug('upload log to S3');
+      this.apiService.post(env.apiUrl + '/s3-logging/upload', {}).subscribe();
+    }
+  }
 }
