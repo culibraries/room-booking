@@ -19,6 +19,7 @@ import { ApiService } from './services/api.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DialogErrorComponent } from './dialog-error/dialog-error.component';
+import { LoggingService } from './services/logging.service';
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
 @Injectable()
@@ -29,7 +30,8 @@ export class HttpConfigInterceptor implements HttpInterceptor {
     @Inject(LOCAL_STORAGE) private storage: StorageService,
     private apiService: ApiService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private log: LoggingService
   ) {}
 
   intercept(
@@ -104,11 +106,11 @@ export class HttpConfigInterceptor implements HttpInterceptor {
       this.isRefreshingToken = true;
 
       this.tokenSubject.next(null);
-
       return this.apiService.post(libcalTokenURL, {}).pipe(
         switchMap((user: any) => {
           if (user) {
             this.tokenSubject.next(user.accessToken);
+            this.log.logDebug('refresh libcal_token');
             this.storage.set('libcal_token', user.access_token);
             request = request.clone({
               headers: request.headers.set(

@@ -65,6 +65,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.timetInterval = setInterval(() => {
       this.time = new Date();
       if (this.dateNow.getDate() !== this.time.getDate()) {
+        this.log.logDebug('new day: reload the app...');
         this.apiService
           .get(
             env.apiUrl +
@@ -74,11 +75,15 @@ export class MainComponent implements OnInit, OnDestroy {
           )
           .subscribe(res => {
             this.log.logDebug(
-              'set location_id, space_id, hours_view_id into localStorage'
+              'new day : set location_id space_id hours_view_id into localStorage'
             );
             this.storage.set('location_id', res.results[0].location_id);
             this.storage.set('space_id', res.results[0].space_id);
             this.storage.set('hours_view_id', res.results[0].hours_view_id);
+
+            // Upload log to S3
+            this.log.uploadLog();
+
             location.reload();
           });
       }
@@ -91,6 +96,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.log.logDebug('app starting...');
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;
