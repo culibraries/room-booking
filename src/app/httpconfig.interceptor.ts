@@ -91,6 +91,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 });
                 return [];
               default:
+                this.log.logError(err.status + '-' + err.message);
                 return this.router.navigate(['system-error']);
             }
           } else {

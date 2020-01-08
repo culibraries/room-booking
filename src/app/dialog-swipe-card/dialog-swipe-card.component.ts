@@ -67,6 +67,8 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
         data => {
           this.log.logDebug('PType value: ' + data.patronType);
           try {
+            // patronType : 2 is Undergraduate student
+            // If patronType is NOT an undergraduate student
             if (data.patronType !== 2) {
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
@@ -79,6 +81,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               return;
             }
 
+            // If patronType is an undergraduate student
             if (data.varFields && data.varFields.length > 0) {
               data.varFields.forEach(e => {
                 if (e.fieldTag === 'q') {
