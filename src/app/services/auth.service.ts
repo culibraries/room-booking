@@ -23,7 +23,7 @@ export class AuthService {
               'token',
               data['authentication']['auth-token']
             );
-            location.reload();
+            location.replace('/room-booking-accessibility-testing/');
           }
         }
       },
