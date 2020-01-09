@@ -1,4 +1,4 @@
-<mat-drawer-container fullscreen>
+<mat-drawer-container fullscreen *ngIf="!isLoadComponent">
   <!-- Left Content Section-->
   <mat-drawer mode="side" opened class="left-content-available"
     [class.left-inuse]="status == 'inuse' || status == 'closed'">
@@ -115,4 +115,4 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
-<ngx-spinner bdColor="rgba(0,0,0,2.0)" color="white" type="line-scale"></ngx-spinner>
+<div class="loading-central" *ngIf="isLoadComponent"> Loading...</div>

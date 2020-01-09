@@ -8,7 +8,6 @@ import { RoomService } from '../services/room.service';
 import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { TimeDisplay } from '../models/time-display.model';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 import { DialogBrowseRoomsComponent } from '../dialog-browse-rooms/dialog-browse-rooms.component';
 import { DialogDescriptionComponent } from '../dialog-description/dialog-description.component';
@@ -50,6 +49,7 @@ export class MainComponent implements OnInit, OnDestroy {
   timetInterval: any;
   isOpen = true;
   isDone: boolean;
+  isLoadComponent = true;
   closedMessage = 'The library is closed';
 
   constructor(
@@ -58,7 +58,6 @@ export class MainComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     private hoursService: HoursService,
     private roomService: RoomService,
-    private spinner: NgxSpinnerService,
     private log: LoggingService,
     private apiService: ApiService
   ) {
@@ -88,15 +87,13 @@ export class MainComponent implements OnInit, OnDestroy {
           });
       }
     }, 2000);
-
-    this.spinner.show();
-    setTimeout(() => {
-      this.spinner.hide();
-    }, delay.spinner_timeout);
   }
 
   ngOnInit() {
     this.log.logDebug('app starting...');
+    setTimeout(() => {
+      this.isLoadComponent = false;
+    }, 2000);
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;
@@ -133,6 +130,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
       //  If the library is close
       if (hours.opens === '00:00' && hours.closes === '00:00') {
+        this.log.logDebug('the library is closed.');
         this.isOpen = false;
         this.isDone = true;
 
