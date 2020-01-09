@@ -12,8 +12,16 @@ import {
 } from '@angular/common/http';
 import { env } from '../environments/environment';
 
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, switchMap, finalize, filter, take } from 'rxjs/operators';
+import { Observable, throwError, BehaviorSubject, timer } from 'rxjs';
+import {
+  catchError,
+  switchMap,
+  finalize,
+  filter,
+  take,
+  retryWhen,
+  delay,
+} from 'rxjs/operators';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { ApiService } from './services/api.service';
 import { Router } from '@angular/router';
@@ -73,7 +81,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
       request = request.clone({
         headers: request.headers.set('Accept', 'application/json'),
       });
-
       return next.handle(request).pipe(
         catchError(err => {
           if (err instanceof HttpErrorResponse) {
@@ -90,6 +97,10 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                   },
                 });
                 return [];
+              case 0:
+                this.log.logError(err.status + '-' + err.message);
+                return this.handleUnknownError(request, next);
+              // location.replace('/room-booking');
               default:
                 this.log.logError(err.status + '-' + err.message);
                 return this.router.navigate(['system-error']);
@@ -100,6 +111,14 @@ export class HttpConfigInterceptor implements HttpInterceptor {
         })
       );
     }
+  }
+
+  private handleUnknownError(request: HttpRequest<any>, next: HttpHandler) {
+    return next.handle(request).pipe(
+      retryWhen(errors => {
+        return errors.pipe(delay(2000), take(5));
+      })
+    );
   }
 
   private handle401Error(request: HttpRequest<any>, next: HttpHandler) {

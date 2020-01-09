@@ -63,7 +63,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       event.preventDefault();
       this.log.logDebug('Card value: ' + this.valueAfterSwipe);
-      this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(
+      this.bookService.getIDInformation('this.valueAfterSwipe').subscribe(
         data => {
           this.log.logDebug('PType value: ' + data.patronType);
           try {
@@ -153,15 +153,12 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               return;
             }
           } catch (e) {
-            this.dialogRef.close();
-            this.dialog.open(DialogEnterStudentInfoComponent, {
-              width: '65%',
-              height: '70%',
+            this.dialog.closeAll();
+            this.dialog.open(DialogErrorComponent, {
+              width: '50%',
+              height: 'auto',
               data: {
-                submitedTime: this.data.submitedTime,
-                date: this.data.date,
-                roomName: this.data.roomName,
-                roomId: this.data.roomId,
+                code: 0,
               },
             });
             return;

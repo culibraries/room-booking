@@ -8,7 +8,6 @@ import {
 import { Observable } from 'rxjs';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
-import { LoggingService } from './logging.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,8 +16,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private deviceService: DeviceDetectorService,
     @Inject(LOCAL_STORAGE) private storage: StorageService,
-    private router: Router,
-    private log: LoggingService
+    private router: Router
   ) {}
   canActivate(
     next: ActivatedRouteSnapshot,
