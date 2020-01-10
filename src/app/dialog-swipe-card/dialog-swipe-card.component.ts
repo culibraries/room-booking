@@ -16,7 +16,6 @@ import { ApiService } from '../services/api.service';
 import { env } from '../../environments/environment';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
-import { Router } from '@angular/router';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 
@@ -41,8 +40,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private dialogRef: MatDialogRef<DialogSwipeCardComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
-    @Inject(LOCAL_STORAGE) private storage: StorageService,
-    private router: Router
+    @Inject(LOCAL_STORAGE) private storage: StorageService
   ) {}
 
   ngOnInit() {

@@ -86,7 +86,7 @@ export class MainComponent implements OnInit, OnDestroy {
             location.reload();
           });
       }
-    }, 2000);
+    }, 3000);
   }
 
   ngOnInit() {
@@ -127,10 +127,8 @@ export class MainComponent implements OnInit, OnDestroy {
         dateString,
         res.openingHours
       );
-
       //  If the library is close
       if (hours.opens === '00:00' && hours.closes === '00:00') {
-        this.log.logDebug('the library is closed.');
         this.isOpen = false;
         this.isDone = true;
 
@@ -174,6 +172,7 @@ export class MainComponent implements OnInit, OnDestroy {
             if (this.displayTime.length > 0) {
               this.status = this.displayTime[0].status ? 'available' : 'inuse';
             } else {
+              this.log.logDebug('the library is closed.');
               this.status = 'closed';
               this.isOpen = false;
               this.roomServiceInterval.unsubscribe();
