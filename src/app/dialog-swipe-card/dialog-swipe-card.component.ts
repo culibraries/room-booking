@@ -61,13 +61,14 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       event.preventDefault();
       this.log.logDebug('Card value: ' + this.valueAfterSwipe);
-      this.bookService.getIDInformation('this.valueAfterSwipe').subscribe(
+      this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(
         data => {
           this.log.logDebug('PType value: ' + data.patronType);
           try {
             // patronType : 2 is Undergraduate student
             // If patronType is NOT an undergraduate student
             if (data.patronType !== 2) {
+              this.log.logDebug('you are not undergraduate student.');
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
                 width: '50%',
