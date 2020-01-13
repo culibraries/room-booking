@@ -1,4 +1,11 @@
-import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewEncapsulation,
+  AfterViewInit,
+  HostListener,
+} from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { BookService } from '../services/book.service';
 import { LoggingService } from '../services/logging.service';
@@ -10,23 +17,35 @@ import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 import { forkJoin } from 'rxjs';
 import { env } from '../../environments/environment';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
+import Keyboard from 'simple-keyboard';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 const PATRON_TYPE_UNDERGRADUATE = env.undergraduatePType;
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   selector: 'app-dialog-enter-student-info',
   templateUrl: './dialog-enter-student-info.component.html',
+  styleUrls: ['../../../node_modules/simple-keyboard/build/css/index.css'],
 })
-export class DialogEnterStudentInfoComponent implements OnInit {
+export class DialogEnterStudentInfoComponent implements OnInit, AfterViewInit {
   firstName = '';
   lastName = '';
   identikey = '';
   isLoading;
   title = 'Please Enter Your information below to continue';
+  keyboard: Keyboard;
+  selectedInputElem: any;
+
   formStudent = new FormGroup({
-    firstName: new FormControl('', Validators.required),
-    lastName: new FormControl('', Validators.required),
+    firstName: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^[a-zA-Z]{2,10}$'),
+    ]),
+    lastName: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^[a-zA-Z]{2,10}$'),
+    ]),
     identikey: new FormControl('', [
       Validators.required,
       Validators.pattern('^[a-z0-9]{4,10}$'),
@@ -46,6 +65,46 @@ export class DialogEnterStudentInfoComponent implements OnInit {
     this.isLoading = false;
   }
 
+  ngAfterViewInit() {
+    this.keyboard = new Keyboard({
+      onChange: input => this.onChange(input),
+      onKeyPress: button => this.onKeyPress(button),
+    });
+  }
+
+  onInputFocus(event: any) {
+    this.selectedInputElem = this.formStudent.get(event.target.name);
+
+    this.keyboard.setOptions({
+      inputName: event.target.name,
+    });
+  }
+  onInputChange(event: any) {
+    this.keyboard.setInput(event.target.value, event.target.name);
+  }
+
+  onChange = (input: string) => {
+    this.selectedInputElem.setValue(input);
+  };
+
+  onKeyPress = (button: string) => {
+    if (button === '{shift}' || button === '{lock}') {
+      this.handleShift();
+    }
+    if (button === '{enter}') {
+      this.onSubmit(this.formStudent);
+    }
+  };
+
+  handleShift = () => {
+    const currentLayout = this.keyboard.options.layoutName;
+    const shiftToggle = currentLayout === 'default' ? 'shift' : 'default';
+
+    this.keyboard.setOptions({
+      layoutName: shiftToggle,
+    });
+  };
+
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key === 'Enter') {
@@ -55,6 +114,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
 
   onSubmit(formGroup) {
     if (formGroup.valid) {
+      console.log('valid');
       this.isLoading = true;
 
       this.firstName = formGroup.value.firstName;
@@ -105,6 +165,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
                       '|'
                     )
                 );
+                this.dialog.closeAll();
                 this.dialog.open(DialogSuccessComponent, {
                   width: '65%',
                   height: '70%',

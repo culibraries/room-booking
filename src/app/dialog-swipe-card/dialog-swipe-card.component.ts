@@ -71,7 +71,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               this.dialogRef.close();
               this.dialog.open(DialogEnterStudentInfoComponent, {
                 width: '65%',
-                height: '70%',
+                height: '84%',
                 data: {
                   submitedTime: this.data.submitedTime,
                   date: this.data.date,
@@ -165,7 +165,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               this.dialogRef.close();
               this.dialog.open(DialogEnterStudentInfoComponent, {
                 width: '65%',
-                height: '70%',
+                height: '84%',
                 data: {
                   submitedTime: this.data.submitedTime,
                   date: this.data.date,
@@ -179,7 +179,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
             this.dialogRef.close();
             this.dialog.open(DialogEnterStudentInfoComponent, {
               width: '65%',
-              height: '70%',
+              height: '84%',
               data: {
                 submitedTime: this.data.submitedTime,
                 date: this.data.date,
@@ -194,7 +194,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
           this.dialogRef.close();
           this.dialog.open(DialogEnterStudentInfoComponent, {
             width: '65%',
-            height: '70%',
+            height: '84%',
             data: {
               submitedTime: this.data.submitedTime,
               date: this.data.date,

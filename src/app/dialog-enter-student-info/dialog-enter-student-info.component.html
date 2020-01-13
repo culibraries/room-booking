@@ -7,21 +7,30 @@
     <form class="unique-form" [formGroup]="formStudent" (submit)="onSubmit(formStudent)">
         <mat-form-field class="unique-form-field">
             <input matInput placeholder="First Name" formControlName="firstName"
-                [formControl]="formStudent.get('firstName')" value="" required>
+                [formControl]="formStudent.get('firstName')" (focus)="onInputFocus($event)"
+                (change)="onInputChange($event)" name="firstName" value="" (input)="onInputChange($event)" required>
             <mat-error *ngIf="formStudent.get('firstName').hasError('required')">
                 Please enter your first name.
+            </mat-error>
+            <mat-error *ngIf="formStudent.get('firstName').hasError('pattern')">
+                Please enter a valid first name.
             </mat-error>
         </mat-form-field>
         <mat-form-field class="unique-form-field">
             <input matInput placeholder="Last Name" formControlName="lastName"
-                [formControl]="formStudent.get('lastName')" value="" required>
+                [formControl]="formStudent.get('lastName')" (focus)="onInputFocus($event)"
+                (change)="onInputChange($event)" name="lastName" value="" required>
             <mat-error *ngIf="formStudent.get('lastName').hasError('required')">
                 Please enter your last name.
+            </mat-error>
+            <mat-error *ngIf="formStudent.get('lastName').hasError('pattern')">
+                Please enter a valid last name.
             </mat-error>
         </mat-form-field>
         <mat-form-field class="unique-form-field">
             <input matInput placeholder="IdentiKey" [formControl]="formStudent.get('identikey')"
-                formControlName="identikey" value="" required>
+                formControlName="identikey" (focus)="onInputFocus($event)" (change)="onInputChange($event)"
+                name="identikey" value="" required>
             <mat-error *ngIf="formStudent.get('identikey').hasError('required')">
                 Please enter your IdentiKey.
             </mat-error>
@@ -39,6 +48,8 @@
             </div>
         </div>
     </form>
+    <div class="simple-keyboard" style="margin-top: 10px;"></div>
+
 </div>
 
 <ng-template #loading>
