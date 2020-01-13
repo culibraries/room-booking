@@ -12,7 +12,7 @@ import { env } from '../../environments/environment';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
-const PATRON_TYPE_UNDERGRADUATE = 2;
+const PATRON_TYPE_UNDERGRADUATE = env.undergraduatePType;
 
 @Component({
   selector: 'app-dialog-enter-student-info',
@@ -42,7 +42,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.log.logDebug('enter student information');
+    this.log.logDebug('manually enter information');
     this.isLoading = false;
   }
 
@@ -60,7 +60,9 @@ export class DialogEnterStudentInfoComponent implements OnInit {
       this.firstName = formGroup.value.firstName;
       this.lastName = formGroup.value.lastName;
       this.identikey = formGroup.value.identikey;
-
+      this.log.logDebug(
+        this.firstName + '-' + this.lastName + '-' + this.identikey
+      );
       const bookingObservableHolder = [];
 
       this.bookService

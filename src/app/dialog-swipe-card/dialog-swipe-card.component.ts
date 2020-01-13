@@ -18,7 +18,7 @@ import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
-const PATRON_TYPE_UNDERGRADUATE = 2;
+const PATRON_TYPE_UNDERGRADUATE = env.undergraduatePType;
 @Component({
   selector: 'app-dialog-swipe-card',
   templateUrl: './dialog-swipe-card.component.html',
