@@ -20,14 +20,13 @@
             </mat-error>
         </mat-form-field>
         <mat-form-field class="unique-form-field">
-            <input matInput placeholder="Email" [formControl]="formStudent.get('email')" formControlName="email"
-                value="" required>
-            <span matSuffix>@Colorado.Edu</span>
-            <mat-error *ngIf="formStudent.get('email').hasError('required')">
-                Please enter your email.
+            <input matInput placeholder="IdentiKey" [formControl]="formStudent.get('identikey')"
+                formControlName="identikey" value="" required>
+            <mat-error *ngIf="formStudent.get('identikey').hasError('required')">
+                Please enter your IdentiKey.
             </mat-error>
-            <mat-error *ngIf="formStudent.get('email').hasError('pattern')">
-                Please enter a valid email. Hint: Do not need to enter: "@Colorado.EDU". It is already included.
+            <mat-error *ngIf="formStudent.get('identikey').hasError('pattern')">
+                Please enter a valid IdentiKey.
             </mat-error>
         </mat-form-field>
 

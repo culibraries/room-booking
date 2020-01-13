@@ -339,3 +339,24 @@ tbody::-webkit-scrollbar-thumb {
 tbody::-webkit-scrollbar-button {
   display: none;
 }
+
+.explain-box {
+  margin-top: 15px;
+  float: right;
+  margin-right: 127px;
+  text-align: right;
+}
+.explain-box-busy {
+  border: 1px solid white;
+  /* border-right: 5px solid #b71d1c; */
+  height: 7px;
+  margin-left: 10px;
+  background: #636363;
+}
+
+.explain-box-available {
+  border: 1px solid white;
+  /* border-right: 5px solid #2e7d32; */
+  height: 7px;
+  margin-left: 10px;
+}

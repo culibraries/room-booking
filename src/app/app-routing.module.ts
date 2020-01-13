@@ -14,6 +14,7 @@ const routes: Routes = [
     path: 'system-error',
     component: SystemErrorComponent,
   },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

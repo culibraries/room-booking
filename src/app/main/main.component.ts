@@ -65,6 +65,8 @@ export class MainComponent implements OnInit, OnDestroy {
       this.time = new Date();
       if (this.dateNow.getDate() !== this.time.getDate()) {
         this.log.logDebug('new day: reload the app...');
+        // Upload log to S3
+        this.log.uploadLog();
         this.apiService
           .get(
             env.apiUrl +
@@ -79,9 +81,6 @@ export class MainComponent implements OnInit, OnDestroy {
             this.storage.set('location_id', res.results[0].location_id);
             this.storage.set('space_id', res.results[0].space_id);
             this.storage.set('hours_view_id', res.results[0].hours_view_id);
-
-            // Upload log to S3
-            this.log.uploadLog();
 
             location.reload();
           });
@@ -134,6 +133,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
         // Only set current status of the room for today
         if (this.isToday(date)) {
+          this.log.logDebug('the library is closed.');
           this.status = 'closed';
         }
 

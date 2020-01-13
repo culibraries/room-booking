@@ -18,7 +18,7 @@ import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/dialog-enter-student-info.component';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
-
+const PATRON_TYPE_UNDERGRADUATE = 2;
 @Component({
   selector: 'app-dialog-swipe-card',
   templateUrl: './dialog-swipe-card.component.html',
@@ -61,13 +61,29 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       event.preventDefault();
       this.log.logDebug('Card value: ' + this.valueAfterSwipe);
-      this.bookService.getIDInformation(this.valueAfterSwipe).subscribe(
+      this.bookService.getIDInformation(this.valueAfterSwipe, 'u').subscribe(
         data => {
-          this.log.logDebug('PType value: ' + data.patronType);
           try {
-            // patronType : 2 is Undergraduate student
+            if (!data.patronType) {
+              this.log.logDebug(
+                'this card value does not recognized in the system.'
+              );
+              this.dialogRef.close();
+              this.dialog.open(DialogEnterStudentInfoComponent, {
+                width: '65%',
+                height: '70%',
+                data: {
+                  submitedTime: this.data.submitedTime,
+                  date: this.data.date,
+                  roomName: this.data.roomName,
+                  roomId: this.data.roomId,
+                },
+              });
+              return;
+            }
+            this.log.logDebug('PType value: ' + data.patronType);
             // If patronType is NOT an undergraduate student
-            if (data.patronType !== 2) {
+            if (data.patronType !== PATRON_TYPE_UNDERGRADUATE) {
               this.log.logDebug('you are not undergraduate student.');
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
@@ -135,6 +151,14 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
                         this.data.submitedTime
                       ).join('|')
                   );
+                  this.dialog.open(DialogErrorComponent, {
+                    width: '50%',
+                    height: 'auto',
+                    data: {
+                      code: 1,
+                    },
+                  });
+                  return;
                 }
               );
             } else {
@@ -152,12 +176,15 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               return;
             }
           } catch (e) {
-            this.dialog.closeAll();
-            this.dialog.open(DialogErrorComponent, {
-              width: '50%',
-              height: 'auto',
+            this.dialogRef.close();
+            this.dialog.open(DialogEnterStudentInfoComponent, {
+              width: '65%',
+              height: '70%',
               data: {
-                code: 0,
+                submitedTime: this.data.submitedTime,
+                date: this.data.date,
+                roomName: this.data.roomName,
+                roomId: this.data.roomId,
               },
             });
             return;
