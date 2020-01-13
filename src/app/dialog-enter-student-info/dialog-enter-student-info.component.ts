@@ -42,7 +42,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.log.logDebug('enter studen information');
+    this.log.logDebug('enter student information');
     this.isLoading = false;
   }
 
