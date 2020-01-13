@@ -8,7 +8,6 @@ import { RoomService } from '../services/room.service';
 import { HelperService } from '../services/helper.service';
 import { HoursService } from '../services/hours.service';
 import { TimeDisplay } from '../models/time-display.model';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { DialogSelectTimesComponent } from '../dialog-select-times/dialog-select-times.component';
 import { DialogBrowseRoomsComponent } from '../dialog-browse-rooms/dialog-browse-rooms.component';
 import { DialogDescriptionComponent } from '../dialog-description/dialog-description.component';
@@ -50,6 +49,7 @@ export class MainComponent implements OnInit, OnDestroy {
   timetInterval: any;
   isOpen = true;
   isDone: boolean;
+  isLoadComponent = true;
   closedMessage = 'The library is closed';
 
   constructor(
@@ -58,7 +58,6 @@ export class MainComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     private hoursService: HoursService,
     private roomService: RoomService,
-    private spinner: NgxSpinnerService,
     private log: LoggingService,
     private apiService: ApiService
   ) {
@@ -66,6 +65,8 @@ export class MainComponent implements OnInit, OnDestroy {
       this.time = new Date();
       if (this.dateNow.getDate() !== this.time.getDate()) {
         this.log.logDebug('new day: reload the app...');
+        // Upload log to S3
+        this.log.uploadLog();
         this.apiService
           .get(
             env.apiUrl +
@@ -81,22 +82,17 @@ export class MainComponent implements OnInit, OnDestroy {
             this.storage.set('space_id', res.results[0].space_id);
             this.storage.set('hours_view_id', res.results[0].hours_view_id);
 
-            // Upload log to S3
-            this.log.uploadLog();
-
             location.reload();
           });
       }
-    }, 2000);
-
-    this.spinner.show();
-    setTimeout(() => {
-      this.spinner.hide();
-    }, delay.spinner_timeout);
+    }, 3000);
   }
 
   ngOnInit() {
     this.log.logDebug('app starting...');
+    setTimeout(() => {
+      this.isLoadComponent = false;
+    }, 2000);
     this.roomService.getRoomInformation(this.spaceId).subscribe(res => {
       this.roomName = res.name;
       this.roomCapacity = res.capacity;
@@ -130,7 +126,6 @@ export class MainComponent implements OnInit, OnDestroy {
         dateString,
         res.openingHours
       );
-
       //  If the library is close
       if (hours.opens === '00:00' && hours.closes === '00:00') {
         this.isOpen = false;
@@ -138,6 +133,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
         // Only set current status of the room for today
         if (this.isToday(date)) {
+          this.log.logDebug('the library is closed.');
           this.status = 'closed';
         }
 
@@ -176,6 +172,7 @@ export class MainComponent implements OnInit, OnDestroy {
             if (this.displayTime.length > 0) {
               this.status = this.displayTime[0].status ? 'available' : 'inuse';
             } else {
+              this.log.logDebug('the library is closed.');
               this.status = 'closed';
               this.isOpen = false;
               this.roomServiceInterval.unsubscribe();

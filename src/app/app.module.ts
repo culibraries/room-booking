@@ -7,7 +7,6 @@ import {
 } from '@angular/common/http';
 
 import { DatePipe } from '@angular/common';
-import { NgxSpinnerModule } from 'ngx-spinner';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -58,7 +57,6 @@ import { DialogEnterStudentInfoComponent } from './dialog-enter-student-info/dia
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    NgxSpinnerModule,
     DeviceDetectorModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,

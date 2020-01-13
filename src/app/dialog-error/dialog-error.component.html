@@ -17,6 +17,14 @@
     Only undergraduate students are allowed to reserve this room. <br><br>
     Please contact the <strong>Circ Desk </strong> for assistance.
   </div>
+  <div *ngIf="code===1">
+    You are not able to reserve this room at this moment. <br><br>
+    Please reserve the room via LibCal or contact the <strong>Circ Desk </strong> for assistance.
+  </div>
+  <div *ngIf="code===2">
+    Your IdentiKey is not recognized in the system. <br><br>
+    Please retry or contact the <strong>Circ Desk </strong> for assistance.
+  </div>
 </div>
 
 <div mat-dialog-actions style="float: right;padding-top: 35px">

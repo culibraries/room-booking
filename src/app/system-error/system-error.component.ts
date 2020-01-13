@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { text } from '../config/text';
 import { MatDialog } from '@angular/material';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { delay } from '../config/delay';
 
 @Component({
@@ -10,13 +9,13 @@ import { delay } from '../config/delay';
 })
 export class SystemErrorComponent implements OnInit {
   errorMessage: string;
-  constructor(private dialog: MatDialog, private spinner: NgxSpinnerService) {}
+  isLoadComponent = true;
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit() {
-    this.spinner.show();
     setTimeout(() => {
-      this.spinner.hide();
-    }, delay.spinner_timeout);
+      this.isLoadComponent = false;
+    }, 2000);
 
     this.dialog.closeAll();
     this.errorMessage = text.system_error + text.assistance_message;

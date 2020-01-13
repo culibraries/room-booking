@@ -11,9 +11,15 @@ import { catchError } from 'rxjs/operators';
 export class BookService {
   constructor(private apiService: ApiService) {}
 
-  getIDInformation(id: string): any {
+  getIDInformation(id: string, tag: string): any {
     return this.apiService
-      .get(env.apiUrl + '/room-booking/sierra/search?format=json&key=' + id)
+      .get(
+        env.apiUrl +
+          '/room-booking/sierra/search?format=json&tag=' +
+          tag +
+          '&key=' +
+          id
+      )
       .pipe(map(data => data));
   }
 

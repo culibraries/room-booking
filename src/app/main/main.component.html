@@ -1,4 +1,4 @@
-<mat-drawer-container fullscreen>
+<mat-drawer-container fullscreen *ngIf="!isLoadComponent">
   <!-- Left Content Section-->
   <mat-drawer mode="side" opened class="left-content-available"
     [class.left-inuse]="status == 'inuse' || status == 'closed'">
@@ -93,6 +93,21 @@
             </tbody>
 
           </table>
+          <div class="explain-box">
+            <div>
+              <span>Busy</span>
+              <span class="explain-box-busy">
+                &nbsp; &nbsp;
+                &nbsp; </span>
+            </div>
+            <div style="margin-top: 8px;">
+              <span>Available</span>
+              <span class="explain-box-available">
+                &nbsp; &nbsp;
+                &nbsp; </span>
+            </div>
+            <div></div>
+          </div>
         </ng-template>
       </div>
 
@@ -115,4 +130,4 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
-<ngx-spinner bdColor="rgba(0,0,0,2.0)" color="white" type="line-scale"></ngx-spinner>
+<div class="loading-central" *ngIf="isLoadComponent"> Loading...</div>

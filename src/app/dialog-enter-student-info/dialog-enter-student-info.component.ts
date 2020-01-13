@@ -12,6 +12,7 @@ import { env } from '../../environments/environment';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
+const PATRON_TYPE_UNDERGRADUATE = 2;
 
 @Component({
   selector: 'app-dialog-enter-student-info',
@@ -20,15 +21,15 @@ const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 export class DialogEnterStudentInfoComponent implements OnInit {
   firstName = '';
   lastName = '';
-  email = '';
+  identikey = '';
   isLoading;
   title = 'Please Enter Your information below to continue';
   formStudent = new FormGroup({
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
-    email: new FormControl('', [
+    identikey: new FormControl('', [
       Validators.required,
-      Validators.pattern('^[a-zA-Z0-9.]{3,30}$'),
+      Validators.pattern('^[a-z0-9]{4,10}$'),
     ]),
   });
   constructor(
@@ -41,6 +42,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.log.logDebug('enter student information');
     this.isLoading = false;
   }
 
@@ -57,55 +59,94 @@ export class DialogEnterStudentInfoComponent implements OnInit {
 
       this.firstName = formGroup.value.firstName;
       this.lastName = formGroup.value.lastName;
-      this.email = formGroup.value.email + '@colorado.edu';
+      this.identikey = formGroup.value.identikey;
 
       const bookingObservableHolder = [];
 
-      this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
-        bookingObservableHolder.push(
-          this.bookService.bookRoom(this.buildBodyPayload(e, this.data.date))
-        );
-      });
-      forkJoin(bookingObservableHolder).subscribe(
-        res => {
-          this.apiService.post(libcalTokenURL, {}).subscribe(user => {
-            this.storage.set('libcal_token', user.access_token);
-          });
+      this.bookService
+        .getIDInformation(this.identikey, 'q')
+        .subscribe(resPatron => {
+          if (resPatron.varFields && resPatron.varFields.length > 0) {
+            if (resPatron.patronType !== PATRON_TYPE_UNDERGRADUATE) {
+              this.log.logDebug('you are not undergraduate student.');
+              this.dialog.closeAll();
+              this.dialog.open(DialogErrorComponent, {
+                width: '50%',
+                height: 'auto',
+                data: {
+                  code: 0,
+                },
+              });
+              return;
+            }
 
-          this.log.logInfo(
-            this.data.roomName +
-              ',' +
-              this.email +
-              ',' +
-              this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-          );
-          this.dialog.open(DialogSuccessComponent, {
-            width: '65%',
-            height: '70%',
-            data: {
-              email: this.email,
-            },
-          });
-        },
-        err => {
-          this.log.logInfo(
-            this.data.roomName +
-              ',' +
-              this.email +
-              ',' +
-              this.reorganizeSubmittedTimes(this.data.submitedTime).join('|')
-          );
-          this.dialog.open(DialogErrorComponent, {
-            width: '60%',
-            height: '45%',
-            panelClass: 'dialog-error',
-          });
-        }
-      );
+            const email = this.identikey + '@colorado.edu';
+            this.reorganizeSubmittedTimes(this.data.submitedTime).forEach(e => {
+              bookingObservableHolder.push(
+                this.bookService.bookRoom(
+                  this.buildBodyPayload(e, this.data.date, email)
+                )
+              );
+            });
+            forkJoin(bookingObservableHolder).subscribe(
+              res => {
+                this.apiService.post(libcalTokenURL, {}).subscribe(user => {
+                  this.storage.set('libcal_token', user.access_token);
+                });
+
+                this.log.logInfo(
+                  this.data.roomName +
+                    ',' +
+                    email +
+                    ',' +
+                    this.reorganizeSubmittedTimes(this.data.submitedTime).join(
+                      '|'
+                    )
+                );
+                this.dialog.open(DialogSuccessComponent, {
+                  width: '65%',
+                  height: '70%',
+                  data: {
+                    email: email,
+                  },
+                });
+              },
+              err => {
+                this.log.logInfo(
+                  this.data.roomName +
+                    ',' +
+                    email +
+                    ',' +
+                    this.reorganizeSubmittedTimes(this.data.submitedTime).join(
+                      '|'
+                    )
+                );
+                this.dialog.open(DialogErrorComponent, {
+                  width: '50%',
+                  height: 'auto',
+                  data: {
+                    code: 1,
+                  },
+                });
+                return;
+              }
+            );
+          } else {
+            this.dialog.closeAll();
+            this.dialog.open(DialogErrorComponent, {
+              width: '50%',
+              height: 'auto',
+              data: {
+                code: 2,
+              },
+            });
+            return;
+          }
+        });
     }
   }
 
-  private buildBodyPayload(dateString, date): any {
+  private buildBodyPayload(dateString, date, email): any {
     const formatedStart = this.getFormatedDate(dateString.split('-')[0], date);
     const formatedEnd = this.getFormatedDate(dateString.split('-')[1], date);
 
@@ -114,7 +155,7 @@ export class DialogEnterStudentInfoComponent implements OnInit {
       fname: this.firstName,
       lname: this.lastName,
       q5253: 'Other',
-      email: this.email,
+      email: email,
       bookings: [
         {
           id: this.data.roomId,
