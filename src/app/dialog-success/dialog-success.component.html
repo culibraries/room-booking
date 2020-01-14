@@ -1,0 +1,18 @@
+<h1 mat-dialog-title class="modal-box-title"></h1>
+
+<div mat-dialog-content class="modal-box-body" style="text-align: center;">
+  <img src="assets/images/success.png" style="width: 120px;" /><br />
+  <div style="font-weight: bold; font-size: 35px">SUCCESS</div>
+  <div style="margin-top: 17px; font-weight: bold">CHECK YOUR EMAIL FOR CONFIRMATION</div>
+</div>
+
+<div mat-dialog-actions class="modal-box-button-wrapper">
+  <div style="margin-bottom: 27px;font-weight: bold">
+    BACK TO MAIN SCREEN IN: {{ counter }} (s)
+  </div>
+  <div>
+    <button class="modal-box-button" type="button" mat-stroked-button tabindex="-1" (click)="onTouchClose()">
+      CLOSE
+    </button>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<h1 mat-dialog-title class="modal-box-title">
+    {{title | uppercase}}
+
+</h1>
+<div mat-dialog-content class="modal-box-body" style="text-align: center;height: 70%;" *ngIf="!isLoading else loading">
+    <img src="assets/images/static-swipe-card.jpg" style="width: 200px;
+                        padding-top: 100px;" />
+</div>
+<ng-template #loading>
+    <div class="loader-internal"> Loading...</div>
+</ng-template>
+<div mat-dialog-actions class="modal-box-button-wrapper">
+    <div>
+        <button mat-stroked-button type="button" tabindex="-1" (click)="onTouchCancel()">CANCEL</button>
+    </div>
+</div>

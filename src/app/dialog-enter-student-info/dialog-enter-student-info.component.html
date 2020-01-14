@@ -1,0 +1,57 @@
+<h1 mat-dialog-title class="modal-box-title">
+    {{title | uppercase}}
+
+</h1>
+<div *ngIf="!isLoading else loading">
+
+    <form class="unique-form" [formGroup]="formStudent" (submit)="onSubmit(formStudent)">
+        <mat-form-field class="unique-form-field">
+            <input matInput placeholder="First Name" formControlName="firstName"
+                [formControl]="formStudent.get('firstName')" (focus)="onInputFocus($event)"
+                (change)="onInputChange($event)" name="firstName" value="" (input)="onInputChange($event)" required>
+            <mat-error *ngIf="formStudent.get('firstName').hasError('required')">
+                Please enter your first name.
+            </mat-error>
+            <mat-error *ngIf="formStudent.get('firstName').hasError('pattern')">
+                Please enter a valid first name.
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="unique-form-field">
+            <input matInput placeholder="Last Name" formControlName="lastName"
+                [formControl]="formStudent.get('lastName')" (focus)="onInputFocus($event)"
+                (change)="onInputChange($event)" name="lastName" value="" required>
+            <mat-error *ngIf="formStudent.get('lastName').hasError('required')">
+                Please enter your last name.
+            </mat-error>
+            <mat-error *ngIf="formStudent.get('lastName').hasError('pattern')">
+                Please enter a valid last name.
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="unique-form-field">
+            <input matInput placeholder="IdentiKey" [formControl]="formStudent.get('identikey')"
+                formControlName="identikey" (focus)="onInputFocus($event)" (change)="onInputChange($event)"
+                name="identikey" value="" required>
+            <mat-error *ngIf="formStudent.get('identikey').hasError('required')">
+                Please enter your IdentiKey.
+            </mat-error>
+            <mat-error *ngIf="formStudent.get('identikey').hasError('pattern')">
+                Please enter a valid IdentiKey.
+            </mat-error>
+        </mat-form-field>
+
+        <div mat-dialog-actions class="modal-box-button-wrapper">
+            <div>
+                <button type="button" mat-stroked-button (click)="onTouchCancel()">CANCEL
+                </button>
+                <button type="submit" mat-stroked-button>RESERVE</button>
+
+            </div>
+        </div>
+    </form>
+    <div class="simple-keyboard" style="margin-top: 10px;"></div>
+
+</div>
+
+<ng-template #loading>
+    <div class="loader-internal"> Loading...</div>
+</ng-template>

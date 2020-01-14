@@ -1,0 +1,189 @@
+.time-display-main {
+  margin-top: 20%;
+  color: white;
+  font-size: 20px;
+  height: auto;
+}
+.time-display-main table {
+  margin: 0 auto;
+}
+
+.time-display-main-header {
+  width: 79%;
+  margin: 0 auto;
+}
+.time-display-main-move {
+  float: left;
+  width: 48%;
+  padding-left: 2px;
+}
+.time-display-main-icon {
+  text-align: center;
+}
+
+.time-display-main td {
+  padding: 20px 15px 20px 20px;
+}
+
+.time-display-main tbody td {
+  border: 1px solid white;
+}
+.time-display-main tbody {
+  display: block;
+  height: 331px;
+  overflow-y: visible;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.td-left {
+  width: 300px;
+  text-align: center;
+}
+
+.td-right {
+  width: 300px;
+  text-align: center;
+}
+
+.td-right mat-icon {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.time-display-main .mat-icon-button:disabled {
+  color: #666666;
+}
+
+.middle-date {
+  display: inline-block;
+  padding-top: 10px;
+  padding-left: 25%;
+}
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+.time-display-main tr td.unavailable {
+  background: #636363;
+}
+
+::ng-deep .mat-calendar {
+  height: 71vh !important;
+  font-size: 15px;
+}
+
+::ng-deep .mat-calendar-body-cell-content {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-body-label {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-table-header {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-spacer {
+  font-size: 19px;
+}
+
+::ng-deep .mat-button-wrapper {
+  font-size: 19px;
+}
+
+::ng-deep .mat-calendar-previous-button {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+::ng-deep .mat-calendar-next-button {
+  width: 45px !important;
+  height: 45px !important;
+}
+
+/******** Left Content Section CSS ********/
+.left-content-available {
+  background: #2e7d32;
+  width: 30%;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+.left-inuse {
+  background: #b71d1c;
+}
+
+.left-text-top {
+  margin-top: 20px;
+}
+
+.left-text-top .name {
+  font-size: 30px;
+}
+
+.left-text-top .capacity {
+  font-weight: normal;
+}
+
+.left-text-center {
+  font-size: 40px;
+  margin-top: 75%;
+}
+
+/****** Right Content Section CSS *******/
+
+.right-content-drawer {
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url('../../assets/images/preview.jpeg');
+  background-repeat: no-repeat;
+  color: white;
+  height: 100%;
+  overflow: hidden;
+}
+
+.right-time-display {
+  font-size: 45px;
+  font-weight: bold;
+  margin: 20px 50px 0 0;
+  float: right;
+  text-align: right;
+}
+
+.top-date {
+  font-size: 30px;
+}
+
+/* Right - Button CSS */
+
+.bottom-btn-wraper {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+  margin: 0 10px 10px 0;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+}
+
+.bottom-btn {
+  text-align: center;
+  border: 3px solid white;
+  border-radius: 10px;
+  width: 230px;
+  height: 70px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.btn-reserve {
+  margin-right: 10px;
+}

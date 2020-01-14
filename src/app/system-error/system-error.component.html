@@ -1,0 +1,16 @@
+<div style="background: black; height: 100vh;" *ngIf="!isLoadComponent">
+  <div style=" margin: 0 auto; text-align: center;">
+    <div
+      style="background: #b71d1c; color: white;height: 150px; width: 400px; margin: 0px auto; padding-top: 20px; border-radius: 5px;">
+      <span [innerHtml]="errorMessage"></span>
+      <div>
+        <button mat-button (click)="onReload()"
+          style="border: 1px solid white; border-radius: 4px; margin-top: 20px;font-size: 14px; ">
+          Press here to reload</button>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+<div class="loading-central" *ngIf="isLoadComponent"> Loading...</div>
