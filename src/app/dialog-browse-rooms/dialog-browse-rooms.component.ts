@@ -211,7 +211,6 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    * Touch : Next - go to confirmation component
    */
   onTouchNextConfirm(): void {
-    console.log(this.setDateString, this.setDate, this.currentRoom);
     this.dialog.open(DialogConfirmationComponent, {
       width: '75%',
       height: '85%',
