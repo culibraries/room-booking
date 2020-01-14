@@ -18,15 +18,15 @@ ng serve -o
 ## Build
 PROD:
 ```
-docker build --build-arg app=room-booking-admin -t culibraries/room-booking-admin:[version]
+docker build --build-arg app=room-booking -t culibraries/room-booking:[version]
 ```
 TESTING:
 ```
-docker build --build-arg app=room-booking-admin -t culibraries/room-booking-admin:testing-[version]
+docker build --build-arg app=room-booking -t culibraries/room-booking:[version]
 ```
 Push to DockerHub:
 ```
-docker push culibraries/room-booking-admin:[version]
+docker push culibraries/room-booking:[version]
 ```
 
 ## License
