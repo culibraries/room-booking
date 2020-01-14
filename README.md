@@ -22,11 +22,13 @@ docker build --build-arg app=room-booking -t culibraries/room-booking:[version]
 ```
 TESTING:
 ```
-docker build --build-arg app=room-booking -t culibraries/room-booking:[version]
+docker build --build-arg app=room-booking -t culibraries/room-booking:testing-[version]
 ```
 Push to DockerHub:
 ```
 docker push culibraries/room-booking:[version]
+docker push culibraries/room-booking:testing-[version]
+
 ```
 
 ## License
