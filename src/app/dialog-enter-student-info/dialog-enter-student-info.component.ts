@@ -114,7 +114,6 @@ export class DialogEnterStudentInfoComponent implements OnInit, AfterViewInit {
 
   onSubmit(formGroup) {
     if (formGroup.valid) {
-      console.log('valid');
       this.isLoading = true;
 
       this.firstName = formGroup.value.firstName;
@@ -130,7 +129,6 @@ export class DialogEnterStudentInfoComponent implements OnInit, AfterViewInit {
         .subscribe(resPatron => {
           if (resPatron.varFields && resPatron.varFields.length > 0) {
             if (resPatron.patronType !== PATRON_TYPE_UNDERGRADUATE) {
-              this.log.logDebug('you are not undergraduate student.');
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
                 width: '50%',
