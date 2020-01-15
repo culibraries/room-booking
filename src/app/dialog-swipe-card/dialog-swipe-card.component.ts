@@ -60,7 +60,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
     } else {
       this.isLoading = true;
       event.preventDefault();
-      this.log.logDebug('Card value: ' + this.valueAfterSwipe);
+      this.log.logDebug('card: ' + this.valueAfterSwipe);
       this.bookService.getIDInformation(this.valueAfterSwipe, 'u').subscribe(
         data => {
           try {
@@ -81,10 +81,9 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
               });
               return;
             }
-            this.log.logDebug('PType value: ' + data.patronType);
+            this.log.logDebug('PType: ' + data.patronType);
             // If patronType is NOT an undergraduate student
             if (data.patronType !== PATRON_TYPE_UNDERGRADUATE) {
-              this.log.logDebug('you are not undergraduate student.');
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
                 width: '50%',
