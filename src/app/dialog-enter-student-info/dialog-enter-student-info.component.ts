@@ -130,7 +130,7 @@ export class DialogEnterStudentInfoComponent implements OnInit, AfterViewInit {
         .subscribe(resPatron => {
           if (resPatron.varFields && resPatron.varFields.length > 0) {
             if (
-              resPatron.patronType !== PATRON_TYPE_UNDERGRADUATE ||
+              resPatron.patronType !== PATRON_TYPE_UNDERGRADUATE &&
               resPatron.patronType !== PATRON_TYPE_GRADUATE
             ) {
               this.dialog.closeAll();

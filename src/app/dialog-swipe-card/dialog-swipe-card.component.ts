@@ -86,7 +86,7 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
             this.log.logDebug('PType: ' + data.patronType);
             // If patronType is NOT an undergraduate student
             if (
-              data.patronType !== PATRON_TYPE_UNDERGRADUATE ||
+              data.patronType !== PATRON_TYPE_UNDERGRADUATE &&
               data.patronType !== PATRON_TYPE_GRADUATE
             ) {
               this.dialog.closeAll();
