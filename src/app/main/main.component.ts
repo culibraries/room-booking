@@ -63,27 +63,35 @@ export class MainComponent implements OnInit, OnDestroy {
   ) {
     this.timetInterval = setInterval(() => {
       this.time = new Date();
-      if (this.dateNow.getDate() !== this.time.getDate()) {
-        this.log.logDebug('new day: reload the app...');
-        // Upload log to S3
-        this.log.uploadLog();
-        this.apiService
-          .get(
-            env.apiUrl +
-              '/catalog/data/catalog/roomBooking/?query={%22filter%22:{%22unique_id%22:%22' +
-              this.storage.get('uid') +
-              '%22}}'
-          )
-          .subscribe(res => {
-            this.log.logDebug(
-              'new day : set location_id space_id hours_view_id into localStorage'
-            );
-            this.storage.set('location_id', res.results[0].location_id);
-            this.storage.set('space_id', res.results[0].space_id);
-            this.storage.set('hours_view_id', res.results[0].hours_view_id);
 
-            location.reload();
-          });
+      if (this.dateNow.getDate() !== this.time.getDate()) {
+        clearInterval(this.timetInterval);
+        if (env.production) {
+          setTimeout(() => {
+            this.log.logDebug('new day: reload the app...');
+            this.log.logDebug('upload log to S3');
+            this.apiService
+              .post(env.apiUrl + '/s3-logging/upload', {})
+              .subscribe(data => {
+                this.apiService
+                  .get(
+                    env.apiUrl +
+                      '/catalog/data/catalog/roomBooking/?query={%22filter%22:{%22unique_id%22:%22' +
+                      this.storage.get('uid') +
+                      '%22}}'
+                  )
+                  .subscribe(res => {
+                    this.storage.set('location_id', res.results[0].location_id);
+                    this.storage.set('space_id', res.results[0].space_id);
+                    this.storage.set(
+                      'hours_view_id',
+                      res.results[0].hours_view_id
+                    );
+                    location.reload();
+                  });
+              });
+          }, 30000);
+        }
       }
     }, 3000);
   }
