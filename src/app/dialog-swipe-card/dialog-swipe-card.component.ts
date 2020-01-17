@@ -19,6 +19,8 @@ import { DialogEnterStudentInfoComponent } from '../dialog-enter-student-info/di
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 const PATRON_TYPE_UNDERGRADUATE = env.undergraduatePType;
+const PATRON_TYPE_GRADUATE = env.graduatePType;
+
 @Component({
   selector: 'app-dialog-swipe-card',
   templateUrl: './dialog-swipe-card.component.html',
@@ -83,7 +85,10 @@ export class DialogSwipeCardComponent implements OnInit, OnDestroy {
             }
             this.log.logDebug('PType: ' + data.patronType);
             // If patronType is NOT an undergraduate student
-            if (data.patronType !== PATRON_TYPE_UNDERGRADUATE) {
+            if (
+              data.patronType !== PATRON_TYPE_UNDERGRADUATE ||
+              data.patronType !== PATRON_TYPE_GRADUATE
+            ) {
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
                 width: '50%',
