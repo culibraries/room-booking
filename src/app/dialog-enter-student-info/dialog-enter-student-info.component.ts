@@ -21,6 +21,7 @@ import Keyboard from 'simple-keyboard';
 
 const libcalTokenURL = env.apiUrl + '/room-booking/libcal/token';
 const PATRON_TYPE_UNDERGRADUATE = env.undergraduatePType;
+const PATRON_TYPE_GRADUATE = env.graduatePType;
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -128,7 +129,10 @@ export class DialogEnterStudentInfoComponent implements OnInit, AfterViewInit {
         .getIDInformation(this.identikey, 'q')
         .subscribe(resPatron => {
           if (resPatron.varFields && resPatron.varFields.length > 0) {
-            if (resPatron.patronType !== PATRON_TYPE_UNDERGRADUATE) {
+            if (
+              resPatron.patronType !== PATRON_TYPE_UNDERGRADUATE &&
+              resPatron.patronType !== PATRON_TYPE_GRADUATE
+            ) {
               this.dialog.closeAll();
               this.dialog.open(DialogErrorComponent, {
                 width: '50%',
