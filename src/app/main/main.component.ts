@@ -90,7 +90,7 @@ export class MainComponent implements OnInit, OnDestroy {
                     location.reload();
                   });
               });
-          }, 30000);
+          }, (Math.floor(Math.random() * 50) + 10) * 1000);
         }
       }
     }, 3000);
