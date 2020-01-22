@@ -6,6 +6,7 @@
 <div mat-dialog-content class="modal-box-body">
     <div *ngIf="loading; else loaded" class="loader-internal"> loading...
     </div>
+    <div *ngIf="loading; else loaded" style="text-align: center;">please wait...</div>
 
     <ng-template #loaded>
         <div *ngIf="!isOpen; else display" style="text-align: center; padding-top: 100px;"> The library is closed

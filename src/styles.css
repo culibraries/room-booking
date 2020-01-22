@@ -257,7 +257,7 @@ body {
 .loader-internal {
   font-size: 10px;
   position: relative;
-  margin: 25% auto;
+  margin: 15% 15% 1% 46%;
   text-indent: -9999em;
   border-top: 1em solid rgba(169, 167, 167, 0.623);
   border-right: 1em solid rgba(169, 167, 167, 0.623);
