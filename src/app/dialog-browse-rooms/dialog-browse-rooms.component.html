@@ -59,7 +59,7 @@
                 The library is closed</div>
             <ng-template #display>
                 <div class="loader-internal" *ngIf="isLoadingByDate else loadedByDate"> Loading...</div>
-                <div style="text-align: center;" *ngIf="isLoadingByDate else loadedByDate">please wait...</div>
+                <div style="text-align: center;" *ngIf="isLoadingByDate">please wait...</div>
                 <ng-template #loadedByDate>
                     <ul class="select-time-list" *ngIf="isOpen">
                         <li *ngFor="let time of displayTime; trackBy: trackByFn" class="select-time-item"
