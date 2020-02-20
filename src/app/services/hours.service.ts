@@ -13,12 +13,18 @@ export class HoursService {
   getLocationHours(hours_view_id: string): Observable<Hours> {
     return this.http
       .jsonp(
-        'https://api3.libcal.com/api_hours_grid.php?format=jsonld&iid=3251&lid=' +
+        'https://colorado.libcal.com/widget/hours/grid?format=jsonld&iid=3251&lid=' +
           hours_view_id,
         'callback'
       )
       .pipe(
-        map((data: any) => new Hours(data.name, data.openingHoursSpecification))
+        map(
+          (data: any) =>
+            new Hours(
+              JSON.parse(data).name,
+              JSON.parse(data).openingHoursSpecification
+            )
+        )
       );
   }
 }
