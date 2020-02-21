@@ -18,13 +18,15 @@ export class HoursService {
         'callback'
       )
       .pipe(
-        map(
-          (data: any) =>
-            new Hours(
-              JSON.parse(data).name,
-              JSON.parse(data).openingHoursSpecification
-            )
-        )
+        map((data: any) => {
+          if (typeof data === 'object') {
+            return new Hours(data.name, data.openingHoursSpecification);
+          }
+          return new Hours(
+            JSON.parse(data).name,
+            JSON.parse(data).openingHoursSpecification
+          );
+        })
       );
   }
 }
