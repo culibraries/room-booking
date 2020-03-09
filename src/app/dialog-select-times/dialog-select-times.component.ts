@@ -128,7 +128,7 @@ export class DialogSelectTimesComponent
    * @param time
    */
   onTouchSelectTime(time: TimeDisplay) {
-    if (!time.status) {
+    if (time.status === 0 || time.status === 2) {
       return;
     }
     // Toggle
