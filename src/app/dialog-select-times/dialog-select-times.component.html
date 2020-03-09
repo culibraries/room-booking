@@ -18,19 +18,25 @@
                     <span>
                         <mat-icon>access_time</mat-icon>
                     </span>
-                    <div *ngIf="time.status; else inuse" style="display:
-                        contents">
+                    <div *ngIf="time.status === 1" style="display: contents">
                         <span class="time-display" [class.seleted-text]="time.active">
                             {{time.displayValue}}
                         </span>
                         <span *ngIf="!time.active" class="box available">AVAILABLE</span>
                         <span *ngIf="time.active" class="box selected">SELECTED</span>
                     </div>
-                    <ng-template #inuse style="display: contents">
+                    <div *ngIf="time.status === 0" style="display: contents">
+                        <span class="time-display reserved-time">
+                            {{time.displayValue}}
+                        </span>
+                        <span class="box busy">RESERVED</span>
+                    </div>
+                    <div *ngIf="time.status === 2" style="display: contents">
                         <span class="time-display unavailable-time">
                             {{time.displayValue}}
                         </span>
-                        <span class="box busy">IN USE</span></ng-template>
+                        <span class="box unavailable">UNAVAILABLE</span>
+                    </div>
                 </li>
             </ul>
         </ng-template>

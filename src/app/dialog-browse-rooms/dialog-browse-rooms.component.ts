@@ -186,7 +186,7 @@ export class DialogBrowseRoomsComponent implements OnInit, OnDestroy {
    * @param time
    */
   onTouchSelectTime(time: TimeDisplay) {
-    if (!time.status) {
+    if (time.status === 0 || time.status === 2) {
       return;
     }
     // Toggle

@@ -183,13 +183,7 @@ export class HelperService {
       }
 
       const timeValue = `${arr[i]}-${arr[i + 1]}`;
-
-      status = availability.find(el => {
-        return el === timeValue;
-      })
-        ? 1
-        : 0;
-
+      status = this.getStatus(availability, timeValue);
       if (this.isTheDay(date, currentDate)) {
         if (`${arr[i + 1]}` > getCurrentTime) {
           output.push({
@@ -215,5 +209,20 @@ export class HelperService {
       }
     });
     return output;
+  }
+
+  // Get status of time slot bases on libcal API return
+  // 1 : available, 0: reserved, 2: unavailable
+
+  private getStatus(availabilityTime: string[], timeValue: string): number {
+    if (availabilityTime.length === 0) {
+      return 2;
+    } else {
+      return availabilityTime.find(el => {
+        return el === timeValue;
+      })
+        ? 1
+        : 0;
+    }
   }
 }

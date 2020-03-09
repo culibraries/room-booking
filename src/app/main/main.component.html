@@ -12,7 +12,7 @@
     <div class="left-text-center">
       <span *ngIf="status == 'available'">AVAILABLE<br />
         NOW</span>
-      <span *ngIf="status == 'inuse'">IN USE<br />
+      <span *ngIf="status == 'inuse'">RESERVED<br />
         NOW</span>
       <span *ngIf="status == 'closed'">CLOSED<br />
       </span>
@@ -21,7 +21,7 @@
     bottom: 1%;
     left: 45%;
     font-size: 12px;
-    font-weight: normal;">v1.0.5</div>
+    font-weight: normal;">v1.1.0</div>
   </mat-drawer>
   <!-- Right Content Section-->
   <mat-drawer-content class="right-content-drawer">
@@ -74,7 +74,8 @@
             <tbody>
               <tr *ngFor="let time of displayTime;">
                 <!-- Begin : First Column-->
-                <td class="td-left" style="color: #636363;" *ngIf="!time.status; else availableDisplayTime">
+                <td class="td-left" style="color: #636363;"
+                  *ngIf="time.status === 0 || time.status === 2; else availableDisplayTime">
                   {{ time.displayValue }}
                 </td>
                 <ng-template #availableDisplayTime>
@@ -86,13 +87,13 @@
 
                 <!-- Begin : Second Column-->
 
-                <td class="td-right unavailable" style="border-right: 5px solid
-                  #b71d1c" *ngIf="!time.status; else available"></td>
+                <td *ngIf="time.status === 0" class="td-right unavailable" style="border-right: 5px solid
+                  #b71d1c"></td>
+                <td *ngIf="time.status === 1" class="td-right" (click)="onTouchCalendarTimeSlot(time)"
+                  style="border-right: 5px solid #2e7d32">
+                </td>
+                <td *ngIf="time.status === 2" class="td-right unavailable" style="border-right: 5px solid#525452"></td>
 
-                <ng-template #available>
-                  <td class="td-right" (click)="onTouchCalendarTimeSlot(time)" style="border-right: 5px solid #2e7d32">
-                  </td>
-                </ng-template>
                 <!-- End : Second Column-->
               </tr>
             </tbody>
@@ -100,14 +101,20 @@
           </table>
           <div class="explain-box">
             <div>
-              <span>Busy</span>
+              <span>Available</span>
+              <span class="explain-box-available">
+                &nbsp; &nbsp;
+                &nbsp; </span>
+            </div>
+            <div style="margin-top: 8px;">
+              <span>Reserved</span>
               <span class="explain-box-busy">
                 &nbsp; &nbsp;
                 &nbsp; </span>
             </div>
             <div style="margin-top: 8px;">
-              <span>Available</span>
-              <span class="explain-box-available">
+              <span>Unavailable</span>
+              <span class="explain-box-unavailable">
                 &nbsp; &nbsp;
                 &nbsp; </span>
             </div>
